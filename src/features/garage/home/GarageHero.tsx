@@ -1,19 +1,26 @@
 import Image from 'next/image'
 import type { ReactNode } from 'react'
 
-/** The supplied production environment. One file; next/image serves AVIF/WebP at device width. */
+/** The supplied production environment. One file, one optimised URL (both uses share src/sizes/quality). */
 export const HOME_BASE_IMAGE = '/assets/environments/garage27-home-base.png'
 
+const imageProps = { src: HOME_BASE_IMAGE, fill: true, sizes: '(min-aspect-ratio: 5/8) 60vh, 100vw', quality: 90 } as const
+
 /**
- * Full-viewport environmental hero. The photograph (bike, building, signage,
- * neon, wet ground) is the composition; the interface sits on top of it.
- * Framing is tuned per breakpoint with --hero-focus-* in home.css.
+ * Full-viewport environmental hero. On phones the photograph fills the
+ * screen exactly as in the reference; on wider screens it stands
+ * full-height in the centre with the same file blurred behind it.
  */
 export function GarageHero({ children }: { children: ReactNode }) {
   return (
     <section className="ghero" aria-labelledby="ghero-title">
       <div className="ghero__media" aria-hidden="true">
-        <Image className="ghero__img" src={HOME_BASE_IMAGE} alt="" fill sizes="100vw" quality={90} loading="eager" fetchPriority="high" />
+        <div className="ghero__fill">
+          <Image {...imageProps} alt="" className="ghero__fill-img" loading="lazy" />
+        </div>
+        <div className="ghero__frame">
+          <Image {...imageProps} alt="" className="ghero__img" loading="eager" fetchPriority="high" />
+        </div>
         <div className="ghero__shade" />
       </div>
       {children}
@@ -28,9 +35,7 @@ export function GarageHeroStatement() {
       <span>BUILT</span>
       <span>DIFFERENT.</span>
       <span>ALWAYS.</span>
-      <span className="ghero__dash" aria-hidden="true">
-        —
-      </span>
+      <span className="ghero__dash" aria-hidden="true" />
     </p>
   )
 }

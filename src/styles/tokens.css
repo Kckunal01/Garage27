@@ -38,6 +38,9 @@
   --font-ui: 'Oswald', 'Arial Narrow', 'Roboto Condensed', sans-serif;
   --font-body: 'Barlow', 'Helvetica Neue', Arial, sans-serif;
   --font-neon: 'Mr Dafoe', 'Brush Script MT', cursive;
+  /* Home reference system: condensed high-contrast display serif + monospace UI. */
+  --font-display: 'Instrument Serif', 'Bodoni Moda', Georgia, serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
 
   --track-wide: 0.22em;
   --track-mid: 0.14em;
@@ -51,10 +54,12 @@
 
   /* Chrome */
   --header-h: 64px;
-  --nav-h: 58px;
-  --nav-gap: 14px;
+  /* Universal floating nav — measured from the home reference (393 px). */
+  --nav-h: 57px;
+  --nav-gap: 12px;
+  --nav-bottom: max(33px, calc(env(safe-area-inset-bottom, 0px) + 12px));
   --safe-bottom: env(safe-area-inset-bottom, 0px);
-  --bottom-clearance: calc(var(--nav-h) + var(--nav-gap) * 2 + var(--safe-bottom));
+  --bottom-clearance: calc(var(--nav-h) + var(--nav-bottom) + var(--nav-gap));
 
   /* Motion — physical, never bouncy */
   --ease-drawer: cubic-bezier(0.2, 0.8, 0.2, 1);

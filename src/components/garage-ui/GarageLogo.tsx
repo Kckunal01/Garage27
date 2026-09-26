@@ -1,20 +1,17 @@
+import Image from 'next/image'
 import Link from 'next/link'
 
-/**
- * Garage 27 signature. Typeset stand-in for the official logo file — drop the
- * master into /public/assets/brand/ and swap the inner markup for an <img>/<svg>.
- */
+/** Official Garage 27 logo (public/assets/brand/garage27-logo.png, 2172×724). */
+export const LOGO_SRC = '/assets/brand/garage27-logo.png'
+const HEIGHT = { sm: 28, md: 44, lg: 96 } as const
+
 export function GarageLogo({ size = 'md', asLink = true }: { size?: 'sm' | 'md' | 'lg'; asLink?: boolean }) {
-  const inner = (
-    <span className={`glogo glogo--${size}`}>
-      <span className="glogo__script">Garage</span>
-      <span className="glogo__num">27</span>
-    </span>
-  )
-  if (!asLink) return inner
+  const h = HEIGHT[size]
+  const img = <Image className={`glogo glogo--${size}`} src={LOGO_SRC} alt="Garage 27" width={Math.round((h * 2172) / 724)} height={h} sizes={`${Math.round((h * 2172) / 724)}px`} />
+  if (!asLink) return img
   return (
-    <Link href="/" className="glogo-link" aria-label="Garage 27 — home">
-      {inner}
+    <Link href="/" className="glogo-link" title="Garage 27 — home">
+      {img}
     </Link>
   )
 }

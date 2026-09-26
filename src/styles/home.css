@@ -1,26 +1,35 @@
-/* ── Garage / Home — environmental composition over garage27-home-base.png ──
-   All placement lives in the variables below so the layout can be tuned
-   against docs/design-references/home/home-mobile-reference.png without
-   touching structure. Mobile is the reference composition; desktop is its
-   own composition in the same language. */
+/* ── Garage / Home ─────────────────────────────────────────────────────
+   Source of truth: docs/design-references/home/home-mobile-reference.png
+   (851×1848 @2.166x → designed at 393×852 CSS px).
+
+   Mobile: the photograph is width-fitted, so every measurement below is in
+   --u = 1/393 of the viewport width and was taken from the reference at
+   393 px. Values are reference px ÷ 2.166. Change a value only after
+   re-measuring against the reference. */
+
+/* One design unit for everything on this route (hero + header control):
+   1/393 of the reference, scaled to whichever viewport dimension is
+   tighter so short browser viewports keep the reference proportions. */
+body:has(.ghero) {
+  --u: min(calc(100vw / 393), calc(100svh / 852));
+}
 
 .ghero {
-  --hero-focus: 50% 50%; /* object-position for the supplied photograph */
-  --hero-side: 20px; /* left/right inset of the interface */
-  --hero-top: calc(env(safe-area-inset-top, 0px) + 20px);
-  --hero-lower-gap: 22px; /* space between CTAs and the floating nav */
-  --title-size: calc((100vw - var(--hero-side) * 2) / 10.4);
+  --ink: #f3ecd9; /* headline, CTA text, menu */
+  --ink-warm: #eadcb9; /* statement, label */
+  --ink-tan: #d8bf98; /* supporting line */
+  --neon: #f2453c;
 
   position: relative;
   isolation: isolate;
   height: 100svh;
-  min-height: 620px;
+  min-height: 540px;
   overflow: hidden;
-  background: var(--g-black);
-  color: var(--g-cream);
+  background: #0b0908;
+  color: var(--ink);
 }
 
-/* The page is one screen: no body padding strip under the hero. */
+/* One screen; nothing scrolls under the floating nav. */
 body:has(.ghero) {
   padding-bottom: 0;
 }
@@ -33,147 +42,172 @@ body:has(.ghero) {
 }
 .ghero__img {
   object-fit: cover;
-  object-position: var(--hero-focus);
+  /* Same aspect as a 393×852 phone, so this is an exact fit there; on
+     shorter browser viewports it trims sky and wet ground evenly and keeps
+     the sign + bike. */
+  object-position: 50% 45%;
 }
-/* Legibility only where type sits: top-left statement, lower copy. Restrained. */
+.ghero__fill {
+  display: none;
+}
+/* Grade fitted to the reference against the raw photograph: a cool-neutral
+   overlay (pulls red, keeps green/blue — e.g. floor 35,13,5 → 20,13,8),
+   strongest in the upper sky and behind the copy. Neon keeps its colour. */
 .ghero__shade {
   position: absolute;
   inset: 0;
-  background:
-    linear-gradient(180deg, rgba(8, 7, 6, 0.55) 0%, rgba(8, 7, 6, 0) 18%),
-    linear-gradient(0deg, rgba(8, 7, 6, 0.88) 0%, rgba(8, 7, 6, 0.6) 26%, rgba(8, 7, 6, 0) 50%);
+  background: linear-gradient(
+    180deg,
+    rgba(4, 12, 11, 0.15) 0%,
+    rgba(4, 12, 11, 0.45) 9%,
+    rgba(4, 12, 11, 0.32) 15%,
+    rgba(4, 12, 11, 0.04) 20%,
+    rgba(4, 12, 11, 0.03) 29%,
+    rgba(4, 12, 11, 0.14) 36%,
+    rgba(4, 12, 11, 0.1) 44%,
+    rgba(4, 12, 11, 0.12) 54%,
+    rgba(4, 12, 11, 0.2) 66%,
+    rgba(4, 12, 11, 0.38) 74%,
+    rgba(4, 12, 11, 0.42) 84%,
+    rgba(4, 12, 11, 0.4) 92%,
+    rgba(4, 12, 11, 0.35) 100%
+  );
 }
 
-/* ── Top-left statement ─────────────────────────────────────────────── */
+/* ── Top-left statement (ref: x 33, cap-top 90, pitch 27, dash at 180) ── */
 .ghero__statement {
   position: absolute;
   z-index: 2;
-  top: var(--hero-top);
-  left: var(--hero-side);
+  top: calc(var(--u) * 38.5);
+  left: calc(var(--u) * 15);
   display: grid;
-  gap: 1px;
-  font-family: var(--font-ui);
-  font-weight: 500;
-  font-size: 0.8rem;
-  line-height: 1.2;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--g-cream);
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-size: calc(var(--u) * 10);
+  line-height: calc(var(--u) * 12.5);
+  letter-spacing: 0.028em;
+  color: var(--ink-warm);
 }
 .ghero__dash {
-  margin-top: 2px;
-  letter-spacing: 0;
-  color: var(--g-cream-soft);
+  display: block;
+  width: calc(var(--u) * 12);
+  height: 1px;
+  margin-top: calc(var(--u) * 6.2);
+  background: var(--ink-warm);
 }
 
-/* ── Lower block: copy + actions, clear of the floating nav ─────────── */
+/* ── Lower block (ref: label cap-top 1262 → CTAs bottom 1575) ───────── */
 .ghero__lower {
-  min-width: 0;
   position: absolute;
   z-index: 2;
-  left: var(--hero-side);
-  right: var(--hero-side);
-  bottom: calc(var(--nav-h) + var(--nav-gap) + env(safe-area-inset-bottom, 0px) + var(--hero-lower-gap));
+  left: calc(var(--u) * 22);
+  /* distance from the viewport bottom to the CTA bottom edge: 852 − 727 */
+  bottom: calc(var(--u) * 125);
   display: grid;
-  gap: 22px;
+  justify-items: start;
 }
 .ghero__copy {
   display: grid;
-  gap: 12px;
+  justify-items: start;
 }
 .ghero__label {
-  font-family: var(--font-ui);
-  font-weight: 500;
-  font-size: 0.72rem;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--g-cream);
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-size: calc(var(--u) * 8.4);
+  line-height: 1;
+  letter-spacing: 0.084em;
+  color: var(--ink-warm);
 }
 .ghero__title {
   display: grid;
-  font-family: var(--font-serif);
-  font-weight: 700;
-  font-size: var(--title-size);
-  line-height: 1.02;
-  letter-spacing: -0.005em;
-  text-transform: uppercase;
-  color: var(--g-cream);
-  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.55);
+  margin-top: calc(var(--u) * 5.5);
+  margin-left: calc(var(--u) * -0.8); /* optical: the T's side-bearing */
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: calc(var(--u) * 35.5);
+  line-height: calc(var(--u) * 34.2);
+  letter-spacing: 0.002em;
+  color: var(--ink);
 }
 .ghero__title span {
   white-space: nowrap;
 }
 .ghero__support {
-  font-family: var(--font-ui);
+  margin-top: calc(var(--u) * 5);
+  font-family: var(--font-mono);
   font-weight: 400;
-  font-size: 0.7rem;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  color: var(--g-cream-soft);
+  font-size: calc(var(--u) * 11.6);
+  line-height: 1;
+  letter-spacing: 0.064em;
+  color: var(--ink-tan);
 }
 
-/* ── Pill CTAs ──────────────────────────────────────────────────────── */
+/* ── Pill CTAs (ref: 150×32 and 144×32, 14.5 apart, 22 below support) ── */
 .ghero__actions {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 10px;
+  display: flex;
+  gap: calc(var(--u) * 14.5);
+  margin-top: calc(var(--u) * 16.5);
 }
 .gpill {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
-  min-height: 52px;
-  padding: 0 14px 0 16px;
-  border-radius: var(--radius-pill);
-  border: 1px solid rgba(233, 223, 199, 0.55);
-  background: rgba(10, 9, 8, 0.55);
-  color: var(--g-cream);
-  font-family: var(--font-ui);
-  font-weight: 500;
-  font-size: 0.7rem;
+  gap: calc(var(--u) * 7);
+  height: calc(var(--u) * 32);
+  border-radius: 999px;
+  border: 1px solid rgba(214, 196, 164, 0.72);
+  background: rgba(8, 7, 6, 0.42);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-size: calc(var(--u) * 9.2);
   letter-spacing: 0.12em;
   white-space: nowrap;
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
   transition:
-    border-color var(--dur) var(--ease-push),
     box-shadow var(--dur) var(--ease-push),
-    background-color var(--dur);
+    border-color var(--dur) var(--ease-push);
   -webkit-tap-highlight-color: transparent;
+}
+/* Visual height matches the reference; the hit area is a full 44px. */
+.gpill::before {
+  content: '';
+  position: absolute;
+  inset: -6px 0;
+}
+.gpill--neon {
+  min-width: calc(var(--u) * 150);
+  padding: 0 calc(var(--u) * 19) 0 calc(var(--u) * 25.5);
+  border: 1.5px solid var(--neon);
+  background: rgba(20, 4, 4, 0.5);
+  box-shadow:
+    0 0 calc(var(--u) * 7) rgba(255, 50, 40, 0.75),
+    0 0 calc(var(--u) * 18) rgba(255, 40, 30, 0.35),
+    inset 0 0 calc(var(--u) * 8) rgba(255, 50, 40, 0.28);
+}
+.gpill--line {
+  min-width: calc(var(--u) * 144);
+  padding: 0 calc(var(--u) * 16.5) 0 calc(var(--u) * 18);
 }
 .gpill:hover,
 .gpill:focus-visible {
-  border-color: var(--g-cream);
-}
-.gpill__arrow {
-  font-family: var(--font-body);
-  font-size: 1.05rem;
-  letter-spacing: 0;
-  line-height: 1;
-}
-.gpill--neon {
-  border-color: #ff3a41;
-  box-shadow:
-    0 0 10px 0 rgba(255, 38, 48, 0.45),
-    inset 0 0 12px 0 rgba(255, 38, 48, 0.22);
+  border-color: var(--ink);
 }
 .gpill--neon:hover,
 .gpill--neon:focus-visible {
-  border-color: #ff5a60;
+  border-color: #ff6a5f;
   box-shadow:
-    0 0 18px 2px rgba(255, 38, 48, 0.6),
-    inset 0 0 16px 0 rgba(255, 38, 48, 0.3);
+    0 0 calc(var(--u) * 10) rgba(255, 60, 48, 0.9),
+    0 0 calc(var(--u) * 26) rgba(255, 40, 30, 0.45),
+    inset 0 0 calc(var(--u) * 10) rgba(255, 50, 40, 0.35);
 }
-@media (max-width: 360px) {
-  .gpill {
-    padding: 0 10px 0 12px;
-    font-size: 0.64rem;
-    letter-spacing: 0.08em;
-  }
+.gpill__arrow {
+  width: calc(var(--u) * 10.5);
+  height: auto;
+  flex: none;
 }
 
-/* ── Immersive chrome (header on this route) ─────────────────────────── */
+/* ── Immersive chrome on this route: the rack control only ──────────── */
 .site-header--immersive {
   position: fixed;
   inset: 0 0 auto;
@@ -185,72 +219,101 @@ body:has(.ghero) {
 }
 .site-header--immersive .site-header__inner {
   max-width: none;
-  padding: calc(env(safe-area-inset-top, 0px) + 8px) 8px 0 0;
-  justify-content: flex-end;
+  padding: 0;
+  display: block;
 }
 .site-header--immersive .site-header__brand,
 .site-header--immersive .site-header__cart,
 .site-header--immersive .site-header__nav {
   display: none;
 }
+/* ref: three 1px lines, x 355–376, y 42 / 49 / 56 */
 .site-header--immersive .rack-trigger {
+  position: absolute;
+  top: calc(var(--u) * 49 - 22px);
+  right: calc(var(--u) * 17 - 12px);
+  width: 44px;
+  height: 44px;
   pointer-events: auto;
 }
 .site-header--immersive .rack-trigger__bars {
-  width: 24px;
-  gap: 6px;
+  width: calc(var(--u) * 20.5);
+  gap: calc(var(--u) * 6);
 }
 .site-header--immersive .rack-trigger__bars span {
-  height: 1px;
   width: 100%;
-  background: var(--g-cream);
-}
-.site-header--immersive .rack-trigger.is-open .rack-trigger__bars span:nth-child(1) {
-  transform: translateY(7px) rotate(45deg);
-}
-.site-header--immersive .rack-trigger.is-open .rack-trigger__bars span:nth-child(3) {
-  transform: translateY(-7px) rotate(-45deg);
+  height: 1px;
+  background: #f3ecd9;
 }
 
-/* ── Desktop: same system, wider environmental composition ───────────── */
-@media (min-width: 1024px) {
-  .ghero {
-    --hero-side: clamp(40px, 5.5vw, 96px);
-    --hero-top: 36px;
-    --hero-lower-gap: 40px;
-    --title-size: clamp(3.4rem, 5vw, 5.6rem);
+/* ── Wider viewports: the whole photograph stands full-height ──────────
+   Beyond phone proportions a width-fitted portrait photo would crop off
+   either the sign or the bike, so it is shown entire, centred, with the
+   same file blurred behind it to fill the width. */
+@media (min-aspect-ratio: 5/8) {
+  body:has(.ghero) {
+    --u: min(calc(100vw / 393), calc(100svh / 852), 1.2px);
+  }
+  .ghero__fill {
+    display: block;
+    position: absolute;
+    inset: -40px;
+  }
+  .ghero__fill-img {
+    object-fit: cover;
+    filter: blur(28px) brightness(0.42) saturate(1.1);
+  }
+  .ghero__frame {
+    position: absolute;
+    inset: 0 auto;
+    left: 50%;
+    height: 100%;
+    aspect-ratio: 851 / 1848;
+    transform: translateX(-50%);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  }
+  .ghero__img {
+    object-position: 50% 50%;
+  }
+}
+
+@media (min-width: 1024px) and (min-aspect-ratio: 5/8) {
+  /* Desktop typography is set larger than the phone composition, same proportions. */
+  body:has(.ghero) {
+    --u: min(calc(100svh / 852 * 1.5), 1.7px);
   }
   .ghero__shade {
     background:
-      linear-gradient(180deg, rgba(8, 7, 6, 0.5) 0%, rgba(8, 7, 6, 0) 16%),
-      linear-gradient(0deg, rgba(8, 7, 6, 0.85) 0%, rgba(8, 7, 6, 0.45) 30%, rgba(8, 7, 6, 0) 55%),
-      linear-gradient(90deg, rgba(8, 7, 6, 0.45) 0%, rgba(8, 7, 6, 0) 45%);
+      linear-gradient(0deg, rgba(10, 8, 6, 0.72) 0%, rgba(10, 8, 6, 0) 45%),
+      linear-gradient(90deg, rgba(10, 8, 6, 0.55) 0%, rgba(10, 8, 6, 0) 40%);
   }
   .ghero__statement {
-    font-size: 0.86rem;
+    top: 40px;
+    left: clamp(32px, 4vw, 72px);
   }
   .ghero__lower {
-    right: auto;
-    width: min(760px, 60vw);
+    left: clamp(32px, 4vw, 72px);
+    bottom: calc(var(--u) * 125);
   }
-  .ghero__label,
-  .ghero__support {
-    font-size: 0.8rem;
+  .site-header--immersive .rack-trigger {
+    top: 30px;
+    right: clamp(20px, 3.4vw, 60px);
   }
-  .ghero__actions {
-    grid-template-columns: repeat(2, minmax(0, 240px));
-    gap: 14px;
+  .site-header--immersive .rack-trigger__bars {
+    width: 24px;
+    gap: 7px;
   }
+}
+
+@media (prefers-reduced-motion: reduce) {
   .gpill {
-    min-height: 56px;
-    padding: 0 20px 0 24px;
-    font-size: 0.8rem;
-    letter-spacing: 0.16em;
+    transition: none;
   }
-  .site-header--immersive .site-header__inner {
-    padding: 22px clamp(28px, 4.5vw, 84px) 0 0;
-  }
-  /* The floating pill is the navigation on this composition at every width. */
+}
+
+/* The floating pill is the navigation on this route at every width. */
+@media (min-width: 1024px) {
   .gnav--pill.gnav--immersive {
     display: block;
   }
