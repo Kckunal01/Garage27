@@ -388,9 +388,10 @@ ol {
 }
 
 /* ── Page entry — moving between garage bays ─────────────────────────── */
-.bay-enter {
-  /* backwards, not both: a filling transform animation would turn this wrapper
-     into the containing block for position:fixed children (dock, modals). */
+/* Only after a client-side navigation (see NavigationFlag) — never on first load.
+   backwards, not both: a filling transform animation would turn this wrapper
+   into the containing block for position:fixed children (dock, modals). */
+html[data-navigated] .bay-enter {
   animation: bay-enter var(--dur-slow) var(--ease-push) backwards;
 }
 @keyframes bay-enter {
@@ -406,7 +407,7 @@ ol {
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .bay-enter {
+  html[data-navigated] .bay-enter {
     animation: none;
   }
 }

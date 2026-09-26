@@ -134,6 +134,8 @@
 .field {
   display: grid;
   gap: 8px;
+  /* Don't stretch the input when a neighbour in the same row has a hint/error. */
+  align-content: start;
 }
 .field__label {
   font-family: var(--font-ui);

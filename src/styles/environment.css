@@ -413,3 +413,13 @@
     padding-inline: clamp(48px, 5vw, 120px);
   }
 }
+
+/* About's sign ("since day one") is longer than the Garage sign: anchor it to
+   the wall's right edge at a smaller size so it can never reach the headline. */
+@media (--desktop) {
+  .env--editorial .env__sign {
+    white-space: nowrap;
+    text-align: right;
+    font-size: clamp(3.2rem, 5.2vw, 6.4rem);
+  }
+}
