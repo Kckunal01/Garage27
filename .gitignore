@@ -1,8 +1,9 @@
-node_modules/
-.next/
-out/
-build/
-coverage/
+# Anchored to the repo root: an unanchored `build/` also ignored src/features/build and src/app/build.
+/node_modules/
+/.next/
+/out/
+/build/
+/coverage/
 *.tsbuildinfo
 next-env.d.ts
 .env
