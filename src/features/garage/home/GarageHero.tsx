@@ -1,8 +1,9 @@
 import Image from 'next/image'
 import type { ReactNode } from 'react'
+import { ENVIRONMENTS } from '@/lib/environments'
 
 /** The supplied production environment. One file, one optimised URL (both uses share src/sizes/quality). */
-export const HOME_BASE_IMAGE = '/assets/environments/garage27-home-base.png'
+export const HOME_BASE_IMAGE = ENVIRONMENTS.garageNight
 
 const imageProps = { src: HOME_BASE_IMAGE, fill: true, sizes: '(min-aspect-ratio: 5/8) 60vh, 100vw', quality: 90 } as const
 

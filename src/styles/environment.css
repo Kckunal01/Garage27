@@ -241,3 +241,175 @@
     animation: none;
   }
 }
+
+/* ── Compositions ─────────────────────────────────────────────────────
+   MOBILE: one vertical stack — sign on the wall above the copy.
+   DESKTOP: two horizontal zones — copy owns the left zone, the wall (sign,
+   lamp, detail) owns the right zone, so the wide canvas is composed rather
+   than a phone layout with an empty right half. */
+@media (--mobile) {
+  .env__sign {
+    left: 5%;
+    font-size: clamp(3rem, 14vw, 4.4rem);
+  }
+}
+@media (--desktop) {
+  .env {
+    --zone-split: 56%; /* copy zone | wall zone */
+  }
+  .env--garage,
+  .env--editorial {
+    --lamp-x: 74%; /* light the sign in the wall zone */
+  }
+  /* Only a hero with a wall sign splits into zones; otherwise the copy
+     keeps the full canvas and the lamp/detail carry the right side. */
+  .env--has-sign .env__content > * {
+    max-width: var(--zone-split);
+  }
+  .env__sign {
+    left: auto;
+    right: 6%;
+    top: 50%;
+    width: calc(100% - var(--zone-split) - 8%);
+    text-align: center;
+    font-size: clamp(4rem, 7.5vw, 8.5rem);
+    transform: translateY(-40%) rotate(-5deg);
+  }
+}
+
+/* ── 404 · wrong bay ─────────────────────────────────────────────────── */
+.lost {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  min-height: 100svh;
+  margin-top: calc(var(--header-h) * -1);
+  display: grid;
+  background: var(--g-black);
+}
+.lost__env {
+  position: absolute;
+  inset: -24px; /* bleed so the blur has no soft edge */
+  z-index: 0;
+}
+.lost__img {
+  object-fit: cover;
+  object-position: 50% 58%; /* mobile: the bay floor + bike, portrait */
+  filter: blur(9px) brightness(0.42) saturate(1.05);
+}
+.lost__shade {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(90% 70% at 50% 40%, transparent 30%, rgba(8, 7, 6, 0.72) 100%),
+    linear-gradient(0deg, rgba(8, 7, 6, 0.85) 0%, rgba(8, 7, 6, 0) 45%);
+}
+.lost__stage {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  width: 100%;
+  max-width: var(--max);
+  margin-inline: auto;
+  padding: calc(var(--header-h) + 24px) var(--gutter) calc(var(--bottom-clearance) + 28px);
+}
+.lost__code {
+  font-family: var(--font-display);
+  line-height: 0.8;
+  letter-spacing: -0.02em;
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgba(242, 69, 60, 0.85);
+  text-shadow:
+    0 0 24px rgba(242, 69, 60, 0.35),
+    0 0 80px rgba(242, 69, 60, 0.18);
+  user-select: none;
+}
+.lost__copy {
+  display: grid;
+  gap: 16px;
+  justify-items: start;
+}
+.lost__kicker {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.14em;
+  color: var(--g-amber);
+}
+.lost__title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  line-height: 0.95;
+  text-transform: uppercase;
+  color: #f3ecd9;
+}
+.lost__lede {
+  color: var(--g-cream-soft);
+  max-width: 40ch;
+}
+.lost__ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+/* Mobile: numeral near the top, copy stack anchored low for the thumb. */
+@media (--mobile) {
+  .lost__stage {
+    grid-template-rows: 1fr auto;
+    align-items: end;
+  }
+  .lost__code {
+    align-self: center;
+    font-size: clamp(8.5rem, 46vw, 12rem);
+  }
+  .lost__title {
+    font-size: clamp(2.6rem, 12vw, 3.4rem);
+  }
+  .lost__ctas {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .lost__ctas .btn {
+    min-height: 52px;
+    padding-inline: 10px;
+  }
+}
+
+/* Desktop: wide crop; numeral owns the left zone, copy the right zone,
+   both centred on the canvas between header and GarageNav. */
+@media (--desktop) {
+  .lost__img {
+    object-position: 50% 62%;
+    filter: blur(16px) brightness(0.4) saturate(1.05);
+  }
+  .lost__shade {
+    background:
+      radial-gradient(45% 60% at 30% 50%, rgba(242, 69, 60, 0.1), transparent 70%),
+      radial-gradient(120% 100% at 50% 50%, transparent 40%, rgba(8, 7, 6, 0.78) 100%),
+      linear-gradient(0deg, rgba(8, 7, 6, 0.6) 0%, rgba(8, 7, 6, 0) 35%);
+  }
+  .lost__stage {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    align-items: center;
+    column-gap: clamp(32px, 5vw, 96px);
+  }
+  .lost__code {
+    font-size: clamp(12rem, 25vw, 26rem);
+    justify-self: end;
+  }
+  .lost__title {
+    font-size: clamp(3rem, 5vw, 5.4rem);
+  }
+  .lost__lede {
+    font-size: 1.08rem;
+  }
+}
+/* Large canvases: the composition spans the screen, not the reading column. */
+@media (--wide) {
+  .lost__stage {
+    max-width: min(1680px, 100%);
+    padding-inline: clamp(48px, 5vw, 120px);
+  }
+}

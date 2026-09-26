@@ -31,7 +31,7 @@ interface Props {
  */
 export function EnvironmentalHero({ environment, media, sign, ignition, align = 'bottom', size = 'tall', children, foreground, className = '' }: Props) {
   return (
-    <section className={`env env--${environment} env--${size} env--${align}${ignition ? ' env--ignite' : ''} ${className}`}>
+    <section className={`env env--${environment} env--${size} env--${align}${ignition ? ' env--ignite' : ''}${sign && !media?.image ? ' env--has-sign' : ''} ${className}`}>
       <div className="env__backdrop" aria-hidden="true">
         {media?.image && (
           <picture>

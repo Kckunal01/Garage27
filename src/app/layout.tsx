@@ -54,7 +54,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <HideOnImmersive>
             <SiteFooter />
           </HideOnImmersive>
-          <GarageNav variant="pill" />
+          <GarageNav />
         </Providers>
       </body>
     </html>

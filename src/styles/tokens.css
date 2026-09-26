@@ -56,10 +56,13 @@
   --header-h: 64px;
   /* Universal floating nav — measured from the home reference (393 px). */
   --nav-h: 57px;
+  --nav-w: 520px; /* desktop: centred, fixed width */
+  --nav-font: 10.6px;
   --nav-gap: 12px;
   --nav-bottom: max(33px, calc(env(safe-area-inset-bottom, 0px) + 12px));
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --bottom-clearance: calc(var(--nav-h) + var(--nav-bottom) + var(--nav-gap));
+  /* The nav exists at every width, so the clearance does too. */
 
   /* Motion — physical, never bouncy */
   --ease-drawer: cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -73,17 +76,25 @@
   --concrete: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='420' height='420'%3E%3Cfilter id='c'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.012 .02' numOctaves='5' seed='27'/%3E%3CfeColorMatrix values='0 0 0 0 0.55 0 0 0 0 0.52 0 0 0 0 0.48 0 0 0 .5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23c)'/%3E%3C/svg%3E");
 }
 
-@media (min-width: 1024px) {
-  :root {
-    --header-h: 76px;
-    --bottom-clearance: 0px;
-  }
-}
+
 
 @media (prefers-reduced-motion: reduce) {
   :root {
     --dur-fast: 0ms;
     --dur: 0ms;
     --dur-slow: 0ms;
+  }
+}
+
+@media (--desktop) {
+  :root {
+    --header-h: 76px;
+  }
+}
+
+/* Large canvases get a wider content column; compositions scale with them. */
+@media (--wide) {
+  :root {
+    --max: 1560px;
   }
 }

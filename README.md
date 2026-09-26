@@ -54,7 +54,7 @@ supabase/                 migrations (schema + RLS + storage bucket) · seed.sql
 docs/                     architecture, infrastructure, adding a bike, analytics, assets
 ```
 
-Read next: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) · [`docs/INFRASTRUCTURE.md`](docs/INFRASTRUCTURE.md) · [`docs/ADDING_A_BIKE.md`](docs/ADDING_A_BIKE.md) · [`docs/ANALYTICS.md`](docs/ANALYTICS.md) · [`public/assets/README.md`](public/assets/README.md)
+Read next: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) · [`docs/RESPONSIVE.md`](docs/RESPONSIVE.md) · [`docs/INFRASTRUCTURE.md`](docs/INFRASTRUCTURE.md) · [`docs/ADDING_A_BIKE.md`](docs/ADDING_A_BIKE.md) · [`docs/ANALYTICS.md`](docs/ANALYTICS.md) · [`public/assets/README.md`](public/assets/README.md)
 
 ## Status & open items
 

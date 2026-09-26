@@ -1,0 +1,13 @@
+/* ── Garage 27 composition breakpoints — the ONLY place widths live ─────
+   Two compositions, not one scaled layout:
+
+   --mobile   < 768px   vertical cinematic composition, touch-first
+   --desktop  ≥ 768px   wide cinematic composition (tablet + laptop + desktop)
+   --wide     ≥ 1200px  refinements for large canvases (multi-panel tools,
+                        extra columns) — never a different design
+
+   Use:  @media (--desktop) { … }   Never write a raw px breakpoint.
+   Mirrored for TypeScript in src/lib/breakpoints.ts. */
+@custom-media --mobile (width < 768px);
+@custom-media --desktop (width >= 768px);
+@custom-media --wide (width >= 1200px);

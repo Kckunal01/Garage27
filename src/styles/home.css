@@ -278,7 +278,7 @@ body:has(.ghero) {
   }
 }
 
-@media (min-width: 1024px) and (min-aspect-ratio: 5/8) {
+@media (--desktop) and (min-aspect-ratio: 5/8) {
   /* Desktop typography is set larger than the phone composition, same proportions. */
   body:has(.ghero) {
     --u: min(calc(100svh / 852 * 1.5), 1.7px);
@@ -309,12 +309,5 @@ body:has(.ghero) {
 @media (prefers-reduced-motion: reduce) {
   .gpill {
     transition: none;
-  }
-}
-
-/* The floating pill is the navigation on this route at every width. */
-@media (min-width: 1024px) {
-  .gnav--pill.gnav--immersive {
-    display: block;
   }
 }

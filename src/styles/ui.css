@@ -90,11 +90,11 @@
   gap: 8px;
   pointer-events: none;
 }
-@media (min-width: 1024px) {
+@media (--desktop) {
   .toasts {
     left: auto;
     right: 24px;
-    bottom: 24px;
+    bottom: calc(var(--bottom-clearance) + 12px); /* clear of GarageNav */
     transform: none;
   }
 }
@@ -205,7 +205,7 @@
   display: grid;
   gap: 18px;
 }
-@media (min-width: 720px) {
+@media (--desktop) {
   .form-grid--2 {
     grid-template-columns: 1fr 1fr;
   }
@@ -304,7 +304,7 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
 }
-@media (min-width: 720px) {
+@media (--desktop) {
   .ctile-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 14px;

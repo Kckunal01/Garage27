@@ -41,8 +41,9 @@ export function isNavItemActive(pathname: string, item: NavItem) {
 }
 
 /**
- * Routes whose environment image *is* the page: no logo bar, no cart link,
- * no footer — just the brand statement, the rack control and the floating nav.
+ * Routes whose environment image *is* the page: no brand mark, no cart link,
+ * no footer — just the brand statement and the rack control. (GarageNav is
+ * identical on every route, immersive or not.)
  */
 export const IMMERSIVE_ROUTES = ['/']
 export const isImmersive = (pathname: string) => IMMERSIVE_ROUTES.includes(pathname)
