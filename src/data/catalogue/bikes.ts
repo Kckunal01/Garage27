@@ -1,7 +1,9 @@
 import type { Bike, BikeColour } from '@/types/catalogue'
 
 /**
- * LOCAL SEED CATALOGUE — development + vertical-slice fallback.
+ * LOCAL SEED CATALOGUE — SAMPLE data for development and to prove the engine.
+ * Two interactive vehicles (Classic 350, Jawa 42) on the procedural TEST rig;
+ * Yezdi Roadster shows the coming-soon state.
  *
  * Production reads the same shapes from Supabase (see supabase/migrations).
  * Prices below are INDICATIVE placeholders pending Garage 27 approval, which is
@@ -48,13 +50,29 @@ export const bikes: Bike[] = [
     brand: 'Jawa',
     model: '42',
     name: 'JAWA 42',
-    status: 'preview-only',
+    status: 'active',
     basePrice: 19_800_000,
-    summary: 'Interactive 3D still in the workshop. Static preview and custom quote available now.',
+    summary: 'Second vehicle on the same engine: its own slots, stock parts and compatible upgrades.',
     silhouette: 'bobber',
-    slots: [],
-    hotspots: [],
-    camera: { position: [2.4, 1.3, 2.6], target: [0, 0.65, 0], minDistance: 2.2, maxDistance: 5.2 },
+    // Same procedural test rig as the Classic until the production GLB lands.
+    // No BODY slot on this bike, so its tank is a fixed stock node.
+    model3d: { kind: 'procedural', ref: 'rig-roadster-v1', approxKb: 0, fixedNodes: { 'bike.tank': 'tank-teardrop' } },
+    defaultColourId: 'col-jawa-black',
+    slots: [
+      { id: 'headlight', category: 'lighting', label: 'HEADLIGHT', defaultOptionId: 'opt-jawa-headlight-stock' },
+      { id: 'handlebar', category: 'cockpit', label: 'HANDLEBAR', defaultOptionId: 'opt-jawa-bar-stock' },
+      { id: 'seat', category: 'seat', label: 'SEAT', defaultOptionId: 'opt-jawa-seat-stock' },
+      { id: 'exhaust', category: 'detail', label: 'EXHAUST', defaultOptionId: 'opt-jawa-exhaust-stock' },
+      { id: 'rearFender', category: 'rearWheel', label: 'REAR FENDER', defaultOptionId: 'opt-jawa-fender-stock' },
+    ],
+    hotspots: [
+      { slot: 'headlight', category: 'lighting', label: 'LIGHTING', position: [0.8, 1.02, 0] },
+      { slot: 'handlebar', category: 'cockpit', label: 'COCKPIT', position: [0.6, 1.26, 0.28] },
+      { slot: 'seat', category: 'seat', label: 'SEAT', position: [-0.3, 0.98, 0.1] },
+      { slot: 'exhaust', category: 'detail', label: 'DETAIL', position: [-0.3, 0.42, 0.24] },
+      { slot: 'rearFender', category: 'rearWheel', label: 'REAR WHEEL', position: [-0.86, 0.72, 0.05] },
+    ],
+    camera: { position: [2.9, 1.45, 3.3], target: [0, 0.62, 0], minDistance: 2.4, maxDistance: 6 },
   },
   {
     id: 'bike-yezdi-roadster',
@@ -112,10 +130,19 @@ export const colours: BikeColour[] = [
   {
     id: 'col-jawa-black',
     bikeId: 'bike-jawa-42',
-    name: 'ALL BLACK',
+    name: 'GLOSS BLACK',
     swatch: '#101010',
-    material: { color: '#101010', metalness: 0.3, roughness: 0.3 },
+    material: { color: '#101010', metalness: 0.3, roughness: 0.22, clearcoat: 1, accent: '#d6b36e' },
     priceDelta: 0,
+    status: 'active',
+  },
+  {
+    id: 'col-jawa-oxblood',
+    bikeId: 'bike-jawa-42',
+    name: 'OXBLOOD',
+    swatch: '#5e1414',
+    material: { color: '#5e1414', metalness: 0.4, roughness: 0.3, clearcoat: 0.9, accent: '#d8b06a' },
+    priceDelta: 1_200_000,
     status: 'active',
   },
 ]

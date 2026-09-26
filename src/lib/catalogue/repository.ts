@@ -27,6 +27,9 @@ const mapBike = (r: any, slots: any[]): Bike => {
     brand: r.brand,
     model: r.model,
     name: r.name,
+    year: r.year ?? undefined,
+    variant: r.variant ?? undefined,
+    thumbnail: r.thumbnail ?? undefined,
     status: r.status,
     basePrice: r.base_price,
     summary: r.summary,
@@ -61,7 +64,8 @@ const mapColour = (r: any): BikeColour => ({
 
 const mapOption = (r: any): ComponentOption => ({
   id: r.id,
-  bikeId: r.bike_id,
+  compatibleBikeIds: r.compatible_bike_ids ?? [],
+  affectedNodes: r.affected_nodes ?? [],
   category: r.category,
   slot: r.slot_id,
   name: r.name,

@@ -10,28 +10,52 @@
   object-fit: contain;
 }
 
-/* ── Header — utility chrome only (brand · cart · rack). No navigation. ──
-   In normal flow (not sticky, no bar background): it sits at the top of the
-   page like the home statement/rack, and environmental heroes slide under it. */
+/* ── Header — logo (left) + drawer control (right). Nothing else. ─────────
+   Geometry is the Home reference's (393 px): the top-left slot starts 15 px
+   in, the menu's three lines are centred 49 px down and end 17 px from the
+   right edge. In normal flow so content never slides under it by accident;
+   environmental heroes deliberately slide under via --header-h. */
 .site-header {
   position: relative;
   z-index: 60;
   height: var(--header-h);
 }
 .site-header__inner {
+  position: relative;
   height: 100%;
   max-width: var(--max);
   margin-inline: auto;
-  padding-inline: var(--gutter);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
 }
-.site-header__tools {
-  display: flex;
-  align-items: center;
-  gap: 6px;
+.site-header__brand {
+  position: absolute;
+  left: 15px;
+  top: calc(49px - 11px); /* 22px logo, centred on the menu's line */
+}
+.glogo-link {
+  display: block;
+  line-height: 0;
+}
+.site-header .glogo {
+  height: 22px;
+  width: auto;
+}
+.site-header .rack-trigger {
+  position: absolute;
+  top: calc(49px - 22px);
+  right: calc(17px - 12px);
+}
+@media (--desktop) {
+  .site-header__brand {
+    left: var(--gutter);
+    top: calc(var(--header-h) / 2 - 14px);
+  }
+  .site-header .glogo {
+    height: 28px;
+  }
+  .site-header .rack-trigger {
+    top: calc(var(--header-h) / 2 - 22px);
+    right: calc(var(--gutter) - 12px);
+  }
 }
 
 .cart-link {
@@ -66,11 +90,7 @@
   color: var(--g-muted);
   box-shadow: none;
 }
-@media (--mobile) {
-  .cart-link__label {
-    display: none;
-  }
-}
+
 
 /* ── GarageNav — the one primary navigation ───────────────────────────
    Canonical treatment from the home reference (measured at 393 px):
@@ -162,45 +182,40 @@
   opacity: 1;
 }
 
-/* ── Rack trigger ────────────────────────────────────────────────────── */
+/* ── Rack trigger — three equal thin cream lines (Home reference) ──────── */
 .rack-trigger {
   position: relative;
   z-index: 110;
-  width: 48px;
-  height: 48px;
+  width: 44px;
+  height: 44px;
   display: grid;
   place-items: center;
-  border-radius: 50%;
 }
 .rack-trigger__bars {
   display: grid;
-  gap: 5px;
-  width: 22px;
+  gap: 6px;
+  width: 20.5px;
 }
 .rack-trigger__bars span {
   display: block;
-  height: 1.5px;
-  background: var(--g-cream);
+  height: 1px;
+  background: #f3ecd9;
   transition:
     transform var(--dur) var(--ease-drawer),
     opacity var(--dur-fast);
   transform-origin: center;
 }
-.rack-trigger__bars span:nth-child(2) {
-  width: 70%;
-  justify-self: end;
-}
 .rack-trigger.is-open .rack-trigger__bars span:nth-child(1) {
-  transform: translateY(6.5px) rotate(45deg);
+  transform: translateY(7px) rotate(45deg);
 }
 .rack-trigger.is-open .rack-trigger__bars span:nth-child(2) {
   opacity: 0;
 }
 .rack-trigger.is-open .rack-trigger__bars span:nth-child(3) {
-  transform: translateY(-6.5px) rotate(-45deg);
+  transform: translateY(-7px) rotate(-45deg);
 }
 
-/* ── Rack drawer ─────────────────────────────────────────────────────── */
+/* ── Rack drawer — full-height, typography-led, the pages + HELP only ──── */
 .rack {
   position: fixed;
   inset: 0;
@@ -213,7 +228,7 @@
 .rack__scrim {
   position: absolute;
   inset: 0;
-  background: rgba(5, 4, 4, 0.66);
+  background: rgba(5, 4, 4, 0.7);
   opacity: 0;
   transition: opacity var(--dur) ease;
 }
@@ -225,20 +240,17 @@
   top: 0;
   right: 0;
   bottom: 0;
-  width: min(420px, 88vw);
+  width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 28px;
-  padding: 18px 28px calc(28px + var(--safe-bottom));
+  padding: calc(env(safe-area-inset-top, 0px) + 27px) 20px var(--bottom-clearance);
   overflow-y: auto;
   overscroll-behavior: contain;
-  /* brushed steel drawer face */
   background:
-    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.012) 0 1px, transparent 1px 3px),
-    linear-gradient(180deg, #1c1a18, #0f0e0d 70%);
-  border-left: 1px solid var(--g-line-strong);
-  box-shadow: -30px 0 60px -20px rgba(0, 0, 0, 0.9);
-  transform: translate3d(104%, 0, 0);
+    radial-gradient(90% 50% at 100% 0%, rgba(242, 69, 60, 0.08), transparent 60%),
+    radial-gradient(70% 40% at 0% 100%, rgba(231, 165, 75, 0.06), transparent 60%),
+    linear-gradient(180deg, #14110e, #0a0908 70%);
+  transform: translate3d(100%, 0, 0);
   transition: transform 520ms var(--ease-drawer);
 }
 .rack.is-open .rack__panel {
@@ -248,51 +260,68 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  min-height: 44px;
+  margin-right: -15px; /* close control sits exactly where the menu control was */
+}
+.rack__title {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: #eadcb9;
 }
 .rack__close {
   width: 44px;
   height: 44px;
-  font-size: 1.8rem;
-  line-height: 1;
-  color: var(--g-cream-soft);
   display: grid;
   place-items: center;
+  color: #f3ecd9;
+}
+.rack__close svg {
+  width: 20px;
+  height: 20px;
 }
 .rack__primary {
   display: grid;
-  gap: 4px;
+  gap: 2px;
+  margin-top: auto;
+  margin-bottom: auto;
+  padding-block: 32px;
 }
 .rack__link {
   display: flex;
   align-items: baseline;
-  gap: 16px;
-  padding: 10px 0;
-  font-family: var(--font-serif);
-  font-weight: 700;
-  font-size: clamp(1.9rem, 7vw, 2.4rem);
+  gap: 18px;
+  min-height: 56px;
+  padding: 6px 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2.6rem, 12vw, 3.4rem);
   line-height: 1;
-  color: var(--g-cream);
+  color: #f3ecd9;
+  border-bottom: 1px solid rgba(255, 228, 196, 0.06);
   transition: color var(--dur-fast);
 }
-.rack__link:hover {
+.rack__num {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: #8f7e63;
+  min-width: 2ch;
+}
+.rack__link:hover,
+.rack__link:focus-visible {
   color: #fff;
 }
-.rack__num {
-  font-family: var(--font-ui);
-  font-size: 0.7rem;
-  letter-spacing: var(--track-mid);
-  color: var(--g-faint);
-}
 .rack__link[aria-current='page'] {
-  color: var(--g-red);
-  text-shadow: 0 0 18px var(--g-red-glow);
+  color: #f2453c;
+  text-shadow: 0 0 18px rgba(255, 50, 40, 0.45);
 }
 .rack__link[aria-current='page'] .rack__num {
-  color: var(--g-red);
+  color: #f2453c;
 }
 .rack.is-open .rack__primary li {
   animation: rack-item 480ms var(--ease-drawer) both;
-  animation-delay: calc(120ms + var(--i) * 40ms);
+  animation-delay: calc(100ms + var(--i) * 40ms);
 }
 @keyframes rack-item {
   from {
@@ -300,20 +329,16 @@
     transform: translateX(24px);
   }
 }
-.rack__secondary {
-  display: grid;
-  gap: 16px;
-}
-.rack__foot {
-  margin-top: auto;
-  display: grid;
-  gap: 8px;
-}
-.rack__sign {
-  margin-top: 18px;
-  font-size: 2.4rem;
-  transform: rotate(-4deg);
-  opacity: 0.85;
+@media (--desktop) {
+  .rack__panel {
+    width: min(460px, 42vw);
+    padding: 20px 36px 48px;
+    border-left: 1px solid rgba(255, 228, 196, 0.1);
+    box-shadow: -30px 0 60px -20px rgba(0, 0, 0, 0.9);
+  }
+  .rack__head {
+    margin-right: -12px;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   .rack__panel {
@@ -324,45 +349,110 @@
   }
 }
 
-/* ── Footer ──────────────────────────────────────────────────────────── */
-.site-footer {
-  border-top: 1px solid var(--g-line);
-  padding-block: 48px 32px;
-  background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.45));
+/* ── GarageFooter — track order · legal · help · Instagram ───────────── */
+.gfoot {
+  margin-top: 48px;
+  border-top: 1px solid rgba(255, 228, 196, 0.08);
+  background:
+    radial-gradient(80% 60% at 50% 0%, rgba(231, 165, 75, 0.05), transparent 70%),
+    linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.5));
 }
-.site-footer__grid {
+.gfoot__inner {
+  max-width: var(--max);
+  margin-inline: auto;
+  padding: 36px 20px 28px;
   display: grid;
-  gap: 32px;
+  gap: 28px;
 }
-.site-footer__cols {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 24px;
+.gfoot__label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: #8f7e63;
+  margin-bottom: 10px;
 }
-.site-footer__cols ul {
-  display: grid;
-  gap: 10px;
-  margin-top: 12px;
-}
-.site-footer__cols a {
-  color: var(--g-cream-soft);
-  font-size: 0.95rem;
-}
-.site-footer__cols a:hover {
-  color: var(--g-cream);
-}
-.site-footer__base {
-  margin-top: 40px;
+.gfoot__track {
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  min-height: 52px;
+  padding: 0 20px;
+  border-radius: var(--radius-pill);
+  border: 1px solid rgba(214, 196, 164, 0.5);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: #f3ecd9;
+  transition: border-color var(--dur);
+}
+.gfoot__track:hover,
+.gfoot__track:focus-visible {
+  border-color: #f3ecd9;
+}
+.gfoot__legal ul {
+  display: grid;
+}
+.gfoot__legal a {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  border-bottom: 1px solid rgba(255, 228, 196, 0.06);
+  font-size: 0.95rem;
+  color: #cfc4ab;
+}
+.gfoot__legal a:hover {
+  color: #f3ecd9;
+}
+.gfoot__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.gfoot__help {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: #f3ecd9;
+}
+.gfoot__ig {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  margin-right: -11px;
+  color: #eadcb9;
+  transition: color var(--dur-fast);
+}
+.gfoot__ig:hover,
+.gfoot__ig:focus-visible {
+  color: #f2453c;
+}
+.gfoot__base {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.1em;
+  color: #6f6759;
 }
 @media (--desktop) {
-  .site-footer__grid {
-    grid-template-columns: 1.2fr 2fr;
+  .gfoot__inner {
+    padding: 44px var(--gutter) 32px;
+    grid-template-columns: minmax(240px, 320px) 1fr auto;
+    align-items: start;
+    column-gap: 56px;
   }
-  .site-footer__cols {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+  .gfoot__legal ul {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 32px;
+  }
+  .gfoot__row {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+  }
+  .gfoot__base {
+    grid-column: 1 / -1;
   }
 }

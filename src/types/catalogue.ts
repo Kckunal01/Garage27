@@ -65,12 +65,26 @@ export type ModelAsset =
   | { kind: 'glb'; url: string; node?: string }
   | { kind: 'none' }
 
+/**
+ * A vehicle's 3D model. Component nodes are addressed by STABLE NAMES, never
+ * mesh indexes: `bike.frame`, `bike.wheelFront`, `bike.wheelRear`,
+ * `bike.engine`, `bike.tank`, `bike.seat`, `bike.headlight`, `bike.handlebar`,
+ * `bike.exhaust`, `bike.luggage`, `bike.rearFender`, … (see docs/ADDING_A_BIKE.md).
+ */
 export interface BikeModelSource {
   kind: 'procedural' | 'glb'
   /** Procedural rig id or GLB url. */
   ref: string
   /** Approximate transfer size, used to warn / choose quality tier. */
   approxKb?: number
+  /** GLB: node names whose meshes take the selected colour's material. */
+  paintNodes?: string[]
+  /**
+   * Stock parts this vehicle has but does not expose for configuration
+   * (node id → procedural variant). E.g. a bike with no BODY options still
+   * needs its tank rendered.
+   */
+  fixedNodes?: Record<string, string>
 }
 
 export interface Hotspot {
@@ -83,11 +97,16 @@ export interface Hotspot {
 export interface Bike {
   id: string
   slug: string
+  /** Manufacturer, e.g. "Royal Enfield". */
   brand: string
   model: string
   /** Display name, e.g. "CLASSIC 350". */
   name: string
   year?: number
+  /** Trim / variant where the catalogue needs it, e.g. "Signals". */
+  variant?: string
+  /** Vehicle-picker thumbnail (optimised still). Falls back to the silhouette. */
+  thumbnail?: string
   status: AvailabilityStatus
   basePrice: Paise
   summary: string
@@ -126,7 +145,11 @@ export interface BikeColour {
 
 export interface ComponentOption {
   id: string
-  bikeId: string
+  /**
+   * Vehicles this option fits. Compatibility is data: the build bay only ever
+   * shows an option on a vehicle listed here AND whose model has the slot.
+   */
+  compatibleBikeIds: string[]
   category: BuildCategory
   slot: string
   name: string
@@ -134,6 +157,8 @@ export interface ComponentOption {
   priceDelta: Paise
   status: AvailabilityStatus
   modelAsset: ModelAsset
+  /** Stable model node ids this option replaces/updates, e.g. ['bike.seat']. */
+  affectedNodes: string[]
   materialConfig?: Partial<MaterialConfig>
   previewAsset?: string
   /** Option ids that must also be selected. */

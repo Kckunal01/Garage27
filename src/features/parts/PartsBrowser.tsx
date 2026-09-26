@@ -9,6 +9,7 @@ import { PART_CATEGORY_META } from '@/data/catalogue'
 import { PART_CATEGORIES, type Bike, type Part, type PartCategory } from '@/types/catalogue'
 import { BikeSelector } from './BikeSelector'
 import { PartCard } from './PartCard'
+import { CartLink } from '@/components/navigation/CartLink'
 
 interface Data {
   parts: Part[]
@@ -71,9 +72,13 @@ function PartsView({
             track('parts_bike_filter_selected', { bike: id || 'all' })
           }}
         />
-        <p className="label" aria-live="polite">
-          {shown.length} PART{shown.length === 1 ? '' : 'S'} ON THE WALL
-        </p>
+        <div className="parts-toolbar__meta">
+          <p className="label" aria-live="polite">
+            {shown.length} PART{shown.length === 1 ? '' : 'S'} ON THE WALL
+          </p>
+          {/* Cart lives in the shopping flow, not the global header. */}
+          <CartLink />
+        </div>
       </div>
 
       <h2 className="sr-only">Categories</h2>

@@ -753,3 +753,76 @@
     gap: 56px;
   }
 }
+
+/* ── Help / Track order / Legal (shell pages) ────────────────────────── */
+.doc-page {
+  display: grid;
+  gap: 16px;
+  max-width: 760px;
+  padding-bottom: 24px;
+}
+.doc-page__kicker {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: var(--g-amber);
+}
+.doc-page__title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2.6rem, 11vw, 4rem);
+  line-height: 0.95;
+  text-transform: uppercase;
+  color: #f3ecd9;
+}
+.doc-page__notice {
+  padding: 16px;
+  border: 1px dashed var(--g-line-strong);
+  border-radius: var(--radius);
+  color: var(--g-cream-soft);
+}
+.doc-page__body {
+  display: grid;
+  gap: 14px;
+  color: var(--g-cream-soft);
+}
+.help-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 8px;
+}
+.help-item {
+  display: grid;
+  gap: 8px;
+  padding: 18px;
+  border: 1px solid var(--g-line);
+  border-radius: var(--radius);
+  background: var(--g-concrete-900);
+}
+.help-item__q {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 1.5rem;
+  line-height: 1.05;
+  color: #f3ecd9;
+}
+.help-item__a {
+  color: var(--g-cream-soft);
+}
+.help-item__cta {
+  justify-self: start;
+  min-width: 170px;
+}
+.track {
+  display: grid;
+  gap: 18px;
+}
+.track__form {
+  display: grid;
+  gap: 14px;
+}
+.parts-toolbar__meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}

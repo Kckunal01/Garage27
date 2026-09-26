@@ -21,7 +21,7 @@ import '@/styles/home.css'
 import '@/styles/build.css'
 import { Providers } from './providers'
 import { SiteHeader } from '@/components/navigation/SiteHeader'
-import { SiteFooter } from '@/components/navigation/SiteFooter'
+import { GarageFooter } from '@/components/navigation/GarageFooter'
 import { GarageNav } from '@/components/navigation/GarageNav'
 import { HideOnImmersive } from '@/components/navigation/ChromeShell'
 import { publicEnv } from '@/lib/env'
@@ -52,7 +52,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <SiteHeader />
           <main id="main">{children}</main>
           <HideOnImmersive>
-            <SiteFooter />
+            <GarageFooter />
           </HideOnImmersive>
           <GarageNav />
         </Providers>

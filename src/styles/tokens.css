@@ -51,9 +51,11 @@
   --radius-sm: 4px;
   --radius: 10px;
   --radius-pill: 999px;
+  /* Design unit used by reference-measured components (Home overrides it). */
+  --u: 1px;
 
   /* Chrome */
-  --header-h: 64px;
+  --header-h: 76px; /* holds the Home-reference logo + menu slot (menu centred at 49px) */
   /* Universal floating nav — measured from the home reference (393 px). */
   --nav-h: 57px;
   --nav-w: 520px; /* desktop: centred, fixed width */

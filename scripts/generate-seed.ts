@@ -22,7 +22,7 @@ Object.values(PART_CATEGORY_META).forEach((c, i) => out.push(row('part_categorie
 bikes.forEach((b, i) =>
   out.push(
     row('bikes', {
-      id: b.id, slug: b.slug, brand: b.brand, model: b.model, name: b.name, status: b.status, base_price: b.basePrice,
+      id: b.id, slug: b.slug, brand: b.brand, model: b.model, name: b.name, year: b.year, variant: b.variant, thumbnail: b.thumbnail, status: b.status, base_price: b.basePrice,
       summary: b.summary, preview_image: b.previewImage, silhouette: b.silhouette, model3d: b.model3d,
       default_colour_id: b.defaultColourId, camera: b.camera, sort_order: i,
     }),
@@ -53,7 +53,7 @@ for (const p of parts) for (const b of p.compatibleBikeIds) out.push(row('bike_c
 options.forEach((o, i) =>
   out.push(
     row('build_options', {
-      id: o.id, bike_id: o.bikeId, slot_id: o.slot, category: o.category, name: o.name, descriptor: o.descriptor,
+      id: o.id, compatible_bike_ids: o.compatibleBikeIds, affected_nodes: o.affectedNodes, slot_id: o.slot, category: o.category, name: o.name, descriptor: o.descriptor,
       price_delta: o.priceDelta, status: o.status, model_asset: o.modelAsset, material_config: o.materialConfig,
       preview_asset: o.previewAsset, requires: o.requires ?? [], excludes: o.excludes ?? [], part_id: o.partId, sort_order: i,
     }),

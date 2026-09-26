@@ -1,17 +1,30 @@
 import type { ComponentOption } from '@/types/catalogue'
 
 /**
- * Build-bay component options for the vertical-slice bike.
- * Each option is tied to bike + category + slot + model asset + price + rules.
- * The editor asks "which option fills this slot?" — never "which image?".
+ * Build-bay component options (SAMPLE catalogue — prices indicative).
+ * Each option declares which vehicles it fits, the slot and model nodes it
+ * affects, its asset, price delta and rules. The editor asks "which option
+ * fills this slot on THIS vehicle?" — never "which image?".
  */
-const BIKE = 'bike-re-classic-350'
+const CLASSIC = 'bike-re-classic-350'
+const JAWA = 'bike-jawa-42'
+
+/** Stable model node each slot's option replaces (see BikeModelSource). */
+const NODE = {
+  headlight: 'bike.headlight',
+  handlebar: 'bike.handlebar',
+  tank: 'bike.tank',
+  seat: 'bike.seat',
+  exhaust: 'bike.exhaust',
+  luggage: 'bike.luggage',
+  rearFender: 'bike.rearFender',
+} as const
 
 export const options: ComponentOption[] = [
   // ── LIGHTING ───────────────────────────────────────────────────────────
   {
     id: 'opt-headlight-stock',
-    bikeId: BIKE,
+    compatibleBikeIds: [CLASSIC],
     category: 'lighting',
     slot: 'headlight',
     name: 'STOCK NACELLE',
@@ -19,10 +32,11 @@ export const options: ComponentOption[] = [
     priceDelta: 0,
     status: 'active',
     modelAsset: { kind: 'procedural', variant: 'headlight-nacelle' },
+    affectedNodes: [NODE.headlight],
   },
   {
     id: 'opt-headlight-chrome-7',
-    bikeId: BIKE,
+    compatibleBikeIds: [CLASSIC],
     category: 'lighting',
     slot: 'headlight',
     name: '7" CHROME BUCKET',
@@ -30,12 +44,13 @@ export const options: ComponentOption[] = [
     priceDelta: 850_000,
     status: 'active',
     modelAsset: { kind: 'procedural', variant: 'headlight-round-chrome' },
+    affectedNodes: [NODE.headlight],
     materialConfig: { color: '#d9d9d9', metalness: 1, roughness: 0.12 },
     partId: 'part-headlight-7-chrome',
   },
   {
     id: 'opt-headlight-caged',
-    bikeId: BIKE,
+    compatibleBikeIds: [CLASSIC, JAWA],
     category: 'lighting',
     slot: 'headlight',
     name: 'CAGED SCRAMBLER',
@@ -43,6 +58,7 @@ export const options: ComponentOption[] = [
     priceDelta: 1_100_000,
     status: 'active',
     modelAsset: { kind: 'procedural', variant: 'headlight-caged' },
+    affectedNodes: [NODE.headlight],
     materialConfig: { color: '#141414', metalness: 0.6, roughness: 0.45 },
     partId: 'part-headlight-caged',
   },
@@ -50,7 +66,7 @@ export const options: ComponentOption[] = [
   // ── COCKPIT ────────────────────────────────────────────────────────────
   {
     id: 'opt-bar-stock',
-    bikeId: BIKE,
+    compatibleBikeIds: [CLASSIC],
     category: 'cockpit',
     slot: 'handlebar',
     name: 'STOCK TOURING BAR',
@@ -58,10 +74,11 @@ export const options: ComponentOption[] = [
     priceDelta: 0,
     status: 'active',
     modelAsset: { kind: 'procedural', variant: 'bar-touring' },
+    affectedNodes: [NODE.handlebar],
   },
   {
     id: 'opt-bar-clipon',
-    bikeId: BIKE,
+    compatibleBikeIds: [CLASSIC],
     category: 'cockpit',
     slot: 'handlebar',
     name: 'CLIP-ONS',
@@ -69,12 +86,13 @@ export const options: ComponentOption[] = [
     priceDelta: 950_000,
     status: 'active',
     modelAsset: { kind: 'procedural', variant: 'bar-clipon' },
+    affectedNodes: [NODE.handlebar],
     requires: ['opt-seat-solo'],
     partId: 'part-clipons-32',
   },
   {
     id: 'opt-bar-ape',
-    bikeId: BIKE,
+    compatibleBikeIds: [CLASSIC, JAWA],
     category: 'cockpit',
     slot: 'handlebar',
     name: 'MINI APE',
@@ -82,12 +100,13 @@ export const options: ComponentOption[] = [
     priceDelta: 780_000,
     status: 'active',
     modelAsset: { kind: 'procedural', variant: 'bar-ape' },
+    affectedNodes: [NODE.handlebar],
   },
 
   // ── BODY ───────────────────────────────────────────────────────────────
   {
     id: 'opt-tank-teardrop',
-    bikeId: BIKE,
+    compatibleBikeIds: [CLASSIC],
     category: 'body',
     slot: 'tank',
     name: 'STOCK TEARDROP',
@@ -95,10 +114,11 @@ export const options: ComponentOption[] = [
     priceDelta: 0,
     status: 'active',
     modelAsset: { kind: 'procedural', variant: 'tank-teardrop' },
+    affectedNodes: [NODE.tank],
   },
   {
     id: 'opt-tank-pinstripe',
-    bikeId: BIKE,
+    compatibleBikeIds: [CLASSIC],
     category: 'body',
     slot: 'tank',
     name: 'HAND PINSTRIPE',
@@ -106,12 +126,13 @@ export const options: ComponentOption[] = [
     priceDelta: 1_400_000,
     status: 'active',
     modelAsset: { kind: 'procedural', variant: 'tank-pinstripe' },
+    affectedNodes: [NODE.tank],
   },
 
   // ── SEAT ───────────────────────────────────────────────────────────────
   {
     id: 'opt-seat-stock',
-    bikeId: BIKE,
+    compatibleBikeIds: [CLASSIC],
     category: 'seat',
     slot: 'seat',
     name: 'STOCK SPLIT SEAT',
@@ -119,10 +140,11 @@ export const options: ComponentOption[] = [
     priceDelta: 0,
     status: 'active',
     modelAsset: { kind: 'procedural', variant: 'seat-split' },
+    affectedNodes: [NODE.seat],
   },
   {
     id: 'opt-seat-solo',
-    bikeId: BIKE,
+    compatibleBikeIds: [CLASSIC, JAWA],
     category: 'seat',
     slot: 'seat',
     name: 'SPRUNG SOLO',
@@ -130,13 +152,14 @@ export const options: ComponentOption[] = [
     priceDelta: 1_250_000,
     status: 'active',
     modelAsset: { kind: 'procedural', variant: 'seat-solo' },
+    affectedNodes: [NODE.seat],
     materialConfig: { color: '#5a3520', metalness: 0, roughness: 0.8 },
     excludes: ['opt-luggage-rack'],
     partId: 'part-seat-solo-brown',
   },
   {
     id: 'opt-seat-bench',
-    bikeId: BIKE,
+    compatibleBikeIds: [CLASSIC],
     category: 'seat',
     slot: 'seat',
     name: 'TUCK & ROLL BENCH',
@@ -144,13 +167,14 @@ export const options: ComponentOption[] = [
     priceDelta: 1_600_000,
     status: 'active',
     modelAsset: { kind: 'procedural', variant: 'seat-bench' },
+    affectedNodes: [NODE.seat],
     materialConfig: { color: '#121212', metalness: 0, roughness: 0.65 },
   },
 
   // ── DETAIL ─────────────────────────────────────────────────────────────
   {
     id: 'opt-exhaust-chrome',
-    bikeId: BIKE,
+    compatibleBikeIds: [CLASSIC],
     category: 'detail',
     slot: 'exhaust',
     name: 'CHROME PEASHOOTER',
@@ -158,11 +182,12 @@ export const options: ComponentOption[] = [
     priceDelta: 0,
     status: 'active',
     modelAsset: { kind: 'procedural', variant: 'exhaust-peashooter' },
+    affectedNodes: [NODE.exhaust],
     materialConfig: { color: '#dcdcdc', metalness: 1, roughness: 0.1 },
   },
   {
     id: 'opt-exhaust-black',
-    bikeId: BIKE,
+    compatibleBikeIds: [CLASSIC, JAWA],
     category: 'detail',
     slot: 'exhaust',
     name: 'CERAMIC BLACK',
@@ -170,11 +195,12 @@ export const options: ComponentOption[] = [
     priceDelta: 1_050_000,
     status: 'active',
     modelAsset: { kind: 'procedural', variant: 'exhaust-peashooter' },
+    affectedNodes: [NODE.exhaust],
     materialConfig: { color: '#1a1a1a', metalness: 0.5, roughness: 0.55 },
   },
   {
     id: 'opt-exhaust-upswept',
-    bikeId: BIKE,
+    compatibleBikeIds: [CLASSIC],
     category: 'detail',
     slot: 'exhaust',
     name: 'UPSWEPT SCRAMBLER',
@@ -182,6 +208,7 @@ export const options: ComponentOption[] = [
     priceDelta: 1_800_000,
     status: 'active',
     modelAsset: { kind: 'procedural', variant: 'exhaust-upswept' },
+    affectedNodes: [NODE.exhaust],
     materialConfig: { color: '#8f8a80', metalness: 0.9, roughness: 0.35 },
     excludes: ['opt-luggage-bags'],
   },
@@ -189,7 +216,7 @@ export const options: ComponentOption[] = [
   // ── LUGGAGE ────────────────────────────────────────────────────────────
   {
     id: 'opt-luggage-none',
-    bikeId: BIKE,
+    compatibleBikeIds: [CLASSIC],
     category: 'luggage',
     slot: 'luggage',
     name: 'NONE',
@@ -197,10 +224,11 @@ export const options: ComponentOption[] = [
     priceDelta: 0,
     status: 'active',
     modelAsset: { kind: 'none' },
+    affectedNodes: [NODE.luggage],
   },
   {
     id: 'opt-luggage-bags',
-    bikeId: BIKE,
+    compatibleBikeIds: [CLASSIC],
     category: 'luggage',
     slot: 'luggage',
     name: 'LEATHER SADDLEBAGS',
@@ -208,12 +236,13 @@ export const options: ComponentOption[] = [
     priceDelta: 1_350_000,
     status: 'active',
     modelAsset: { kind: 'procedural', variant: 'luggage-saddlebags' },
+    affectedNodes: [NODE.luggage],
     materialConfig: { color: '#4a2c1a', metalness: 0, roughness: 0.85 },
     partId: 'part-saddlebags-waxed',
   },
   {
     id: 'opt-luggage-rack',
-    bikeId: BIKE,
+    compatibleBikeIds: [CLASSIC],
     category: 'luggage',
     slot: 'luggage',
     name: 'PILLION RACK',
@@ -221,13 +250,14 @@ export const options: ComponentOption[] = [
     priceDelta: 520_000,
     status: 'active',
     modelAsset: { kind: 'procedural', variant: 'luggage-rack' },
+    affectedNodes: [NODE.luggage],
     materialConfig: { color: '#161616', metalness: 0.6, roughness: 0.4 },
   },
 
   // ── REAR WHEEL ─────────────────────────────────────────────────────────
   {
     id: 'opt-fender-stock',
-    bikeId: BIKE,
+    compatibleBikeIds: [CLASSIC],
     category: 'rearWheel',
     slot: 'rearFender',
     name: 'STOCK FENDER',
@@ -235,10 +265,11 @@ export const options: ComponentOption[] = [
     priceDelta: 0,
     status: 'active',
     modelAsset: { kind: 'procedural', variant: 'fender-full' },
+    affectedNodes: [NODE.rearFender],
   },
   {
     id: 'opt-fender-bobbed',
-    bikeId: BIKE,
+    compatibleBikeIds: [CLASSIC, JAWA],
     category: 'rearWheel',
     slot: 'rearFender',
     name: 'BOBBED FENDER',
@@ -246,11 +277,12 @@ export const options: ComponentOption[] = [
     priceDelta: 900_000,
     status: 'active',
     modelAsset: { kind: 'procedural', variant: 'fender-bobbed' },
+    affectedNodes: [NODE.rearFender],
     excludes: ['opt-luggage-rack'],
   },
   {
     id: 'opt-fender-flat-track',
-    bikeId: BIKE,
+    compatibleBikeIds: [CLASSIC],
     category: 'rearWheel',
     slot: 'rearFender',
     name: 'FLAT-TRACK HOOP',
@@ -258,5 +290,70 @@ export const options: ComponentOption[] = [
     priceDelta: 1_100_000,
     status: 'coming-soon',
     modelAsset: { kind: 'procedural', variant: 'fender-bobbed' },
+    affectedNodes: [NODE.rearFender],
+  },
+
+  // ── JAWA 42 stock fit (Jawa only) ──────────────────────────────────────
+  {
+    id: 'opt-jawa-headlight-stock',
+    compatibleBikeIds: [JAWA],
+    category: 'lighting',
+    slot: 'headlight',
+    name: 'STOCK ROUND LAMP',
+    descriptor: 'Factory round chrome headlamp.',
+    priceDelta: 0,
+    status: 'active',
+    modelAsset: { kind: 'procedural', variant: 'headlight-round-chrome' },
+    affectedNodes: [NODE.headlight],
+  },
+  {
+    id: 'opt-jawa-bar-stock',
+    compatibleBikeIds: [JAWA],
+    category: 'cockpit',
+    slot: 'handlebar',
+    name: 'STOCK ROADSTER BAR',
+    descriptor: 'Factory upright bar.',
+    priceDelta: 0,
+    status: 'active',
+    modelAsset: { kind: 'procedural', variant: 'bar-touring' },
+    affectedNodes: [NODE.handlebar],
+  },
+  {
+    id: 'opt-jawa-seat-stock',
+    compatibleBikeIds: [JAWA],
+    category: 'seat',
+    slot: 'seat',
+    name: 'STOCK BENCH',
+    descriptor: 'Factory single-piece seat.',
+    priceDelta: 0,
+    status: 'active',
+    modelAsset: { kind: 'procedural', variant: 'seat-bench' },
+    affectedNodes: [NODE.seat],
+    materialConfig: { color: '#161412', metalness: 0, roughness: 0.7 },
+  },
+  {
+    id: 'opt-jawa-exhaust-stock',
+    compatibleBikeIds: [JAWA],
+    category: 'detail',
+    slot: 'exhaust',
+    name: 'STOCK CHROME PIPE',
+    descriptor: 'Factory peashooter, polished.',
+    priceDelta: 0,
+    status: 'active',
+    modelAsset: { kind: 'procedural', variant: 'exhaust-peashooter' },
+    affectedNodes: [NODE.exhaust],
+    materialConfig: { color: '#dcdcdc', metalness: 1, roughness: 0.1 },
+  },
+  {
+    id: 'opt-jawa-fender-stock',
+    compatibleBikeIds: [JAWA],
+    category: 'rearWheel',
+    slot: 'rearFender',
+    name: 'STOCK FENDER',
+    descriptor: 'Factory full fender.',
+    priceDelta: 0,
+    status: 'active',
+    modelAsset: { kind: 'procedural', variant: 'fender-full' },
+    affectedNodes: [NODE.rearFender],
   },
 ]

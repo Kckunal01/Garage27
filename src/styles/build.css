@@ -125,7 +125,7 @@
 .bay-viewport {
   position: relative;
   height: min(58svh, 560px);
-  min-height: 300px;
+  min-height: 260px;
   background:
     radial-gradient(60% 50% at 50% 12%, rgba(255, 190, 120, 0.12), transparent 70%),
     #0b0a09;
@@ -828,5 +828,25 @@
 @media (--desktop) {
   .bay + .wrap .catalogue-note {
     margin-top: calc(var(--bottom-clearance) + 12px);
+  }
+}
+
+/* Mobile editor: the bike stays dominant, but the category chips and the first
+   row of option cards must sit ABOVE the price dock + GarageNav on first view.
+   Viewport = what's left after header, bay bar (44), chips (64), one row of
+   option cards incl. tray heading (~226), the dock and the nav clearance. */
+@media (--mobile) {
+  .bay--editor .bay-viewport {
+    height: clamp(260px, calc(100svh - var(--header-h) - 44px - 64px - 226px - var(--dock-h) - var(--bottom-clearance)), 560px);
+  }
+  .bay--editor .bay__panel {
+    padding-top: 12px;
+  }
+  /* Colour was chosen in step 2; in the editor it follows the parts tray. */
+  .bay--editor .bay__panel > .colours {
+    order: 2;
+  }
+  .bay--editor .opt {
+    min-height: 150px;
   }
 }

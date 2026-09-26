@@ -5,8 +5,7 @@ import { usePathname } from 'next/navigation'
 import { useCallback, useEffect, useId, useRef, useState, useSyncExternalStore } from 'react'
 import { createPortal } from 'react-dom'
 import { track } from '@/lib/analytics'
-import { useCart } from '@/features/checkout/cart-store'
-import { CONTACT, isNavItemActive, PRIMARY_NAV, RACK_SECONDARY } from './nav-config'
+import { DRAWER_LINKS, isActive, isNavItemActive, PRIMARY_NAV } from './nav-config'
 
 const FOCUSABLE = 'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])'
 
@@ -21,7 +20,6 @@ export function GarageRack() {
   const panelRef = useRef<HTMLDivElement>(null)
   const triggerRef = useRef<HTMLButtonElement>(null)
   const titleId = useId()
-  const { count } = useCart()
   // Portal target only exists on the client (the header's backdrop-filter
   // would otherwise trap a position:fixed drawer inside it).
   const mounted = useSyncExternalStore(
@@ -111,55 +109,35 @@ export function GarageRack() {
             <div className="rack__scrim" onClick={() => close('outside')} />
             <div ref={panelRef} id="garage-rack" className="rack__panel" role="dialog" aria-modal="true" aria-labelledby={titleId}>
               <div className="rack__head">
-                <p id={titleId} className="label label--amber">
-                  THE RACK
+                <p id={titleId} className="rack__title">
+                  MENU
                 </p>
                 <button type="button" className="rack__close" onClick={() => close('button')} aria-label="Close menu">
-                  <span aria-hidden="true">×</span>
+                  <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round">
+                    <path d="M5 5l14 14M19 5L5 19" />
+                  </svg>
                 </button>
               </div>
 
               <ul className="rack__primary">
-                {PRIMARY_NAV.map((item, i) => {
-                  const active = isNavItemActive(pathname, item)
+                {DRAWER_LINKS.map((item, i) => {
+                  const primary = PRIMARY_NAV.find((n) => n.href === item.href)
+                  const active = primary ? isNavItemActive(pathname, primary) : isActive(pathname, item.href)
                   return (
                     <li key={item.href} style={{ ['--i' as string]: i }}>
                       <Link
                         href={item.href}
                         className="rack__link"
                         aria-current={active ? 'page' : undefined}
-                        onClick={() => track(item.event, { surface: 'rack' })}
+                        onClick={() => item.event && track(item.event, { surface: 'rack' })}
                       >
-                        <span className="rack__num">0{i + 1}</span>
+                        <span className="rack__num">{String(i + 1).padStart(2, '0')}</span>
                         <span className="rack__text">{item.label}</span>
                       </Link>
                     </li>
                   )
                 })}
               </ul>
-
-              <hr className="rule" />
-
-              <ul className="rack__secondary">
-                {RACK_SECONDARY.map((item) => (
-                  <li key={item.href}>
-                    <Link href={item.href} className="neon-link">
-                      {item.label}
-                      {item.href === '/cart' && count > 0 ? ` (${count})` : ''}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-
-              <div className="rack__foot">
-                <p className="label">{CONTACT.hours}</p>
-                <a className="muted" href={`mailto:${CONTACT.email}`}>
-                  {CONTACT.email}
-                </a>
-                <p className="rack__sign neon" aria-hidden="true">
-                  Garage 27
-                </p>
-              </div>
             </div>
           </div>,
           document.body,

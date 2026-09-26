@@ -21,6 +21,13 @@ describe('catalogue integrity', () => {
   for (const bike of bikes.filter(isInteractive)) {
     describe(bike.name, () => {
       const bundle = getBikeBundle(localCatalogue, bike.id)!
+      it('fixed (non-configurable) nodes are renderable and never also a slot', () => {
+        for (const [node, variant] of Object.entries(bike.model3d?.fixedNodes ?? {})) {
+          expect(PROCEDURAL_VARIANTS, node).toContain(variant)
+          expect(bike.slots.some((sl) => `bike.${sl.id}` === node), node).toBe(false)
+        }
+      })
+
       it('has an active default colour', () => {
         expect(bundle.colours.some((c) => c.id === bike.defaultColourId && c.status === 'active')).toBe(true)
       })
@@ -34,13 +41,17 @@ describe('catalogue integrity', () => {
         }
         expect(validateConfiguration(createDefaultConfiguration(bundle), bundle)).toEqual([])
       })
-      it('every option maps to a real slot, renderable asset and known rule targets', () => {
-        const ids = new Set(bundle.options.map((o) => o.id))
+      it('every option maps to a real slot, renderable asset, stable nodes and known rule targets', () => {
+        // Rules may reference options another vehicle has — inert here, but they must exist.
+        const ids = new Set(options.map((o) => o.id))
         for (const o of bundle.options) {
           const slot = bike.slots.find((s) => s.id === o.slot)
           expect(slot, o.id).toBeDefined()
           expect(slot!.category).toBe(o.category)
           if (o.modelAsset.kind === 'procedural') expect(PROCEDURAL_VARIANTS, o.id).toContain(o.modelAsset.variant)
+          if (o.modelAsset.kind === 'procedural') expect(bike.model3d?.kind, `${o.id} is procedural but ${bike.id} is not`).toBe('procedural')
+          expect(o.affectedNodes.length, `${o.id} affectedNodes`).toBeGreaterThan(0)
+          for (const n of o.affectedNodes) expect(n, o.id).toMatch(/^bike\.[a-zA-Z]+/)
           for (const r of [...(o.requires ?? []), ...(o.excludes ?? [])]) expect(ids.has(r), `${o.id} → ${r}`).toBe(true)
           if (o.partId) expect(parts.some((p) => p.id === o.partId), o.partId).toBe(true)
         }

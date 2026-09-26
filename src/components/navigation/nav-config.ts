@@ -17,12 +17,24 @@ export const PRIMARY_NAV: NavItem[] = [
   { href: '/about', label: 'ABOUT', event: 'nav_about' },
 ]
 
-export const RACK_SECONDARY = [
-  { href: '/cart', label: 'CART' },
-  { href: '/build?saved=1', label: 'SAVED BUILD' },
-  { href: '/service#request', label: 'BOOK A SERVICE' },
-  { href: '/about#contact', label: 'CONTACT' },
+/** The global drawer: the five pages + HELP. Nothing else. */
+export const DRAWER_LINKS: { href: string; label: string; event?: AnalyticsEvent }[] = [
+  ...PRIMARY_NAV,
+  { href: '/help', label: 'HELP' },
 ]
+
+/** Universal footer. No hours, addresses, cart or duplicate primary nav. */
+export const FOOTER = {
+  trackOrder: { href: '/track-order', label: 'TRACK ORDER' },
+  legal: [
+    { href: '/legal/privacy', label: 'Privacy Policy' },
+    { href: '/legal/terms', label: 'Terms & Conditions' },
+    { href: '/legal/shipping', label: 'Shipping Policy' },
+    { href: '/legal/refunds', label: 'Refund / Cancellation Policy' },
+  ],
+  help: { href: '/help', label: 'HELP' },
+  instagram: 'https://instagram.com/garage27',
+}
 
 export const CONTACT = {
   phone: '+91 00000 00000',

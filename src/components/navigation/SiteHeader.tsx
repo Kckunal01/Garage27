@@ -1,11 +1,10 @@
 import { GarageLogo } from '@/components/garage-ui/GarageLogo'
 import { GarageRack } from './GarageRack'
-import { CartLink } from './CartLink'
 import { HeaderShell } from './ChromeShell'
 
 /**
- * Top utility chrome: brand mark (left) + cart and rack (right).
- * It deliberately contains NO primary navigation — that is GarageNav, bottom.
+ * Global header: official logo top-left, drawer control top-right — the
+ * Home reference geometry, on every page. No cart, no navigation.
  */
 export function SiteHeader() {
   return (
@@ -14,12 +13,7 @@ export function SiteHeader() {
         <div className="site-header__brand">
           <GarageLogo size="sm" />
         </div>
-        <div className="site-header__tools">
-          <div className="site-header__cart">
-            <CartLink />
-          </div>
-          <GarageRack />
-        </div>
+        <GarageRack />
       </div>
     </HeaderShell>
   )
