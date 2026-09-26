@@ -1,0 +1,262 @@
+/* ── Environmental hero: one garage, many bays ───────────────────────── */
+.env {
+  --lamp-x: 62%;
+  --lamp-color: 255, 178, 92;
+  --neon-color: 255, 38, 48;
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  overflow: hidden;
+  margin-top: calc(var(--header-h) * -1); /* slide under the translucent header */
+  padding-top: var(--header-h);
+  background: var(--g-black);
+}
+.env--full {
+  min-height: 100svh;
+}
+.env--tall {
+  min-height: min(86svh, 860px);
+}
+.env--band {
+  min-height: clamp(360px, 52svh, 560px);
+}
+.env--bottom {
+  align-items: flex-end;
+}
+.env--center {
+  align-items: center;
+}
+.env__content {
+  position: relative;
+  z-index: 3;
+  padding-block: 40px clamp(40px, 7vw, 96px);
+}
+.env__backdrop,
+.env__backdrop > * {
+  position: absolute;
+  inset: 0;
+}
+.env__backdrop {
+  z-index: 0;
+}
+.env__media {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.env__foreground {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Wall: aged concrete with seams + stains */
+.env__wall {
+  background:
+    radial-gradient(60% 50% at var(--lamp-x) 22%, rgba(var(--lamp-color), 0.16), transparent 70%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.55) 100%),
+    repeating-linear-gradient(90deg, transparent 0 calc(25% - 1px), rgba(0, 0, 0, 0.35) calc(25% - 1px) 25%),
+    var(--concrete),
+    linear-gradient(180deg, #1b1916, #0d0c0b);
+  background-blend-mode: normal, normal, normal, overlay, normal;
+}
+
+/* Tungsten lamp + light cone */
+.env__lamp {
+  inset: auto;
+  top: calc(var(--header-h) + 4%);
+  left: var(--lamp-x);
+  width: 120px;
+  height: 18px;
+  transform: translateX(-50%);
+  border-radius: 0 0 60px 60px;
+  background: linear-gradient(180deg, #2a2724, #0f0e0d);
+  box-shadow: 0 10px 30px 6px rgba(var(--lamp-color), 0.55);
+}
+.env__lamp::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -6px;
+  width: 64px;
+  height: 10px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: #fff1d6;
+  box-shadow:
+    0 0 20px 6px rgba(var(--lamp-color), 0.9),
+    0 0 80px 24px rgba(var(--lamp-color), 0.35);
+}
+.env__cone {
+  background: conic-gradient(
+    from 180deg at var(--lamp-x) calc(var(--header-h) + 6%),
+    transparent 0deg 155deg,
+    rgba(var(--lamp-color), 0.13) 168deg,
+    rgba(var(--lamp-color), 0.2) 180deg,
+    rgba(var(--lamp-color), 0.13) 192deg,
+    transparent 205deg 360deg
+  );
+  mix-blend-mode: screen;
+  filter: blur(6px);
+}
+
+/* Wet concrete floor with neon + lamp reflections */
+.env__floor {
+  top: auto;
+  height: 34%;
+  background:
+    radial-gradient(40% 60% at var(--lamp-x) 0%, rgba(var(--lamp-color), 0.22), transparent 70%),
+    radial-gradient(30% 50% at 22% 10%, rgba(var(--neon-color), 0.16), transparent 70%),
+    repeating-linear-gradient(180deg, rgba(255, 255, 255, 0.018) 0 2px, transparent 2px 7px),
+    linear-gradient(180deg, #151311, #070606);
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.env__sign {
+  inset: auto;
+  top: calc(var(--header-h) + 8%);
+  left: 8%;
+  font-size: clamp(3rem, 10vw, 7rem);
+  transform: rotate(-5deg);
+  opacity: 0.92;
+}
+.env__haze {
+  background:
+    radial-gradient(80% 40% at 50% 60%, rgba(233, 223, 199, 0.05), transparent 70%),
+    linear-gradient(180deg, rgba(10, 9, 8, 0.1), transparent 30%, transparent 60%, rgba(10, 9, 8, 0.85));
+  animation: haze-drift 18s ease-in-out infinite alternate;
+}
+.env__vignette {
+  background: radial-gradient(120% 90% at 50% 40%, transparent 50%, rgba(0, 0, 0, 0.75));
+}
+@keyframes haze-drift {
+  to {
+    transform: translate3d(-2%, -1%, 0) scale(1.03);
+  }
+}
+
+/* ── Bay variations ─────────────────────────────────────────────────── */
+.env--exterior {
+  --lamp-x: 72%;
+}
+.env--exterior .env__detail {
+  /* roller shutter door behind the bike */
+  inset: auto 6% 32% 38%;
+  top: calc(var(--header-h) + 12%);
+  background:
+    repeating-linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0 2px, rgba(0, 0, 0, 0.45) 2px 12px),
+    linear-gradient(180deg, #25221f, #121110);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: inset 0 40px 60px -20px rgba(0, 0, 0, 0.8);
+}
+.env--garage {
+  --lamp-x: 50%;
+}
+.env--garage .env__detail {
+  /* old posters pinned to the wall */
+  background:
+    linear-gradient(#2a2118, #2a2118) 8% 24% / 90px 130px no-repeat,
+    linear-gradient(#3b1314, #3b1314) 16% 30% / 70px 100px no-repeat,
+    linear-gradient(#1f2320, #1f2320) 86% 22% / 110px 150px no-repeat;
+  opacity: 0.8;
+  filter: sepia(0.4) contrast(1.1);
+}
+.env--workshop {
+  --lamp-x: 30%;
+}
+.env--workshop .env__detail {
+  /* pegboard */
+  inset: calc(var(--header-h) + 6%) 8% 40% 50%;
+  background-image: radial-gradient(circle, rgba(0, 0, 0, 0.7) 1.6px, transparent 2px);
+  background-size: 18px 18px;
+  background-color: #2a241c;
+  opacity: 0.55;
+  border-radius: 4px;
+}
+.env--parts-wall {
+  --lamp-x: 50%;
+}
+.env--parts-wall .env__detail {
+  /* shelves */
+  background: repeating-linear-gradient(180deg, transparent 0 88px, rgba(0, 0, 0, 0.8) 88px 92px, rgba(231, 165, 75, 0.12) 92px 94px);
+  opacity: 0.8;
+}
+.env--build-bay {
+  --lamp-x: 50%;
+  --lamp-color: 255, 190, 120;
+}
+.env--editorial {
+  --lamp-x: 40%;
+  --lamp-color: 240, 160, 80;
+}
+.env--editorial .env__wall {
+  filter: sepia(0.25);
+}
+
+/* ── Ignition: lights come on, then breathe ─────────────────────────── */
+.env--ignite .env__lamp,
+.env--ignite .env__cone,
+.env--ignite .env__floor {
+  animation: lamp-on 1.8s steps(1, end) both, lamp-idle 11s 2.2s infinite;
+}
+.env--ignite .env__sign {
+  animation: neon-on 2.4s steps(1, end) both, neon-idle 9s 3s infinite;
+}
+@keyframes lamp-on {
+  0% { opacity: 0.08; }
+  18% { opacity: 1; }
+  22% { opacity: 0.1; }
+  30% { opacity: 0.9; }
+  34% { opacity: 0.25; }
+  48%, 100% { opacity: 1; }
+}
+@keyframes lamp-idle {
+  0%, 92%, 100% { opacity: 1; }
+  93% { opacity: 0.72; }
+  94% { opacity: 1; }
+  96% { opacity: 0.85; }
+}
+@keyframes neon-on {
+  0% { opacity: 0.05; }
+  30% { opacity: 0.05; }
+  34% { opacity: 0.9; }
+  38% { opacity: 0.1; }
+  46% { opacity: 0.8; }
+  50% { opacity: 0.2; }
+  60%, 100% { opacity: 0.92; }
+}
+@keyframes neon-idle {
+  0%, 88%, 100% { opacity: 0.92; }
+  89% { opacity: 0.35; }
+  90% { opacity: 0.92; }
+  91% { opacity: 0.5; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .env__haze,
+  .env--ignite .env__lamp,
+  .env--ignite .env__cone,
+  .env--ignite .env__floor,
+  .env--ignite .env__sign {
+    animation: none;
+  }
+}
+
+/* Hero bike placement */
+.hero-bike {
+  position: absolute;
+  left: 50%;
+  bottom: 12%;
+  width: min(920px, 118vw);
+  transform: translateX(-50%);
+  filter: drop-shadow(0 30px 40px rgba(0, 0, 0, 0.8));
+}
+@media (min-width: 1024px) {
+  .hero-bike {
+    left: auto;
+    right: -2%;
+    bottom: 6%;
+    width: min(880px, 62vw);
+    transform: none;
+  }
+}

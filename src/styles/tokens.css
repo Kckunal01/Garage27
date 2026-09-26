@@ -1,0 +1,84 @@
+/* Garage 27 — design tokens. One physical garage: concrete, tungsten, neon, chrome. */
+:root {
+  color-scheme: dark;
+
+  /* Surfaces — aged concrete, never pure black */
+  --g-black: #0a0908;
+  --g-concrete-950: #0e0d0c;
+  --g-concrete-900: #141210;
+  --g-concrete-850: #191715;
+  --g-concrete-800: #201d1a;
+  --g-concrete-700: #2a2622;
+  --g-concrete-600: #3a352f;
+
+  /* Ink */
+  --g-cream: #e9dfc7;
+  --g-cream-soft: #cfc4ab;
+  --g-muted: #9a907d; /* 6.1:1 on concrete-900 */
+  --g-faint: #6f6759;
+
+  /* Light */
+  --g-amber: #e7a54b;
+  --g-amber-soft: #b8823d;
+  --g-amber-glow: rgba(255, 168, 72, 0.32);
+  --g-red: #e0262d;
+  --g-red-deep: #9c1419;
+  --g-red-glow: rgba(255, 38, 48, 0.55);
+  --g-chrome: #d3d6d8;
+  --g-leather: #5a3520;
+  --g-olive: #55553a;
+  --g-success: #8fb36b;
+
+  /* Lines */
+  --g-line: rgba(233, 223, 199, 0.12);
+  --g-line-strong: rgba(233, 223, 199, 0.26);
+
+  /* Type */
+  --font-serif: 'Bodoni Moda', 'Didot', 'Bodoni 72', Georgia, serif;
+  --font-ui: 'Oswald', 'Arial Narrow', 'Roboto Condensed', sans-serif;
+  --font-body: 'Barlow', 'Helvetica Neue', Arial, sans-serif;
+  --font-neon: 'Mr Dafoe', 'Brush Script MT', cursive;
+
+  --track-wide: 0.22em;
+  --track-mid: 0.14em;
+
+  /* Space & shape */
+  --gutter: clamp(16px, 4vw, 48px);
+  --max: 1320px;
+  --radius-sm: 4px;
+  --radius: 10px;
+  --radius-pill: 999px;
+
+  /* Chrome */
+  --header-h: 64px;
+  --nav-h: 58px;
+  --nav-gap: 14px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --bottom-clearance: calc(var(--nav-h) + var(--nav-gap) * 2 + var(--safe-bottom));
+
+  /* Motion — physical, never bouncy */
+  --ease-drawer: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-push: cubic-bezier(0.25, 0.6, 0.3, 1);
+  --dur-fast: 160ms;
+  --dur: 320ms;
+  --dur-slow: 700ms;
+
+  /* Grain (SVG turbulence, tiny, inlined) */
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --concrete: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='420' height='420'%3E%3Cfilter id='c'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.012 .02' numOctaves='5' seed='27'/%3E%3CfeColorMatrix values='0 0 0 0 0.55 0 0 0 0 0.52 0 0 0 0 0.48 0 0 0 .5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23c)'/%3E%3C/svg%3E");
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --header-h: 76px;
+    --bottom-clearance: 0px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0ms;
+    --dur: 0ms;
+    --dur-slow: 0ms;
+  }
+}

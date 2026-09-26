@@ -1,0 +1,24 @@
+import type { Paise } from '@/types/catalogue'
+
+const inr = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 })
+
+/** Format integer paise as ₹ with Indian digit grouping. */
+export function formatINR(paise: Paise): string {
+  return inr.format(Math.round(paise) / 100)
+}
+
+/** Signed delta, e.g. "+ ₹8,500" / "INCLUDED". */
+export function formatDelta(paise: Paise): string {
+  if (paise === 0) return 'INCLUDED'
+  return `${paise > 0 ? '+' : '−'} ${formatINR(Math.abs(paise))}`
+}
+
+/** Coarse value band for analytics — never send exact order values with PII. */
+export function valueBand(paise: Paise): string {
+  const rupees = paise / 100
+  if (rupees < 5_000) return '<5k'
+  if (rupees < 25_000) return '5k-25k'
+  if (rupees < 1_00_000) return '25k-1L'
+  if (rupees < 2_50_000) return '1L-2.5L'
+  return '2.5L+'
+}

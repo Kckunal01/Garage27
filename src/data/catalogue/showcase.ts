@@ -1,0 +1,148 @@
+import type { ServiceOffering, ShowcaseBuild } from '@/types/catalogue'
+
+/**
+ * Garage showcase — pre-customised builds. Presets reference real option ids,
+ * so "OPEN BUILD" drops the visitor into the bay with that exact configuration.
+ */
+export const showcase: ShowcaseBuild[] = [
+  {
+    id: 'build-ember',
+    number: 1,
+    name: 'EMBER',
+    bikeId: 'bike-re-classic-350',
+    style: 'CAFÉ',
+    summary: 'Clip-ons, sprung solo, chrome everywhere it counts.',
+    silhouette: 'cafe',
+    tone: 'red',
+    preset: {
+      bikeId: 'bike-re-classic-350',
+      colourId: 'col-classic-oxblood',
+      components: {
+        headlight: 'opt-headlight-chrome-7',
+        handlebar: 'opt-bar-clipon',
+        tank: 'opt-tank-pinstripe',
+        seat: 'opt-seat-solo',
+        exhaust: 'opt-exhaust-chrome',
+        luggage: 'opt-luggage-none',
+        rearFender: 'opt-fender-bobbed',
+      },
+    },
+  },
+  {
+    id: 'build-dust',
+    number: 2,
+    name: 'DUST',
+    bikeId: 'bike-re-classic-350',
+    style: 'SCRAMBLER',
+    summary: 'Caged light, high pipe, workshop olive.',
+    silhouette: 'scrambler',
+    tone: 'olive',
+    preset: {
+      bikeId: 'bike-re-classic-350',
+      colourId: 'col-classic-olive',
+      components: {
+        headlight: 'opt-headlight-caged',
+        handlebar: 'opt-bar-stock',
+        tank: 'opt-tank-teardrop',
+        seat: 'opt-seat-bench',
+        exhaust: 'opt-exhaust-upswept',
+        luggage: 'opt-luggage-rack',
+        rearFender: 'opt-fender-stock',
+      },
+    },
+  },
+  {
+    id: 'build-nocturne',
+    number: 3,
+    name: 'NOCTURNE',
+    bikeId: 'bike-re-classic-350',
+    style: 'BOBBER',
+    summary: 'Midnight gloss, ape bars, nothing wasted.',
+    silhouette: 'bobber',
+    tone: 'chrome',
+    preset: {
+      bikeId: 'bike-re-classic-350',
+      colourId: 'col-classic-midnight',
+      components: {
+        headlight: 'opt-headlight-chrome-7',
+        handlebar: 'opt-bar-ape',
+        tank: 'opt-tank-teardrop',
+        seat: 'opt-seat-solo',
+        exhaust: 'opt-exhaust-black',
+        luggage: 'opt-luggage-none',
+        rearFender: 'opt-fender-bobbed',
+      },
+    },
+  },
+  {
+    id: 'build-longhaul',
+    number: 4,
+    name: 'LONG HAUL',
+    bikeId: 'bike-re-classic-350',
+    style: 'TOURER',
+    summary: 'Saddlebags, bench seat, built for the Ghats.',
+    silhouette: 'roadster',
+    tone: 'amber',
+    preset: {
+      bikeId: 'bike-re-classic-350',
+      colourId: 'col-classic-gunmetal',
+      components: {
+        headlight: 'opt-headlight-stock',
+        handlebar: 'opt-bar-stock',
+        tank: 'opt-tank-pinstripe',
+        seat: 'opt-seat-bench',
+        exhaust: 'opt-exhaust-chrome',
+        luggage: 'opt-luggage-bags',
+        rearFender: 'opt-fender-stock',
+      },
+    },
+  },
+  {
+    id: 'build-forty-two',
+    number: 5,
+    name: 'FORTY-TWO',
+    bikeId: 'bike-jawa-42',
+    style: 'BOBBER',
+    summary: 'Our Jawa bay build. 3D coming — quote it today.',
+    silhouette: 'bobber',
+    tone: 'red',
+  },
+]
+
+export const services: ServiceOffering[] = [
+  {
+    id: 'custom-design',
+    name: 'CUSTOM DESIGN',
+    kicker: 'IDEATE',
+    summary: 'From a napkin sketch to a full build sheet. We draw it before we cut it.',
+    includes: ['Design consultation', 'Concept renders', 'Build sheet & estimate'],
+  },
+  {
+    id: 'consultation',
+    name: 'CONSULTATION',
+    kicker: 'TALK',
+    summary: 'Sit down with a builder. Bring the bike, the idea, or both.',
+    includes: ['45-minute session', 'Parts & compatibility advice', 'Budget planning'],
+  },
+  {
+    id: 'doorstep-installation',
+    name: 'DOORSTEP INSTALLATION',
+    kicker: 'WE COME TO YOU',
+    summary: 'Bolt-on parts fitted at your place by a Garage 27 technician.',
+    includes: ['Bolt-on part fitting', 'Torque & safety check', 'Old parts bagged & returned'],
+  },
+  {
+    id: 'paint-upholstery',
+    name: 'CUSTOM PAINT & UPHOLSTERY',
+    kicker: 'FINISH',
+    summary: 'Hand-laid paint, pinstripe and leatherwork, done in-house.',
+    includes: ['Paint & pinstripe', 'Seat re-trim', 'Tank & panel refinishing'],
+  },
+  {
+    id: 'detailing-restoration',
+    name: 'DETAILING & RESTORATION',
+    kicker: 'REVIVE',
+    summary: 'Bring an old soul back. Strip, restore, protect.',
+    includes: ['Deep detailing', 'Chrome & metal restoration', 'Mechanical refresh'],
+  },
+]
