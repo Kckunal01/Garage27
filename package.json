@@ -11,7 +11,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "catalogue:check": "tsx scripts/check-catalogue.ts"
+    "catalogue:check": "vitest run src/data/catalogue",
+    "db:seed:sql": "tsx scripts/generate-seed.ts > supabase/seed.sql"
   },
   "engines": {
     "node": ">=20"

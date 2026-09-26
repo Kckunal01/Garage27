@@ -246,7 +246,7 @@
 .hero-bike {
   position: absolute;
   left: 50%;
-  bottom: 12%;
+  bottom: 3%;
   width: min(920px, 118vw);
   transform: translateX(-50%);
   filter: drop-shadow(0 30px 40px rgba(0, 0, 0, 0.8));

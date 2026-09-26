@@ -40,7 +40,7 @@ export const bikes: Bike[] = [
       { slot: 'luggage', category: 'luggage', label: 'LUGGAGE', position: [-0.6, 0.78, 0.26] },
       { slot: 'rearFender', category: 'rearWheel', label: 'REAR WHEEL', position: [-0.86, 0.72, 0.05] },
     ],
-    camera: { position: [2.4, 1.3, 2.6], target: [0, 0.65, 0], minDistance: 2.2, maxDistance: 5.2 },
+    camera: { position: [2.9, 1.45, 3.3], target: [0, 0.62, 0], minDistance: 2.4, maxDistance: 6 },
   },
   {
     id: 'bike-jawa-42',

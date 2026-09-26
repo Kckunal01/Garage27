@@ -1,7 +1,5 @@
 import type { Metadata } from 'next'
-import { Suspense } from 'react'
 import { EnvironmentalHero } from '@/components/media/EnvironmentalHero'
-import { LoadingState } from '@/components/garage-ui/States'
 import { CatalogueNote } from '@/components/garage-ui/CatalogueNote'
 import { PartsBrowser } from '@/features/parts/PartsBrowser'
 import { getCatalogue } from '@/lib/catalogue/repository'
@@ -31,9 +29,7 @@ export default async function PartsPage() {
         </h1>
       </EnvironmentalHero>
       <div className="section--tight wrap parts-page">
-        <Suspense fallback={<LoadingState message="STOCKING THE SHELVES…" />}>
-          <PartsBrowser parts={parts} bikes={bikes} images={images} />
-        </Suspense>
+        <PartsBrowser parts={parts} bikes={bikes} images={images} />
         {source === 'local' && <CatalogueNote />}
       </div>
     </>

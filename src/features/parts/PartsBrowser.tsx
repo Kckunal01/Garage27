@@ -1,7 +1,7 @@
 'use client'
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { useMemo } from 'react'
+import { Suspense, useMemo } from 'react'
 import { CategoryTile } from '@/components/garage-ui/CategoryTile'
 import { EmptyState } from '@/components/garage-ui/States'
 import { track } from '@/lib/analytics'
@@ -10,8 +10,26 @@ import { PART_CATEGORIES, type Bike, type Part, type PartCategory } from '@/type
 import { BikeSelector } from './BikeSelector'
 import { PartCard } from './PartCard'
 
-/** Filter state lives in the URL (?bike=&category=) so views are shareable and back-button friendly. */
-export function PartsBrowser({ parts, bikes, images }: { parts: Part[]; bikes: Bike[]; images: Record<string, string> }) {
+interface Data {
+  parts: Part[]
+  bikes: Bike[]
+  images: Record<string, string>
+}
+
+/**
+ * Filter state lives in the URL (?bike=&category=) so views are shareable and
+ * back-button friendly. The static HTML (Suspense fallback) is the full,
+ * unfiltered shelf — crawlable and paint-ready before hydration.
+ */
+export function PartsBrowser(data: Data) {
+  return (
+    <Suspense fallback={<PartsView {...data} bike="" category={null} setParam={() => {}} clearAll={() => {}} />}>
+      <LivePartsBrowser {...data} />
+    </Suspense>
+  )
+}
+
+function LivePartsBrowser(data: Data) {
   const router = useRouter()
   const pathname = usePathname()
   const params = useSearchParams()
@@ -25,6 +43,18 @@ export function PartsBrowser({ parts, bikes, images }: { parts: Part[]; bikes: B
     else next.delete(key)
     router.replace(`${pathname}${next.size ? `?${next}` : ''}`, { scroll: false })
   }
+  return <PartsView {...data} bike={bike} category={category} setParam={setParam} clearAll={() => router.replace(pathname, { scroll: false })} />
+}
+
+function PartsView({
+  parts,
+  bikes,
+  images,
+  bike,
+  category,
+  setParam,
+  clearAll,
+}: Data & { bike: string; category: PartCategory | null; setParam(key: string, value: string | null): void; clearAll(): void }) {
 
   const forBike = useMemo(() => parts.filter((p) => p.status !== 'retired' && (!bike || p.compatibleBikeIds.length === 0 || p.compatibleBikeIds.includes(bike))), [parts, bike])
   const shown = category ? forBike.filter((p) => p.category === category) : forBike
@@ -84,7 +114,7 @@ export function PartsBrowser({ parts, bikes, images }: { parts: Part[]; bikes: B
         ) : (
           <EmptyState>
             <p>Nothing on this shelf for that bike yet.</p>
-            <button type="button" className="btn btn--sm" onClick={() => router.replace(pathname, { scroll: false })}>
+            <button type="button" className="btn btn--sm" onClick={clearAll}>
               SHOW EVERYTHING
             </button>
           </EmptyState>

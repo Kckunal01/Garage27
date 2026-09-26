@@ -9,6 +9,9 @@ html {
   text-size-adjust: 100%;
   scroll-behavior: smooth;
   background: var(--g-black);
+  /* Keep scrolled-to / focused controls clear of the fixed header, nav and dock. */
+  scroll-padding-top: calc(var(--header-h) + 12px);
+  scroll-padding-bottom: calc(var(--bottom-clearance) + 84px);
 }
 @media (prefers-reduced-motion: reduce) {
   html {
@@ -20,10 +23,11 @@ body {
   margin: 0;
   min-height: 100dvh;
   background-color: var(--g-concrete-950);
+  /* Concrete stays a whisper under content — texture, not weather. */
   background-image:
     radial-gradient(120% 60% at 50% -10%, rgba(231, 165, 75, 0.07), transparent 60%),
+    linear-gradient(rgba(14, 13, 12, 0.86), rgba(14, 13, 12, 0.86)),
     var(--concrete);
-  background-attachment: fixed;
   color: var(--g-cream);
   font-family: var(--font-body);
   font-size: 16px;
@@ -385,7 +389,9 @@ ol {
 
 /* ── Page entry — moving between garage bays ─────────────────────────── */
 .bay-enter {
-  animation: bay-enter var(--dur-slow) var(--ease-push) both;
+  /* backwards, not both: a filling transform animation would turn this wrapper
+     into the containing block for position:fixed children (dock, modals). */
+  animation: bay-enter var(--dur-slow) var(--ease-push) backwards;
 }
 @keyframes bay-enter {
   from {

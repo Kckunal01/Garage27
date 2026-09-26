@@ -62,14 +62,14 @@ export default function HomePage() {
         <h2 id="bays-heading" className="sr-only">
           Inside Garage 27
         </h2>
-        <ol className="bays">
+        <ol className="doors">
           {BAYS.map((b) => (
             <li key={b.href}>
-              <Link href={b.href} className="bay">
-                <span className="bay__n">{b.n}</span>
-                <span className="bay__title headline">{b.title}</span>
-                <span className="bay__line">{b.line}</span>
-                <span className="neon-link bay__cta">{b.cta}</span>
+              <Link href={b.href} className="door">
+                <span className="door__n">{b.n}</span>
+                <span className="door__title headline">{b.title}</span>
+                <span className="door__line">{b.line}</span>
+                <span className="neon-link door__cta">{b.cta}</span>
               </Link>
             </li>
           ))}

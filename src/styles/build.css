@@ -113,6 +113,14 @@
   display: grid;
   gap: 18px;
 }
+.bay__panel-cta {
+  display: none; /* mobile: the dock owns the primary action */
+}
+@media (min-width: 1024px) {
+  .bay__panel-cta {
+    display: inline-flex;
+  }
+}
 .bay__reset {
   justify-self: center;
   font-size: 0.66rem;

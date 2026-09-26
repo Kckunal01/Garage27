@@ -3,12 +3,11 @@
   display: grid;
   gap: 16px;
   max-width: 640px;
-  padding-bottom: clamp(200px, 48vw, 0px);
 }
 @media (max-width: 1023px) {
   .home-hero {
     /* bike sits in the lower half on mobile; text above it */
-    padding-bottom: min(58vw, 380px);
+    padding-bottom: min(74vw, 440px);
   }
 }
 .home-hero__sign {
@@ -45,17 +44,17 @@
   }
 }
 
-.bays {
+.doors {
   display: grid;
   gap: 12px;
 }
 @media (min-width: 900px) {
-  .bays {
+  .doors {
     grid-template-columns: repeat(3, 1fr);
     gap: 18px;
   }
 }
-.bay {
+.door {
   position: relative;
   display: grid;
   gap: 10px;
@@ -71,7 +70,7 @@
     transform var(--dur-slow) var(--ease-push),
     border-color var(--dur);
 }
-.bay::before {
+.door::before {
   /* the bay door light */
   content: '';
   position: absolute;
@@ -81,23 +80,23 @@
   box-shadow: 0 0 24px 4px var(--g-amber-glow);
   opacity: 0.7;
 }
-.bay:hover {
+.door:hover {
   transform: translateY(-3px) scale(1.01);
   border-color: var(--g-line-strong);
 }
-.bay:hover .neon-link::after {
+.door:hover .neon-link::after {
   transform: scaleX(1);
 }
-.bay__n {
+.door__n {
   font-family: var(--font-ui);
   color: var(--g-faint);
   letter-spacing: var(--track-mid);
   font-size: 0.72rem;
 }
-.bay__line {
+.door__line {
   color: var(--g-cream-soft);
 }
-.bay__cta {
+.door__cta {
   margin-top: auto;
   justify-self: start;
 }

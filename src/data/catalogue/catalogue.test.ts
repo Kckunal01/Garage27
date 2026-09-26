@@ -1,0 +1,63 @@
+import { describe, expect, it } from 'vitest'
+import { localCatalogue } from '@/data/catalogue'
+import { PROCEDURAL_VARIANTS } from '@/features/build/viewport/ProceduralBike'
+import { getBikeBundle, isInteractive, validateConfiguration, createDefaultConfiguration } from '@/features/build/engine'
+import { BUILD_CATEGORIES, PART_CATEGORIES } from '@/types/catalogue'
+
+/**
+ * Catalogue QA gate — the "8. QA" step of adding a bike. Run before activating
+ * any catalogue change: `npm run catalogue:check`.
+ */
+const { bikes, colours, options, parts, showcase } = localCatalogue
+
+describe('catalogue integrity', () => {
+  it('ids are unique', () => {
+    for (const list of [bikes, colours, options, parts, showcase]) {
+      const ids = list.map((x) => x.id)
+      expect(new Set(ids).size).toBe(ids.length)
+    }
+  })
+
+  for (const bike of bikes.filter(isInteractive)) {
+    describe(bike.name, () => {
+      const bundle = getBikeBundle(localCatalogue, bike.id)!
+      it('has an active default colour', () => {
+        expect(bundle.colours.some((c) => c.id === bike.defaultColourId && c.status === 'active')).toBe(true)
+      })
+      it('every slot has a valid default and a hotspot', () => {
+        for (const slot of bike.slots) {
+          expect(BUILD_CATEGORIES).toContain(slot.category)
+          const def = bundle.options.find((o) => o.id === slot.defaultOptionId)
+          expect(def, slot.id).toBeDefined()
+          expect(def!.slot).toBe(slot.id)
+          expect(bike.hotspots.some((h) => h.slot === slot.id), `hotspot for ${slot.id}`).toBe(true)
+        }
+        expect(validateConfiguration(createDefaultConfiguration(bundle), bundle)).toEqual([])
+      })
+      it('every option maps to a real slot, renderable asset and known rule targets', () => {
+        const ids = new Set(bundle.options.map((o) => o.id))
+        for (const o of bundle.options) {
+          const slot = bike.slots.find((s) => s.id === o.slot)
+          expect(slot, o.id).toBeDefined()
+          expect(slot!.category).toBe(o.category)
+          if (o.modelAsset.kind === 'procedural') expect(PROCEDURAL_VARIANTS, o.id).toContain(o.modelAsset.variant)
+          for (const r of [...(o.requires ?? []), ...(o.excludes ?? [])]) expect(ids.has(r), `${o.id} → ${r}`).toBe(true)
+          if (o.partId) expect(parts.some((p) => p.id === o.partId), o.partId).toBe(true)
+        }
+      })
+    })
+  }
+
+  it('parts reference real bikes and categories, with valid prices', () => {
+    for (const p of parts) {
+      expect(PART_CATEGORIES).toContain(p.category)
+      expect(Number.isInteger(p.price) && p.price > 0).toBe(true)
+      for (const b of p.compatibleBikeIds) expect(bikes.some((x) => x.id === b), `${p.id} → ${b}`).toBe(true)
+    }
+  })
+
+  it('showcase numbers are unique and sequential', () => {
+    const nums = showcase.map((s) => s.number).sort((a, b) => a - b)
+    expect(nums).toEqual(nums.map((_, i) => i + 1))
+  })
+})
