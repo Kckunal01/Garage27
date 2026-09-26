@@ -27,7 +27,7 @@ const csp = [
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
-  images: { formats: ['image/avif', 'image/webp'] },
+  images: { formats: ['image/avif', 'image/webp'], qualities: [75, 90] },
   async headers() {
     return [
       {

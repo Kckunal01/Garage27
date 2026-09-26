@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { track } from '@/lib/analytics'
-import { isActive, PRIMARY_NAV } from './nav-config'
+import { isImmersive, isNavItemActive, PRIMARY_NAV } from './nav-config'
 
 /**
  * The universal Garage 27 navigation.
@@ -14,10 +14,10 @@ import { isActive, PRIMARY_NAV } from './nav-config'
 export function GarageNav({ variant }: { variant: 'pill' | 'bar' }) {
   const pathname = usePathname() ?? '/'
   return (
-    <nav className={`gnav gnav--${variant}`} aria-label={variant === 'pill' ? 'Primary (mobile)' : 'Primary'}>
+    <nav className={`gnav gnav--${variant}${variant === 'pill' && isImmersive(pathname) ? ' gnav--immersive' : ''}`} aria-label={variant === 'pill' ? 'Primary (mobile)' : 'Primary'}>
       <ul className="gnav__list">
         {PRIMARY_NAV.map((item) => {
-          const active = isActive(pathname, item.href)
+          const active = isNavItemActive(pathname, item)
           return (
             <li key={item.href} className="gnav__item">
               <Link

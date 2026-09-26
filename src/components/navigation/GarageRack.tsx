@@ -6,7 +6,7 @@ import { useCallback, useEffect, useId, useRef, useState, useSyncExternalStore }
 import { createPortal } from 'react-dom'
 import { track } from '@/lib/analytics'
 import { useCart } from '@/features/checkout/cart-store'
-import { CONTACT, isActive, PRIMARY_NAV, RACK_SECONDARY } from './nav-config'
+import { CONTACT, isNavItemActive, PRIMARY_NAV, RACK_SECONDARY } from './nav-config'
 
 const FOCUSABLE = 'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])'
 
@@ -121,7 +121,7 @@ export function GarageRack() {
 
               <ul className="rack__primary">
                 {PRIMARY_NAV.map((item, i) => {
-                  const active = isActive(pathname, item.href)
+                  const active = isNavItemActive(pathname, item)
                   return (
                     <li key={item.href} style={{ ['--i' as string]: i }}>
                       <Link

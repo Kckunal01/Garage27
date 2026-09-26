@@ -1,0 +1,257 @@
+/* ── Garage / Home — environmental composition over garage27-home-base.png ──
+   All placement lives in the variables below so the layout can be tuned
+   against docs/design-references/home/home-mobile-reference.png without
+   touching structure. Mobile is the reference composition; desktop is its
+   own composition in the same language. */
+
+.ghero {
+  --hero-focus: 50% 50%; /* object-position for the supplied photograph */
+  --hero-side: 20px; /* left/right inset of the interface */
+  --hero-top: calc(env(safe-area-inset-top, 0px) + 20px);
+  --hero-lower-gap: 22px; /* space between CTAs and the floating nav */
+  --title-size: calc((100vw - var(--hero-side) * 2) / 10.4);
+
+  position: relative;
+  isolation: isolate;
+  height: 100svh;
+  min-height: 620px;
+  overflow: hidden;
+  background: var(--g-black);
+  color: var(--g-cream);
+}
+
+/* The page is one screen: no body padding strip under the hero. */
+body:has(.ghero) {
+  padding-bottom: 0;
+}
+
+/* ── Photograph ─────────────────────────────────────────────────────── */
+.ghero__media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.ghero__img {
+  object-fit: cover;
+  object-position: var(--hero-focus);
+}
+/* Legibility only where type sits: top-left statement, lower copy. Restrained. */
+.ghero__shade {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(8, 7, 6, 0.55) 0%, rgba(8, 7, 6, 0) 18%),
+    linear-gradient(0deg, rgba(8, 7, 6, 0.88) 0%, rgba(8, 7, 6, 0.6) 26%, rgba(8, 7, 6, 0) 50%);
+}
+
+/* ── Top-left statement ─────────────────────────────────────────────── */
+.ghero__statement {
+  position: absolute;
+  z-index: 2;
+  top: var(--hero-top);
+  left: var(--hero-side);
+  display: grid;
+  gap: 1px;
+  font-family: var(--font-ui);
+  font-weight: 500;
+  font-size: 0.8rem;
+  line-height: 1.2;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--g-cream);
+}
+.ghero__dash {
+  margin-top: 2px;
+  letter-spacing: 0;
+  color: var(--g-cream-soft);
+}
+
+/* ── Lower block: copy + actions, clear of the floating nav ─────────── */
+.ghero__lower {
+  min-width: 0;
+  position: absolute;
+  z-index: 2;
+  left: var(--hero-side);
+  right: var(--hero-side);
+  bottom: calc(var(--nav-h) + var(--nav-gap) + env(safe-area-inset-bottom, 0px) + var(--hero-lower-gap));
+  display: grid;
+  gap: 22px;
+}
+.ghero__copy {
+  display: grid;
+  gap: 12px;
+}
+.ghero__label {
+  font-family: var(--font-ui);
+  font-weight: 500;
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--g-cream);
+}
+.ghero__title {
+  display: grid;
+  font-family: var(--font-serif);
+  font-weight: 700;
+  font-size: var(--title-size);
+  line-height: 1.02;
+  letter-spacing: -0.005em;
+  text-transform: uppercase;
+  color: var(--g-cream);
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.55);
+}
+.ghero__title span {
+  white-space: nowrap;
+}
+.ghero__support {
+  font-family: var(--font-ui);
+  font-weight: 400;
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--g-cream-soft);
+}
+
+/* ── Pill CTAs ──────────────────────────────────────────────────────── */
+.ghero__actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 10px;
+}
+.gpill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 52px;
+  padding: 0 14px 0 16px;
+  border-radius: var(--radius-pill);
+  border: 1px solid rgba(233, 223, 199, 0.55);
+  background: rgba(10, 9, 8, 0.55);
+  color: var(--g-cream);
+  font-family: var(--font-ui);
+  font-weight: 500;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  white-space: nowrap;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  transition:
+    border-color var(--dur) var(--ease-push),
+    box-shadow var(--dur) var(--ease-push),
+    background-color var(--dur);
+  -webkit-tap-highlight-color: transparent;
+}
+.gpill:hover,
+.gpill:focus-visible {
+  border-color: var(--g-cream);
+}
+.gpill__arrow {
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  letter-spacing: 0;
+  line-height: 1;
+}
+.gpill--neon {
+  border-color: #ff3a41;
+  box-shadow:
+    0 0 10px 0 rgba(255, 38, 48, 0.45),
+    inset 0 0 12px 0 rgba(255, 38, 48, 0.22);
+}
+.gpill--neon:hover,
+.gpill--neon:focus-visible {
+  border-color: #ff5a60;
+  box-shadow:
+    0 0 18px 2px rgba(255, 38, 48, 0.6),
+    inset 0 0 16px 0 rgba(255, 38, 48, 0.3);
+}
+@media (max-width: 360px) {
+  .gpill {
+    padding: 0 10px 0 12px;
+    font-size: 0.64rem;
+    letter-spacing: 0.08em;
+  }
+}
+
+/* ── Immersive chrome (header on this route) ─────────────────────────── */
+.site-header--immersive {
+  position: fixed;
+  inset: 0 0 auto;
+  height: auto;
+  background: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  pointer-events: none;
+}
+.site-header--immersive .site-header__inner {
+  max-width: none;
+  padding: calc(env(safe-area-inset-top, 0px) + 8px) 8px 0 0;
+  justify-content: flex-end;
+}
+.site-header--immersive .site-header__brand,
+.site-header--immersive .site-header__cart,
+.site-header--immersive .site-header__nav {
+  display: none;
+}
+.site-header--immersive .rack-trigger {
+  pointer-events: auto;
+}
+.site-header--immersive .rack-trigger__bars {
+  width: 24px;
+  gap: 6px;
+}
+.site-header--immersive .rack-trigger__bars span {
+  height: 1px;
+  width: 100%;
+  background: var(--g-cream);
+}
+.site-header--immersive .rack-trigger.is-open .rack-trigger__bars span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.site-header--immersive .rack-trigger.is-open .rack-trigger__bars span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* ── Desktop: same system, wider environmental composition ───────────── */
+@media (min-width: 1024px) {
+  .ghero {
+    --hero-side: clamp(40px, 5.5vw, 96px);
+    --hero-top: 36px;
+    --hero-lower-gap: 40px;
+    --title-size: clamp(3.4rem, 5vw, 5.6rem);
+  }
+  .ghero__shade {
+    background:
+      linear-gradient(180deg, rgba(8, 7, 6, 0.5) 0%, rgba(8, 7, 6, 0) 16%),
+      linear-gradient(0deg, rgba(8, 7, 6, 0.85) 0%, rgba(8, 7, 6, 0.45) 30%, rgba(8, 7, 6, 0) 55%),
+      linear-gradient(90deg, rgba(8, 7, 6, 0.45) 0%, rgba(8, 7, 6, 0) 45%);
+  }
+  .ghero__statement {
+    font-size: 0.86rem;
+  }
+  .ghero__lower {
+    right: auto;
+    width: min(760px, 60vw);
+  }
+  .ghero__label,
+  .ghero__support {
+    font-size: 0.8rem;
+  }
+  .ghero__actions {
+    grid-template-columns: repeat(2, minmax(0, 240px));
+    gap: 14px;
+  }
+  .gpill {
+    min-height: 56px;
+    padding: 0 20px 0 24px;
+    font-size: 0.8rem;
+    letter-spacing: 0.16em;
+  }
+  .site-header--immersive .site-header__inner {
+    padding: 22px clamp(28px, 4.5vw, 84px) 0 0;
+  }
+  /* The floating pill is the navigation on this composition at every width. */
+  .gnav--pill.gnav--immersive {
+    display: block;
+  }
+}

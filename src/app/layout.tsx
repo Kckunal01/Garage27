@@ -15,11 +15,13 @@ import '@/styles/chrome.css'
 import '@/styles/environment.css'
 import '@/styles/ui.css'
 import '@/styles/pages.css'
+import '@/styles/home.css'
 import '@/styles/build.css'
 import { Providers } from './providers'
 import { SiteHeader } from '@/components/navigation/SiteHeader'
 import { SiteFooter } from '@/components/navigation/SiteFooter'
 import { GarageNav } from '@/components/navigation/GarageNav'
+import { HideOnImmersive } from '@/components/navigation/ChromeShell'
 import { publicEnv } from '@/lib/env'
 
 export const metadata: Metadata = {
@@ -47,7 +49,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <Providers>
           <SiteHeader />
           <main id="main">{children}</main>
-          <SiteFooter />
+          <HideOnImmersive>
+            <SiteFooter />
+          </HideOnImmersive>
           <GarageNav variant="pill" />
         </Providers>
       </body>
