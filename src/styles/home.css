@@ -74,11 +74,12 @@ body:has(.ghero) {
   );
 }
 
-/* ── Top-left statement (ref: x 33, cap-top 90, pitch 27, dash at 180) ── */
+/* ── Top-left statement (ref: x 33, cap-top 90, pitch 27, dash at 180) ──
+   Sits directly under the universal header logo (22px at top 38). */
 .ghero__statement {
   position: absolute;
   z-index: 2;
-  top: calc(var(--u) * 38.5);
+  top: calc(38px + 22px + var(--u) * 14);
   left: calc(var(--u) * 15);
   display: grid;
   font-family: var(--font-mono);
@@ -207,7 +208,7 @@ body:has(.ghero) {
   flex: none;
 }
 
-/* ── Immersive chrome on this route: the rack control only ──────────── */
+/* ── Immersive chrome on this route: universal logo + rack control ──── */
 .site-header--immersive {
   position: fixed;
   inset: 0 0 auto;
@@ -222,7 +223,9 @@ body:has(.ghero) {
   padding: 0;
   display: block;
 }
-.site-header--immersive .site-header__brand,
+.site-header--immersive .site-header__brand {
+  pointer-events: auto; /* same position as every other page (chrome.css) */
+}
 .site-header--immersive .site-header__cart,
 .site-header--immersive .site-header__nav {
   display: none;
@@ -289,8 +292,13 @@ body:has(.ghero) {
       linear-gradient(90deg, rgba(10, 8, 6, 0.55) 0%, rgba(10, 8, 6, 0) 40%);
   }
   .ghero__statement {
-    top: 40px;
+    top: calc(var(--header-h) / 2 + 14px + 20px); /* under the 28px header logo */
     left: clamp(32px, 4vw, 72px);
+  }
+  /* The immersive header spans the full width; place the logo where the
+     standard header's --max column puts it. */
+  .site-header--immersive .site-header__brand {
+    left: calc(max(0px, (100% - var(--max)) / 2) + var(--gutter));
   }
   .ghero__lower {
     left: clamp(32px, 4vw, 72px);
