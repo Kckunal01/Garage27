@@ -3,11 +3,10 @@
 import { useCallback, useEffect, useMemo, useReducer } from 'react'
 import { track } from '@/lib/analytics'
 import { valueBand } from '@/lib/pricing/money'
-import type { BuildCategory, BuildConfiguration, ComponentOption } from '@/types/catalogue'
+import type { BuildConfiguration, ComponentOption } from '@/types/catalogue'
 import {
   applyColour,
   applyOption,
-  categoriesForBike,
   createDefaultConfiguration,
   estimateBuild,
   getBikeBundle,
@@ -17,14 +16,16 @@ import {
   type BuildContext,
   type CompatibilityResult,
 } from './engine'
+import { firstZone, getZone, zoneSlots } from './zones'
 
-export type BuildStage = 'bikes' | 'colour' | 'editor' | 'review' | 'preview'
+export type BuildStage = 'bikes' | 'editor' | 'review' | 'preview'
 
 interface State {
   stage: BuildStage
   bikeId: string | null
   config: BuildConfiguration | null
-  category: BuildCategory | null
+  /** Open build zone (TANK, FRONT…). */
+  zone: string | null
   /** Slot that should visually "light up" (last touched). */
   litSlot: string | null
   /** Bumped on every change so the 3D lamp can re-pulse. */
@@ -37,12 +38,12 @@ type Action =
   | { type: 'reset-bikes' }
   | { type: 'colour'; config: BuildConfiguration }
   | { type: 'stage'; stage: BuildStage }
-  | { type: 'category'; category: BuildCategory | null; slot?: string | null }
+  | { type: 'zone'; zone: string | null; slot?: string | null }
   | { type: 'apply'; config: BuildConfiguration; slot: string }
   | { type: 'blocked'; optionId: string; conflicts: string[]; reason: string; slot: string }
   | { type: 'restore'; config: BuildConfiguration }
 
-const initial: State = { stage: 'bikes', bikeId: null, config: null, category: null, litSlot: null, pulse: 0, blocked: null }
+const initial: State = { stage: 'bikes', bikeId: null, config: null, zone: null, litSlot: null, pulse: 0, blocked: null }
 
 function reducer(state: State, a: Action): State {
   switch (a.type) {
@@ -52,8 +53,8 @@ function reducer(state: State, a: Action): State {
         ...initial,
         bikeId: a.bundle.bike.id,
         config: a.config ?? createDefaultConfiguration(a.bundle),
-        stage: a.stage ?? (interactive ? 'colour' : 'preview'),
-        category: interactive ? (categoriesForBike(a.bundle.bike)[0] ?? null) : null,
+        stage: a.stage ?? (interactive ? 'editor' : 'preview'),
+        zone: interactive ? firstZone(a.bundle) : null,
       }
     }
     case 'reset-bikes':
@@ -62,8 +63,8 @@ function reducer(state: State, a: Action): State {
       return { ...state, config: a.config, pulse: state.pulse + 1, litSlot: 'tank', blocked: null }
     case 'stage':
       return { ...state, stage: a.stage, blocked: null }
-    case 'category':
-      return { ...state, category: a.category, litSlot: a.slot ?? state.litSlot, blocked: null }
+    case 'zone':
+      return { ...state, zone: a.zone, litSlot: a.slot ?? state.litSlot, blocked: null }
     case 'apply':
       return { ...state, config: a.config, litSlot: a.slot, pulse: state.pulse + 1, blocked: null }
     case 'blocked':
@@ -138,11 +139,12 @@ export function useBuildState(ctx: BuildContext) {
     [bundle, state.config],
   )
 
-  const openCategory = useCallback(
-    (category: BuildCategory | null) => {
-      const slot = category && bundle ? (bundle.bike.slots.find((s) => s.category === category)?.id ?? null) : null
-      dispatch({ type: 'category', category, slot })
-      if (category) track('build_category_opened', { bike: bundle?.bike.id, category })
+  const openZone = useCallback(
+    (zoneId: string | null) => {
+      const zone = getZone(zoneId)
+      const slot = zone && bundle ? (zoneSlots(zone, bundle)[0]?.id ?? null) : null
+      dispatch({ type: 'zone', zone: zone?.id ?? null, slot })
+      if (zone) track('build_category_opened', { bike: bundle?.bike.id, category: zone.id })
     },
     [bundle],
   )
@@ -172,5 +174,5 @@ export function useBuildState(ctx: BuildContext) {
     dispatch({ type: 'restore', config: createDefaultConfiguration(bundle) })
   }, [bundle])
 
-  return { state, bundle, estimate, pickBike, selectColour, openCategory, selectOption, setStage, resetToBikes, resetBuild }
+  return { state, bundle, estimate, pickBike, selectColour, openZone, selectOption, setStage, resetToBikes, resetBuild }
 }

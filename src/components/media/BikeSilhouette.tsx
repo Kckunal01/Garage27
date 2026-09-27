@@ -1,5 +1,7 @@
 import { useId } from 'react'
 
+const r2 = (n: number) => Math.round(n * 100) / 100
+
 export type Silhouette = 'roadster' | 'bobber' | 'scrambler' | 'cafe'
 export type Tone = 'amber' | 'red' | 'chrome' | 'olive'
 
@@ -39,7 +41,8 @@ export function BikeSilhouette({ silhouette = 'roadster', tone = 'amber', paint,
   const spokes = (cx: number, cy: number, r: number) =>
     Array.from({ length: 18 }, (_, i) => {
       const a = (i / 18) * Math.PI * 2
-      return <line key={i} x1={cx + Math.cos(a) * 14} y1={cy + Math.sin(a) * 14} x2={cx + Math.cos(a + 0.35) * r} y2={cy + Math.sin(a + 0.35) * r} />
+      // Rounded: server and browser must print identical coordinates (hydration).
+      return <line key={i} x1={r2(cx + Math.cos(a) * 14)} y1={r2(cy + Math.sin(a) * 14)} x2={r2(cx + Math.cos(a + 0.35) * r)} y2={r2(cy + Math.sin(a + 0.35) * r)} />
     })
 
   const wheel = (cx: number, cy: number) => (

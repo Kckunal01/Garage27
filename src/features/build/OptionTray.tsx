@@ -1,40 +1,33 @@
 'use client'
 
-import { BUILD_CATEGORY_META } from '@/data/catalogue'
 import { formatDelta } from '@/lib/pricing/money'
-import type { BuildCategory, BuildConfiguration, ComponentOption } from '@/types/catalogue'
+import type { BuildConfiguration, BuildZone, ComponentOption } from '@/types/catalogue'
 import { CategoryGlyph } from '@/components/media/CategoryGlyph'
 import { checkOption, INVALID_OPTION_MESSAGE, type BikeBundle } from './engine'
+import { zoneSlots } from './zones'
 
 interface Props {
   bundle: BikeBundle
   config: BuildConfiguration
-  category: BuildCategory
+  zone: BuildZone
   blocked: { optionId: string; reason: string } | null
   onSelect(option: ComponentOption): void
 }
 
 /**
- * The control surface for one category: every slot in it, every option for
- * that slot, with price delta, selected state and — crucially — a visible
+ * The options for one zone: every slot the vehicle has in it, every catalogue
+ * option for that slot, with price delta, selected state and a visible
  * "doesn't fit" state instead of silently overwriting other choices.
  */
-export function OptionTray({ bundle, config, category, blocked, onSelect }: Props) {
-  const meta = BUILD_CATEGORY_META[category]
-  const slots = bundle.bike.slots.filter((s) => s.category === category)
+export function OptionTray({ bundle, config, zone, blocked, onSelect }: Props) {
+  const slots = zoneSlots(zone, bundle)
   return (
-    <section className="tray" aria-labelledby={`tray-${category}`}>
-      <header className="tray__head">
-        <h2 id={`tray-${category}`} className="tray__title">
-          {meta.label}
-        </h2>
-        <p className="tray__desc">{meta.descriptor}</p>
-      </header>
+    <div className="tray">
       {slots.map((slot) => {
         const opts = bundle.options.filter((o) => o.slot === slot.id && o.status !== 'retired')
         return (
           <div key={slot.id} className="tray__slot" role="radiogroup" aria-label={slot.label}>
-            {slots.length > 1 && <p className="label">{slot.label}</p>}
+            {slots.length > 1 && <p className="label tray__slot-label">{slot.label}</p>}
             <div className="tray__options">
               {opts.map((o) => {
                 const selected = config.components[slot.id] === o.id
@@ -50,16 +43,16 @@ export function OptionTray({ bundle, config, category, blocked, onSelect }: Prop
                     aria-disabled={soon || undefined}
                     className={`opt${selected ? ' is-selected' : ''}${!check.ok ? ' is-unfit' : ''}${isBlocked ? ' is-blocked' : ''}`}
                     onClick={() => !selected && onSelect(o)}
+                    title={!check.ok && !soon ? check.reason : o.descriptor}
                     aria-describedby={!check.ok ? `${o.id}-why` : undefined}
                   >
                     <span className="opt__thumb" aria-hidden="true">
-                      <CategoryGlyph category={category} />
+                      <CategoryGlyph category={zone.glyph} />
                     </span>
                     <span className="opt__name">{o.name}</span>
-                    <span className="opt__desc">{o.descriptor}</span>
-                    <span className="opt__delta">{soon ? 'COMING SOON' : formatDelta(o.priceDelta)}</span>
+                    <span className="opt__delta">{soon ? 'SOON' : formatDelta(o.priceDelta)}</span>
                     {!check.ok && !soon && (
-                      <span className="opt__why" id={`${o.id}-why`}>
+                      <span className="sr-only" id={`${o.id}-why`}>
                         {check.reason}
                       </span>
                     )}
@@ -75,6 +68,6 @@ export function OptionTray({ bundle, config, category, blocked, onSelect }: Prop
           <strong>{INVALID_OPTION_MESSAGE}</strong> {blocked.reason}
         </p>
       )}
-    </section>
+    </div>
   )
 }

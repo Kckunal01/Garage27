@@ -1,11 +1,11 @@
 'use client'
 
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { ContactShadows, Environment, Html, Lightformer, OrbitControls } from '@react-three/drei'
+import { ContactShadows, Environment, Lightformer, OrbitControls } from '@react-three/drei'
 import { Suspense, useEffect, useImperativeHandle, useMemo, useRef, type Ref } from 'react'
 import { Vector3, type PointLight } from 'three'
 import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib'
-import type { Bike, BuildCategory, BuildConfiguration, ComponentOption, MaterialConfig } from '@/types/catalogue'
+import type { Bike, BuildConfiguration, ComponentOption, MaterialConfig } from '@/types/catalogue'
 import { VehicleModel } from '../model/VehicleModel'
 import type { QualityProfile } from './quality'
 
@@ -19,12 +19,12 @@ interface SceneProps {
   options: ComponentOption[]
   paint: MaterialConfig
   quality: QualityProfile
-  activeCategory: BuildCategory | null
+  /** Slots of the open zone (hotspots light up, the orbit drifts toward them). */
+  activeSlots: string[]
   litSlot: string | null
   pulse: number
-  conflictSlots: string[]
-  showHotspots: boolean
-  onHotspot(category: BuildCategory): void
+  /** DOM hotspot markers by slot; the scene keeps them on their parts. */
+  markers: React.RefObject<Map<string, HTMLElement>>
   onReady(): void
   handle?: Ref<SceneHandle>
 }
@@ -49,7 +49,7 @@ function SlotLamp({ position, pulse }: { position: [number, number, number] | nu
  * distance that fits the bike's length and height, along the vehicle's
  * catalogue camera direction. Re-fits when the canvas resizes; reset re-fits.
  */
-const FIT = { halfLength: 1.2, halfHeight: 0.72 }
+const FIT = { halfLength: 1.08, halfHeight: 1.02, drop: 0.12 }
 function FitCamera({ bike, controls, fitRef }: { bike: Bike; controls: React.RefObject<OrbitControlsImpl | null>; fitRef: React.RefObject<(() => void) | null> }) {
   const { camera, size, invalidate } = useThree()
   useEffect(() => {
@@ -62,6 +62,10 @@ function FitCamera({ bike, controls, fitRef }: { bike: Bike; controls: React.Ref
       const target = new Vector3(...bike.camera.target)
       const dir = new Vector3(...bike.camera.position).sub(target).normalize()
       camera.position.copy(target.clone().add(dir.multiplyScalar(clamped)))
+      // On tall (phone) stages, stand the bike low, on the environment's floor rather than mid-air.
+      const cam = camera as { setViewOffset?: (fw: number, fh: number, x: number, y: number, w: number, h: number) => void; updateProjectionMatrix(): void }
+      cam.setViewOffset?.(size.width, size.height, 0, -size.height * (aspect < 1 ? FIT.drop : 0), size.width, size.height)
+      cam.updateProjectionMatrix()
       controls.current?.target.copy(target)
       controls.current?.update()
       invalidate()
@@ -87,25 +91,25 @@ function FocusRig({ controls, target }: { controls: React.RefObject<OrbitControl
   return null
 }
 
-function Hotspots({ bike, active, conflicts, onPick }: { bike: Bike; active: BuildCategory | null; conflicts: string[]; onPick(c: BuildCategory): void }) {
-  return (
-    <>
-      {bike.hotspots.map((h) => {
-        const state = conflicts.includes(h.slot) ? 'conflict' : active === h.category ? 'active' : 'idle'
-        return (
-          <Html key={h.slot} position={h.position} center zIndexRange={[20, 0]}>
-            <button type="button" className={`hotspot hotspot--${state}`} onClick={() => onPick(h.category)} aria-label={`Customise ${h.label.toLowerCase()}`} aria-pressed={active === h.category}>
-              <span className="hotspot__ring" aria-hidden="true">
-                +
-              </span>
-              <span className="hotspot__line" aria-hidden="true" />
-              <span className="hotspot__label">{h.label}</span>
-            </button>
-          </Html>
-        )
-      })}
-    </>
-  )
+/**
+ * Projects each catalogue hotspot (model space) to canvas pixels every frame
+ * and moves its DOM marker there. The markers are ordinary buttons rendered
+ * by BuildViewport, so they are real, focusable UI generated from data.
+ */
+function HotspotProjector({ bike, markers }: { bike: Bike; markers: React.RefObject<Map<string, HTMLElement>> }) {
+  const v = useMemo(() => new Vector3(), [])
+  useFrame(({ camera, size }) => {
+    for (const h of bike.hotspots) {
+      const el = markers.current.get(h.slot)
+      if (!el) continue
+      v.set(h.position[0], h.position[1], h.position[2]).project(camera)
+      const x = ((v.x + 1) / 2) * size.width
+      const y = ((1 - v.y) / 2) * size.height
+      el.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0)`
+      el.style.visibility = v.z < 1 ? 'visible' : 'hidden'
+    }
+  })
+  return null
 }
 
 function ReadySignal({ onReady }: { onReady(): void }) {
@@ -120,16 +124,16 @@ function ReadySignal({ onReady }: { onReady(): void }) {
 }
 
 export function BuildScene(props: SceneProps) {
-  const { bike, config, options, paint, quality, activeCategory, litSlot, pulse, conflictSlots, showHotspots, onHotspot, onReady, handle } = props
+  const { bike, config, options, paint, quality, activeSlots, litSlot, pulse, markers, onReady, handle } = props
   const controls = useRef<OrbitControlsImpl | null>(null)
   const fitRef = useRef<(() => void) | null>(null)
   const baseTarget = useMemo(() => new Vector3(...bike.camera.target), [bike.camera.target])
   const focus = useMemo(() => {
-    const h = bike.hotspots.find((x) => x.category === activeCategory)
+    const h = bike.hotspots.find((x) => activeSlots.includes(x.slot))
     if (!h) return baseTarget.clone()
-    // Drift 35% toward the part — enough to "look at it", not enough to lose the bike.
-    return baseTarget.clone().lerp(new Vector3(...h.position), 0.35)
-  }, [bike.hotspots, activeCategory, baseTarget])
+    // Drift 20% toward the part — enough to "look at it", not enough to lose the bike.
+    return baseTarget.clone().lerp(new Vector3(...h.position), 0.2)
+  }, [bike.hotspots, activeSlots, baseTarget])
   const lampAt = useMemo(() => bike.hotspots.find((h) => h.slot === litSlot)?.position ?? null, [bike.hotspots, litSlot])
 
   useImperativeHandle(handle, () => ({
@@ -144,17 +148,19 @@ export function BuildScene(props: SceneProps) {
       dpr={quality.dpr}
       shadows={quality.shadows}
       camera={{ position: bike.camera.position, fov: 34, near: 0.1, far: 40 }}
-      gl={{ antialias: quality.tier === 'high', powerPreference: 'high-performance', preserveDrawingBuffer: false }}
+      gl={{ alpha: true, antialias: quality.tier === 'high', powerPreference: 'high-performance', preserveDrawingBuffer: false }}
       aria-label={`3D view of your ${bike.brand} ${bike.model} build. Drag to rotate, pinch or scroll to zoom.`}
     >
-      <color attach="background" args={['#0b0a09']} />
-      <fog attach="fog" args={['#0b0a09', 5, 12]} />
+      {/* No backdrop: the canvas is transparent and the bike stands in the Build environment photograph. */}
 
       {/* Tungsten key, red neon rim, cool fill — the garage's three lights. */}
       <spotLight position={[1.2, 3.4, 1.6]} angle={0.6} penumbra={0.8} intensity={38} color="#ffc27a" castShadow={quality.shadows} shadow-mapSize={[1024, 1024]} />
       <pointLight position={[-1.8, 1.6, -1.6]} intensity={2.4} color="#ff2a33" distance={4.5} />
       <directionalLight position={[-2, 2, 3]} intensity={0.35} color="#a9b6c8" />
-      <ambientLight intensity={0.12} />
+      {/* Warm bounce from the garage lamps so the bike reads against the photograph. */}
+      <directionalLight position={[3, 2.2, 3.5]} intensity={2.2} color="#ffd2a0" />
+      <hemisphereLight args={['#ffd9a8', '#2a0a08', 0.9]} />
+      <ambientLight intensity={0.18} />
 
       <Environment resolution={quality.envResolution} frames={1}>
         <Lightformer form="rect" intensity={2.2} color="#ffd6a0" position={[0, 4, 1]} rotation-x={Math.PI / 2} scale={[4, 1, 1]} />
@@ -169,15 +175,10 @@ export function BuildScene(props: SceneProps) {
         <ReadySignal onReady={onReady} />
       </Suspense>
 
-      {/* Wet concrete */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
-        <circleGeometry args={[6, 48]} />
-        <meshStandardMaterial color="#141210" metalness={0.35} roughness={0.42} />
-      </mesh>
       <ContactShadows position={[0, 0.002, 0]} opacity={0.75} scale={4} blur={2.4} far={1.4} resolution={quality.tier === 'high' ? 512 : 256} frames={1} color="#000" />
 
       <SlotLamp position={lampAt} pulse={pulse} />
-      {showHotspots && <Hotspots bike={bike} active={activeCategory} conflicts={conflictSlots} onPick={onHotspot} />}
+      <HotspotProjector bike={bike} markers={markers} />
 
       <OrbitControls
         ref={controls}

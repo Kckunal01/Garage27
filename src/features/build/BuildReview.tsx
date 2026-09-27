@@ -5,13 +5,13 @@ import Link from 'next/link'
 import { BikeSilhouette } from '@/components/media/BikeSilhouette'
 import { GarageButton } from '@/components/garage-ui/GarageButton'
 import { useToast } from '@/components/garage-ui/Toast'
-import { BUILD_CATEGORY_META } from '@/data/catalogue'
 import { QuoteForm } from '@/features/quotes/QuoteForm'
 import { track } from '@/lib/analytics'
 import { formatDelta } from '@/lib/pricing/money'
 import type { BuildConfiguration } from '@/types/catalogue'
 import { encodeConfiguration, type BikeBundle, type BuildEstimate } from './engine'
 import { PriceSummary } from './PriceSummary'
+import { zoneForSlot } from './zones'
 
 export function BuildReview({ bundle, config, estimate, onBack, previewOnly }: { bundle: BikeBundle; config: BuildConfiguration; estimate: BuildEstimate; onBack(): void; previewOnly?: boolean }) {
   const [reference, setReference] = useState<string | null>(null)
@@ -86,7 +86,7 @@ export function BuildReview({ bundle, config, estimate, onBack, previewOnly }: {
             return (
               <div key={slot.id}>
                 <dt className="label">
-                  {BUILD_CATEGORY_META[slot.category].label} · {slot.label}
+                  {[zoneForSlot(slot.id)?.label ?? slot.category.toUpperCase(), slot.label].filter((x, i, all) => all.indexOf(x) === i).join(' · ')}
                 </dt>
                 <dd>
                   {opt?.name ?? 'NONE'} <span className="muted">{opt ? formatDelta(opt.priceDelta) : ''}</span>

@@ -37,6 +37,28 @@ export const PART_CATEGORIES = [
 ] as const
 export type PartCategory = (typeof PART_CATEGORIES)[number]
 
+/**
+ * A build-bay ZONE: the visual category the customer edits (TANK, FRONT,
+ * COCKPIT…). Pure presentation over the engine: a zone owns catalogue SLOT
+ * ids, and is live on a vehicle only when that vehicle has one of those slots
+ * (or, for `paint`, active colours). Adding a slot with a listed id to a
+ * vehicle lights its zone up — no page code changes.
+ */
+export interface BuildZone {
+  id: string
+  label: string
+  /** Editorial line in the option panel. */
+  descriptor: string
+  /** Key into CategoryGlyph. */
+  glyph: string
+  /** Catalogue slot ids this zone edits. */
+  slots: string[]
+  /** The zone also carries the vehicle's paint colours. */
+  paint?: boolean
+  /** Shown on the category rail (otherwise reachable from its hotspot). */
+  rail: boolean
+}
+
 export interface CategoryMeta {
   id: string
   label: string

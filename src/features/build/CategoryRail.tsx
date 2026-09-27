@@ -1,24 +1,40 @@
 'use client'
 
 import { CategoryGlyph } from '@/components/media/CategoryGlyph'
-import { BUILD_CATEGORY_META } from '@/data/catalogue'
-import type { BuildCategory } from '@/types/catalogue'
+import { BUILD_ZONES } from '@/data/catalogue'
+import type { BikeBundle } from './engine'
+import { isZoneAvailable } from './zones'
 
-/** Desktop: vertical rail. Mobile: horizontal chip strip. Same data, same state. */
-export function CategoryRail({ categories, active, modified, onPick }: { categories: BuildCategory[]; active: BuildCategory | null; modified: Set<BuildCategory>; onPick(c: BuildCategory): void }) {
+/**
+ * The Build reference's vertical rail: every rail zone, always in the same
+ * order. Zones this vehicle has no slot for stay visible but unavailable —
+ * the catalogue, not the page, decides what is editable.
+ */
+export function CategoryRail({ bundle, active, modified, onPick }: { bundle: BikeBundle; active: string | null; modified: Set<string>; onPick(zone: string): void }) {
   return (
     <nav className="crail" aria-label="Build categories">
       <ul className="crail__list">
-        {categories.map((c, i) => (
-          <li key={c}>
-            <button type="button" className={`crail__btn${active === c ? ' is-active' : ''}`} aria-pressed={active === c} onClick={() => onPick(c)}>
-              <span className="crail__n">{String(i + 1).padStart(2, '0')}</span>
-              <CategoryGlyph category={c} className="crail__glyph" />
-              <span className="crail__label">{BUILD_CATEGORY_META[c].label}</span>
-              {modified.has(c) && <span className="crail__mod" aria-label="customised" />}
-            </button>
-          </li>
-        ))}
+        {BUILD_ZONES.filter((z) => z.rail).map((z) => {
+          const live = isZoneAvailable(z, bundle)
+          const on = active === z.id
+          return (
+            <li key={z.id}>
+              <button
+                type="button"
+                className={`crail__btn${on ? ' is-active' : ''}`}
+                aria-pressed={on}
+                aria-disabled={!live || undefined}
+                title={live ? undefined : `${z.label}: coming soon for the ${bundle.bike.name}`}
+                onClick={() => live && onPick(z.id)}
+              >
+                <CategoryGlyph category={z.glyph} className="crail__glyph" />
+                <span className="crail__label">{z.label}</span>
+                {!live && <span className="sr-only">coming soon</span>}
+                {modified.has(z.id) && <span className="crail__mod" aria-label="customised" />}
+              </button>
+            </li>
+          )
+        })}
       </ul>
     </nav>
   )

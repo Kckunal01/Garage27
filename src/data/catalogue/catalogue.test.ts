@@ -3,6 +3,8 @@ import { localCatalogue } from '@/data/catalogue'
 import { PROCEDURAL_VARIANTS } from '@/features/build/viewport/ProceduralBike'
 import { getBikeBundle, isInteractive, validateConfiguration, createDefaultConfiguration } from '@/features/build/engine'
 import { BUILD_CATEGORIES, PART_CATEGORIES } from '@/types/catalogue'
+import { BUILD_ZONES } from '@/data/catalogue'
+import { isZoneAvailable, unzonedSlots } from '@/features/build/zones'
 
 /**
  * Catalogue QA gate — the "8. QA" step of adding a bike. Run before activating
@@ -58,6 +60,16 @@ describe('catalogue integrity', () => {
       })
     })
   }
+
+  it('every slot on an interactive vehicle belongs to a build zone (or it could never be edited)', () => {
+    for (const bike of bikes.filter(isInteractive)) {
+      const bundle = getBikeBundle(localCatalogue, bike.id)!
+      expect(unzonedSlots(bundle), bike.id).toEqual([])
+      expect(BUILD_ZONES.some((z) => z.rail && isZoneAvailable(z, bundle)), bike.id).toBe(true)
+    }
+    const ids = BUILD_ZONES.flatMap((z) => z.slots)
+    expect(new Set(ids).size, 'a slot id may belong to only one zone').toBe(ids.length)
+  })
 
   it('parts reference real bikes and categories, with valid prices', () => {
     for (const p of parts) {

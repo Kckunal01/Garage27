@@ -2,6 +2,7 @@
 
 import { BikeSilhouette } from '@/components/media/BikeSilhouette'
 import { formatINR } from '@/lib/pricing/money'
+import { BuildEnvironment } from './BuildEnvironment'
 import type { Bike } from '@/types/catalogue'
 import { isInteractive } from './engine'
 
@@ -15,10 +16,7 @@ export function BikePicker({ bikes, onPick }: { bikes: Bike[]; onPick(id: string
   const visible = bikes.filter((b) => b.status !== 'retired')
   return (
     <div className="bike-picker">
-      <header className="bike-picker__head">
-        <p className="label label--amber">STEP 01 · SELECT BIKE</p>
-        <h1 className="headline">What are we building on?</h1>
-      </header>
+      <p className="bike-picker__head">SELECT YOUR MOTORCYCLE</p>
       <ul className="bike-picker__grid">
         {visible.map((b) => {
           const key = isInteractive(b) ? 'interactive' : b.status
@@ -55,8 +53,8 @@ export function BikePicker({ bikes, onPick }: { bikes: Bike[]; onPick(id: string
 /** Server-renderable picker (Suspense fallback): real bikes in the first HTML, hydrated into the live bay. */
 export function BikePickerShell({ bikes }: { bikes: Bike[] }) {
   return (
-    <div className="wrap section--tight">
+    <BuildEnvironment stage="picker">
       <BikePicker bikes={bikes} onPick={() => {}} />
-    </div>
+    </BuildEnvironment>
   )
 }

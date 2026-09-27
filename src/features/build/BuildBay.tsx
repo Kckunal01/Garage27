@@ -5,17 +5,19 @@ import { useEffect, useMemo, useRef } from 'react'
 import { GarageButton } from '@/components/garage-ui/GarageButton'
 import { useToast } from '@/components/garage-ui/Toast'
 import { track } from '@/lib/analytics'
+import { BUILD_ZONES } from '@/data/catalogue'
 import { formatINR } from '@/lib/pricing/money'
-import type { BikeColour, Bike, BuildCategory, ComponentOption, ShowcaseBuild } from '@/types/catalogue'
+import type { BikeColour, Bike, ComponentOption, ShowcaseBuild } from '@/types/catalogue'
 import { BikePicker } from './BikePicker'
+import { BuildEnvironment } from './BuildEnvironment'
 import { BuildReview } from './BuildReview'
 import { CategoryRail } from './CategoryRail'
 import { ColourPicker } from './ColourPicker'
-import { categoriesForBike, decodeConfiguration, INVALID_OPTION_MESSAGE, isInteractive, type BuildContext } from './engine'
+import { createDefaultConfiguration, decodeConfiguration, INVALID_OPTION_MESSAGE, isInteractive, type BuildContext } from './engine'
 import { OptionTray } from './OptionTray'
-import { PriceSummary } from './PriceSummary'
 import { readLastBikeId, useBuildState } from './useBuildState'
 import { BuildViewport } from './viewport/BuildViewport'
+import { getZone, zoneForSlot, zoneSlots } from './zones'
 
 interface Props {
   bikes: Bike[]
@@ -25,13 +27,14 @@ interface Props {
 }
 
 /**
- * SELECT BIKE → SELECT COLOUR → EDITOR (category → option → live price) → REVIEW → QUOTE.
- * One state machine; the CSS decides whether it reads as a mobile build bay
- * (viewport, chips, tray, sticky price) or a desktop one (rail | viewport | panel).
+ * SELECT BIKE → EDITOR (zone → colour / option → live 3D + price) → REVIEW → QUOTE.
+ * Everything happens inside the Build environment photograph; the 3D bike
+ * stands on its floor. Zones, options, colours and prices all come from the
+ * catalogue — this file never names a bike, part or price.
  */
 export function BuildBay({ bikes, colours, options, presets }: Props) {
   const ctx: BuildContext = useMemo(() => ({ bikes, colours, options }), [bikes, colours, options])
-  const { state, bundle, estimate, pickBike, selectColour, openCategory, selectOption, setStage, resetToBikes, resetBuild } = useBuildState(ctx)
+  const { state, bundle, estimate, pickBike, selectColour, openZone, selectOption, setStage, resetToBikes, resetBuild } = useBuildState(ctx)
   const router = useRouter()
   const params = useSearchParams()
   const toast = useToast()
@@ -82,127 +85,120 @@ export function BuildBay({ bikes, colours, options, presets }: Props) {
 
   if (!bundle || !state.config || !estimate || state.stage === 'bikes') {
     return (
-      <div className="wrap section--tight">
+      <BuildEnvironment stage="picker">
         <BikePicker bikes={bikes} onPick={onPick} />
-      </div>
+      </BuildEnvironment>
     )
   }
 
   if (state.stage === 'review' || state.stage === 'preview') {
     return (
-      <div className="wrap section--tight">
-        <BuildReview
-          bundle={bundle}
-          config={state.config}
-          estimate={estimate}
-          previewOnly={state.stage === 'preview'}
-          onBack={() => (state.stage === 'preview' || !isInteractive(bundle.bike) ? resetToBikes() : setStage('editor'))}
-        />
-      </div>
+      <BuildEnvironment stage="review" title={false}>
+        <div className="bbay__sheet">
+          <BuildReview
+            bundle={bundle}
+            config={state.config}
+            estimate={estimate}
+            previewOnly={state.stage === 'preview'}
+            onBack={() => (state.stage === 'preview' || !isInteractive(bundle.bike) ? resetToBikes() : setStage('editor'))}
+          />
+        </div>
+      </BuildEnvironment>
     )
   }
 
-  const categories = categoriesForBike(bundle.bike)
-  const modified = new Set<BuildCategory>(
-    bundle.bike.slots.filter((s) => (state.config!.components[s.id] ?? null) !== s.defaultOptionId).map((s) => s.category),
-  )
   const config = state.config
+  const zone = getZone(state.zone)
+  const factory = createDefaultConfiguration(bundle)
+  const modified = new Set<string>()
+  for (const s of bundle.bike.slots) {
+    if ((config.components[s.id] ?? null) !== s.defaultOptionId) {
+      const z = zoneForSlot(s.id)
+      if (z) modified.add(z.id)
+    }
+  }
+  if (config.colourId !== factory.colourId) BUILD_ZONES.filter((z) => z.paint).forEach((z) => modified.add(z.id))
+  const hotspotLabels: Record<string, string> = {}
+  for (const h of bundle.bike.hotspots) {
+    const z = zoneForSlot(h.slot)
+    if (z) hotspotLabels[h.slot] = z.label
+  }
+  const activeSlots = zone ? zoneSlots(zone, bundle).map((s) => s.id) : []
   const paint = bundle.colours.find((c) => c.id === config.colourId)?.material ?? { color: '#333', metalness: 0.4, roughness: 0.4 }
-  const inEditor = state.stage === 'editor'
 
   const choose = (o: ComponentOption) => {
     const r = selectOption(o)
     if (!r.ok) toast({ tone: 'error', title: INVALID_OPTION_MESSAGE, body: r.reason })
   }
 
-  const reviewButton = (
-    <GarageButton variant="ignite" onClick={() => setStage('review')} block className="bay__panel-cta">
-      REVIEW BUILD
-    </GarageButton>
+  const vehicle = (
+    <p className="bbay__vehicle">
+      <span>
+        {bundle.bike.brand.toUpperCase()} · <strong>{bundle.bike.name}</strong>
+      </span>
+      <button type="button" className="bbay__change" onClick={resetToBikes}>
+        CHANGE BIKE
+      </button>
+    </p>
   )
 
   return (
-    <div className={`bay bay--${state.stage}`}>
-      <header className="bay__bar">
-        <button type="button" className="neon-link" onClick={resetToBikes}>
-          ← BIKES
-        </button>
-        <p className="bay__bike">
-          <span className="label">{bundle.bike.brand.toUpperCase()}</span> <strong>{bundle.bike.name}</strong>
-        </p>
-        <p className="label bay__step">{inEditor ? 'STEP 03 · CUSTOMISE' : 'STEP 02 · COLOUR'}</p>
-      </header>
-
-      {inEditor && (
-        <div className="bay__rail">
-          <CategoryRail categories={categories} active={state.category} modified={modified} onPick={openCategory} />
+    <BuildEnvironment stage="editor" head={vehicle}>
+      <div className="bbay__stage">
+        <div className="bbay__rail">
+          <CategoryRail bundle={bundle} active={zone?.id ?? null} modified={modified} onPick={openZone} />
         </div>
-      )}
-
-      <div className="bay__stage">
-        <BuildViewport
-          bike={bundle.bike}
-          config={state.config}
-          options={bundle.options}
-          paint={paint}
-          activeCategory={inEditor ? state.category : null}
-          litSlot={state.litSlot}
-          pulse={state.pulse}
-          conflictSlots={state.blocked?.conflicts ?? []}
-          showHotspots={inEditor}
-          onHotspot={openCategory}
-          fallbackAction={
-            <GarageButton variant="amber" size="sm" onClick={() => setStage('review')}>
-              REVIEW & REQUEST QUOTE
-            </GarageButton>
-          }
-        />
+        <div className="bbay__viewport">
+          <BuildViewport
+            bike={bundle.bike}
+            config={config}
+            options={bundle.options}
+            paint={paint}
+            activeSlots={activeSlots}
+            hotspotLabels={hotspotLabels}
+            litSlot={state.litSlot}
+            pulse={state.pulse}
+            conflictSlots={state.blocked?.conflicts ?? []}
+            showHotspots
+            onHotspot={(slot) => openZone(zoneForSlot(slot)?.id ?? null)}
+            fallbackAction={
+              <GarageButton variant="amber" size="sm" onClick={() => setStage('review')}>
+                REVIEW & REQUEST QUOTE
+              </GarageButton>
+            }
+          />
+        </div>
       </div>
 
-      <aside className="bay__panel" aria-label={inEditor ? 'Options' : 'Colour'}>
-        {inEditor ? (
-          <>
-            <ColourPicker colours={bundle.colours} value={state.config.colourId} onChange={selectColour} compact />
-            {state.category && <OptionTray bundle={bundle} config={state.config} category={state.category} blocked={state.blocked} onSelect={choose} />}
-            <div className="bay__summary">
-              <PriceSummary estimate={estimate} detailed />
-              {reviewButton}
-              <button type="button" className="neon-link bay__reset" onClick={resetBuild}>
-                RESET TO FACTORY
-              </button>
-            </div>
-          </>
-        ) : (
-          <div className="bay__colour">
-            <p className="label label--amber">STEP 02 · SELECT COLOUR</p>
-            <h1 className="headline">Pick your paint.</h1>
-            <ColourPicker colours={bundle.colours} value={state.config.colourId} onChange={selectColour} />
-            <PriceSummary estimate={estimate} />
-            <GarageButton variant="ignite" block className="bay__panel-cta" onClick={() => setStage('editor')}>
-              ENTER THE EDITOR
-            </GarageButton>
+      <section className="bbay__panel" aria-labelledby="bbay-zone">
+        {zone && (
+          <header className="bbay__panel-head">
+            <h2 id="bbay-zone" className="bbay__zone">
+              {zone.label}
+            </h2>
+            <p className="bbay__zone-desc">{zone.descriptor}</p>
+          </header>
+        )}
+        <div className="bbay__panel-body">
+          {zone && <OptionTray bundle={bundle} config={config} zone={zone} blocked={state.blocked} onSelect={choose} />}
+          {zone?.paint && <ColourPicker colours={bundle.colours} value={config.colourId} onChange={selectColour} />}
+          {zone && zoneSlots(zone, bundle).length === 0 && <p className="bbay__note">PAINT ONLY — NO {zone.label} PARTS FOR THE {bundle.bike.name} IN THE CATALOGUE YET.</p>}
+        </div>
+        <footer className="bbay__panel-foot">
+          <div className="bbay__price">
+            <span className="bbay__price-label">ESTIMATED BUILD VALUE</span>
+            <span className="bbay__price-total" aria-live="polite" aria-atomic="true">
+              {formatINR(estimate.total)}
+            </span>
           </div>
-        )}
-      </aside>
-
-      {/* Mobile sticky price bar — sits above the universal nav, never under it. */}
-      <div className="bay__dock">
-        <div className="bay__dock-price">
-          <span className="label">EST. BUILD VALUE</span>
-          <span className="bay__dock-total" aria-live="polite">
-            {formatINR(estimate.total)}
-          </span>
-        </div>
-        {inEditor ? (
+          <button type="button" className="bbay__reset" onClick={resetBuild}>
+            RESET
+          </button>
           <GarageButton variant="ignite" size="sm" onClick={() => setStage('review')}>
-            REVIEW
+            REVIEW BUILD
           </GarageButton>
-        ) : (
-          <GarageButton variant="ignite" size="sm" onClick={() => setStage('editor')}>
-            CUSTOMISE
-          </GarageButton>
-        )}
-      </div>
-    </div>
+        </footer>
+      </section>
+    </BuildEnvironment>
   )
 }
