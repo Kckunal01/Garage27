@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
-import { EnvironmentalHero } from '@/components/media/EnvironmentalHero'
 import { ServiceBay } from '@/features/service/ServiceBay'
+import { ServiceHero } from '@/features/service/ServiceHero'
 import { getCatalogue } from '@/lib/catalogue/repository'
 import { pageMetadata } from '@/lib/seo/metadata'
 
@@ -12,21 +12,17 @@ export const metadata: Metadata = pageMetadata({
   path: '/service',
 })
 
-export default async function ServicePage() {
-  const { services } = await getCatalogue()
+export default async function ServicePage({ searchParams }: PageProps<'/service'>) {
+  const [{ services }, params] = await Promise.all([getCatalogue(), searchParams])
+  const wanted = typeof params.request === 'string' ? params.request : null
+  // Only a real catalogue service opens the request flow.
+  const requested = wanted && services.some((s) => s.id === wanted) ? wanted : null
   return (
-    <>
-      <EnvironmentalHero environment="workshop" size="band">
-        <p className="label label--amber">SERVICE</p>
-        <h1 className="display" style={{ marginTop: 12 }}>
-          Ride. Restore.
-          <br />
-          <em>Repeat.</em>
-        </h1>
-      </EnvironmentalHero>
-      <section className="section--tight wrap" aria-label="Services">
-        <ServiceBay services={services} />
-      </section>
-    </>
+    <div className="svc">
+      <ServiceHero compact={!!requested} />
+      <div className="svc__body">
+        <ServiceBay services={services} requested={requested} />
+      </div>
+    </div>
   )
 }

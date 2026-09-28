@@ -116,6 +116,8 @@ export const services: ServiceOffering[] = [
     kicker: 'IDEATE',
     summary: 'From a napkin sketch to a full build sheet. We draw it before we cut it.',
     includes: ['Design consultation', 'Concept renders', 'Build sheet & estimate'],
+    pitch: ['From concept to build.', 'We bring your vision to life.'],
+    image: { src: '/assets/service/custom-design.png', alt: 'A builder sketching a custom motorcycle on a workshop bench', focus: '62% 50%' },
   },
   {
     id: 'consultation',
@@ -123,6 +125,8 @@ export const services: ServiceOffering[] = [
     kicker: 'TALK',
     summary: 'Sit down with a builder. Bring the bike, the idea, or both.',
     includes: ['45-minute session', 'Parts & compatibility advice', 'Budget planning'],
+    pitch: ['Personalised guidance.', 'Right parts, right look, right for you.'],
+    image: { src: '/assets/service/consultation.png', alt: 'A Garage 27 builder talking through a build with a customer', focus: '60% 45%' },
   },
   {
     id: 'doorstep-installation',
@@ -130,6 +134,8 @@ export const services: ServiceOffering[] = [
     kicker: 'WE COME TO YOU',
     summary: 'Bolt-on parts fitted at your place by a Garage 27 technician.',
     includes: ['Bolt-on part fitting', 'Torque & safety check', 'Old parts bagged & returned'],
+    pitch: ['Skilled hands. Real experience.', 'We come to you.'],
+    image: { src: '/assets/service/doorstep-installation.png', alt: 'A Garage 27 technician fitting parts to a motorcycle at a customer’s home', focus: '58% 50%' },
   },
   {
     id: 'paint-upholstery',
@@ -137,6 +143,8 @@ export const services: ServiceOffering[] = [
     kicker: 'FINISH',
     summary: 'Hand-laid paint, pinstripe and leatherwork, done in-house.',
     includes: ['Paint & pinstripe', 'Seat re-trim', 'Tank & panel refinishing'],
+    pitch: ['Make it truly yours.', 'Colors, textures, finishes that speak your style.'],
+    image: { src: '/assets/service/custom-paint-upholstery.png', alt: 'A custom-painted flame tank being finished in the paint bay', focus: '55% 50%' },
   },
   {
     id: 'detailing-restoration',
@@ -144,5 +152,7 @@ export const services: ServiceOffering[] = [
     kicker: 'REVIVE',
     summary: 'Bring an old soul back. Strip, restore, protect.',
     includes: ['Deep detailing', 'Chrome & metal restoration', 'Mechanical refresh'],
+    pitch: ['Keep it legendary.', 'From daily care to full restorations.'],
+    image: { src: '/assets/service/detailing-restoration.png', alt: 'A gloved hand polishing a spoked wheel and brake disc', focus: '50% 50%' },
   },
 ]

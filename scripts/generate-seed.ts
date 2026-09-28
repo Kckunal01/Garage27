@@ -62,6 +62,6 @@ options.forEach((o, i) =>
 showcase.forEach((s) =>
   out.push(row('showcase_builds', { id: s.id, number: s.number, name: s.name, bike_id: s.bikeId, style: s.style, summary: s.summary, image: s.image, silhouette: s.silhouette, tone: s.tone, preset: s.preset })),
 )
-services.forEach((s, i) => out.push(row('services', { id: s.id, name: s.name, kicker: s.kicker, summary: s.summary, includes: s.includes, sort_order: i })))
+services.forEach((s, i) => out.push(row('services', { id: s.id, name: s.name, kicker: s.kicker, summary: s.summary, includes: s.includes, pitch: s.pitch ?? null, image: s.image ?? null, sort_order: i })))
 out.push('commit;')
 console.log(out.join('\n'))

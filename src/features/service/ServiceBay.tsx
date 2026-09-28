@@ -1,55 +1,50 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import Link from 'next/link'
+import { useEffect, useState } from 'react'
 import { track } from '@/lib/analytics'
 import type { ServiceOffering } from '@/types/catalogue'
+import { ServiceCard } from './ServiceCard'
 import { ServiceRequestForm } from './ServiceRequestForm'
 
-export function ServiceBay({ services }: { services: ServiceOffering[] }) {
-  const [selected, setSelected] = useState('')
-  const formRef = useRef<HTMLDivElement>(null)
+export const requestHref = (id: string) => `/service?request=${encodeURIComponent(id)}`
 
+/**
+ * SERVICE → pick a service (card) → request flow for that service.
+ * The chosen service lives in the URL (`?request=`), so the browser's back
+ * button returns to the list and a request link can be shared.
+ */
+export function ServiceBay({ services, requested }: { services: ServiceOffering[]; requested: string | null }) {
   useEffect(() => {
-    track('service_viewed')
-  }, [])
+    track('service_viewed', requested ? { service: requested } : undefined)
+  }, [requested])
 
-  const request = (id: string) => {
-    setSelected(id)
-    track('service_selected', { service: id, surface: 'card' })
-    formRef.current?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' })
-  }
+  if (requested) return <ServiceRequest key={requested} services={services} initial={requested} />
 
   return (
-    <>
-      <ol className="scard-list">
-        {services.map((s, i) => (
-          <li key={s.id} className={`scard${selected === s.id ? ' is-selected' : ''}`}>
-            <span className="scard__n">{String(i + 1).padStart(2, '0')}</span>
-            <div className="scard__body">
-              <p className="label label--amber">{s.kicker}</p>
-              <h3 className="scard__name">{s.name}</h3>
-              <p className="scard__summary">{s.summary}</p>
-              <ul className="scard__includes">
-                {s.includes.map((x) => (
-                  <li key={x}>{x}</li>
-                ))}
-              </ul>
-            </div>
-            <button type="button" className="btn btn--amber scard__cta" onClick={() => request(s.id)} aria-label={`Request ${s.name.toLowerCase()}`}>
-              REQUEST
-            </button>
-          </li>
-        ))}
-      </ol>
+    <ol className="svc-list" aria-label="Services">
+      {services.map((s, i) => (
+        <li key={s.id}>
+          <ServiceCard service={s} href={requestHref(s.id)} eager={i < 2} onClick={() => track('service_selected', { service: s.id, surface: 'card' })} />
+        </li>
+      ))}
+    </ol>
+  )
+}
 
-      <div id="request" ref={formRef} className="service-request">
-        <div className="service-request__intro">
-          <p className="label label--amber">REQUEST A SERVICE</p>
-          <h2 className="headline">Tell us about the bike.</h2>
-          <p className="lede">Three short steps. A builder calls you back — no bots, no ticket queue.</p>
-        </div>
-        <ServiceRequestForm services={services} selected={selected} onSelect={setSelected} />
+function ServiceRequest({ services, initial }: { services: ServiceOffering[]; initial: string }) {
+  const [selected, setSelected] = useState(initial)
+  const service = services.find((s) => s.id === selected)
+  return (
+    <div className="svc-request">
+      <div className="svc-request__intro">
+        <Link href="/service" className="neon-link svc-request__back">
+          ← ALL SERVICES
+        </Link>
+        {service && <ServiceCard service={service} eager />}
+        <p className="svc-request__lede">Three short steps. A builder calls you back — no bots, no ticket queue.</p>
       </div>
-    </>
+      <ServiceRequestForm services={services} selected={selected} onSelect={setSelected} />
+    </div>
   )
 }

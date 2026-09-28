@@ -119,6 +119,8 @@ const mapService = (r: any): ServiceOffering => ({
   kicker: r.kicker,
   summary: r.summary,
   includes: r.includes ?? [],
+  pitch: r.pitch ?? undefined,
+  image: r.image ?? undefined,
 })
 /* eslint-enable @typescript-eslint/no-explicit-any */
 

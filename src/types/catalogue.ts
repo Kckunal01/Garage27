@@ -232,6 +232,10 @@ export interface ServiceOffering {
   kicker: string
   summary: string
   includes: string[]
+  /** Service-page card copy, one entry per line. Falls back to `summary`. */
+  pitch?: string[]
+  /** Service-page photograph. `focus` is the CSS object-position that keeps the subject in frame. */
+  image?: { src: string; alt: string; focus?: string }
 }
 
 /** The entire build as reconstructable JSON. Never only a screenshot. */
