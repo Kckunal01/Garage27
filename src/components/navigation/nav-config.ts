@@ -4,13 +4,13 @@ export interface NavItem {
   href: string
   label: string
   event: AnalyticsEvent
-  /** Extra routes on which this item reads as active (the home page is the Garage). */
+  /** Extra routes on which this item reads as active. (`/` has no active item.) */
   alsoActiveOn?: string[]
 }
 
 /** The one and only primary navigation. Every nav surface reads this list. */
 export const PRIMARY_NAV: NavItem[] = [
-  { href: '/garage', label: 'GARAGE', event: 'nav_garage', alsoActiveOn: ['/'] },
+  { href: '/garage', label: 'GARAGE', event: 'nav_garage' },
   { href: '/build', label: 'BUILD', event: 'nav_build' },
   { href: '/parts', label: 'PARTS', event: 'nav_parts' },
   { href: '/service', label: 'SERVICE', event: 'nav_service' },
