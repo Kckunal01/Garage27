@@ -16,7 +16,8 @@ function files(dir: string, ext: RegExp): string[] {
 }
 const css = files(path.join(SRC, 'styles'), /\.css$/)
 const tsx = files(SRC, /\.tsx?$/).filter((f) => !f.endsWith('.test.ts'))
-const rel = (f: string) => path.relative(SRC, f)
+// Always forward slashes, so assertions match on Windows and Unix alike.
+const rel = (f: string) => path.relative(SRC, f).replace(/\\/g, '/')
 
 describe('responsive architecture', () => {
   it('no stylesheet hardcodes a width breakpoint (use --mobile / --desktop / --wide)', () => {
