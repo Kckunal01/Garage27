@@ -243,97 +243,108 @@
   font-size: 16px; /* no zoom-on-focus on iOS */
 }
 
-/* The wall of categories (ref: 2 columns, ~88px tiles, dark label bar) */
+/* The catalogue of categories: large photograph cards, number + name + one
+   line over a dark gradient. Phones: one editorial column. */
 .ptile-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 7px 8px;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+  margin-top: 6px;
 }
 .ptile {
   position: relative;
+  isolation: isolate;
   display: block;
-  height: 88px;
-  padding: 0;
+  height: 208px;
   overflow: hidden;
-  border: 1px solid var(--prt-edge);
+  border: 1px solid rgba(255, 228, 196, 0.12);
   border-radius: 4px;
-  background: #120f0d;
+  background: #110e0c;
   color: var(--g-cream);
-  text-align: left;
   transition:
-    border-color var(--dur-fast),
-    box-shadow var(--dur-fast);
+    border-color var(--dur),
+    box-shadow var(--dur);
   -webkit-tap-highlight-color: transparent;
 }
+.ptile--lead {
+  height: 300px;
+}
 .ptile__media {
-  inset: 0 0 22px;
+  z-index: -2;
 }
-/* Only the very wide tiles need the catalogue zoom; taller frames already crop in. */
 .ptile .cphoto__img {
-  transform: scale(calc(var(--zoom, 1) * 1.03));
+  transition:
+    transform 900ms var(--ease-push),
+    filter var(--dur);
+  filter: saturate(0.95) brightness(0.92);
 }
-.ptile:hover .cphoto__img {
-  transform: scale(calc(var(--zoom, 1) * 1.08));
+.ptile:hover .cphoto__img,
+.ptile:focus-visible .cphoto__img {
+  transform: scale(1.06);
+  filter: saturate(1.05) brightness(1);
 }
-
-/* Category photograph (tiles, category banner, product fallback).
-   --zoom and transform-origin come from the catalogue's focus/zoom. */
-.cphoto {
+.ptile__shade {
   position: absolute;
   inset: 0;
-  display: block;
-  overflow: hidden;
-  background: #120f0d;
-}
-.cphoto__img {
-  object-fit: cover;
-  transform: scale(1.03); /* trims the supplied files' edge lines */
-  transition: transform 700ms var(--ease-push);
-}
-.cphoto--stencil {
-  display: grid;
-  place-items: center;
+  z-index: -1;
   background:
-    radial-gradient(60% 80% at 50% 30%, rgba(231, 165, 75, 0.22), transparent 70%),
-    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.015) 0 1px, transparent 1px 4px),
-    linear-gradient(180deg, #211c18, #0f0d0c);
+    linear-gradient(180deg, rgba(10, 8, 7, 0) 28%, rgba(10, 8, 7, 0.62) 60%, rgba(10, 8, 7, 0.96) 100%),
+    linear-gradient(90deg, rgba(10, 8, 7, 0.45) 0%, rgba(10, 8, 7, 0) 55%);
 }
-.cphoto__glyph {
-  width: 46px;
-  height: 46px;
-  color: var(--g-amber);
-  filter: drop-shadow(0 0 8px rgba(231, 165, 75, 0.35));
-}
-.ptile__bar {
+.ptile__copy {
   position: absolute;
-  inset: auto 0 0;
-  height: 22px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 0 8px 0 9px;
-  background: rgba(14, 12, 10, 0.94);
-  border-top: 1px solid rgba(255, 228, 196, 0.08);
+  left: 18px;
+  right: 56px;
+  bottom: 16px;
+  display: grid;
+  gap: 2px;
+}
+.ptile__num {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: #ff5a5f;
 }
 .ptile__label {
-  flex: 1;
   font-family: var(--font-display);
-  font-size: 15px;
-  line-height: 1;
-  letter-spacing: 0.02em;
+  font-weight: 400;
+  font-size: 38px;
+  line-height: 0.95;
+  letter-spacing: 0.01em;
+  color: #f1e6cc;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.7);
 }
-.ptile__count {
+.ptile--lead .ptile__label {
+  font-size: 46px;
+}
+.ptile__desc {
+  margin-top: 4px;
   font-family: var(--font-mono);
-  font-size: 8px;
-  color: var(--g-muted);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: rgba(239, 227, 200, 0.86);
+  text-shadow: 0 1px 6px #000, 0 0 2px #000;
 }
 .ptile__arrow {
-  width: 15px;
-  height: 15px;
+  position: absolute;
+  right: 16px;
+  bottom: 18px;
+  width: 22px;
+  height: 22px;
+  color: rgba(239, 227, 200, 0.8);
+  transition:
+    transform var(--dur),
+    color var(--dur);
 }
 .ptile:hover,
 .ptile:focus-visible {
-  border-color: rgba(255, 228, 196, 0.34);
+  border-color: rgba(255, 45, 55, 0.7);
+  box-shadow: 0 0 22px -6px rgba(255, 38, 48, 0.55);
+}
+.ptile:hover .ptile__arrow,
+.ptile:focus-visible .ptile__arrow {
+  color: #ff5a5f;
+  transform: translateX(4px);
 }
 
 @media (--desktop) {
@@ -377,32 +388,69 @@
   .bike-bar__text {
     font-size: 11px;
   }
+  /* 1440: an editorial spread — two lead pages, then two rows of three. */
   .ptile-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 14px;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 16px;
+    margin-top: 10px;
   }
   .ptile {
-    height: clamp(170px, 15vw, 230px);
+    grid-column: span 2;
+    height: clamp(250px, 21vw, 320px);
     border-radius: 6px;
   }
-  .ptile__media {
-    inset: 0 0 38px;
+  .ptile--lead {
+    grid-column: span 3;
+    height: clamp(380px, 33vw, 500px);
   }
-  .ptile__bar {
-    height: 38px;
-    padding: 0 14px 0 16px;
-    gap: 10px;
+  .ptile__copy {
+    left: 26px;
+    bottom: 24px;
   }
   .ptile__label {
-    font-size: 22px;
+    font-size: clamp(40px, 3.4vw, 52px);
   }
-  .ptile__count {
-    font-size: 10px;
+  .ptile--lead .ptile__label {
+    font-size: clamp(56px, 5vw, 76px);
+  }
+  .ptile__num,
+  .ptile__desc {
+    font-size: 11px;
   }
   .ptile__arrow {
-    width: 20px;
-    height: 20px;
+    right: 24px;
+    bottom: 28px;
+    width: 26px;
+    height: 26px;
   }
+}
+
+/* Category photograph (cards, category banner, product fallback). */
+.cphoto {
+  position: absolute;
+  inset: 0;
+  display: block;
+  overflow: hidden;
+  background: #120f0d;
+}
+.cphoto__img {
+  object-fit: cover;
+  transform: scale(1.03); /* trims the supplied files' edge lines */
+  transition: transform 700ms var(--ease-push);
+}
+.cphoto--stencil {
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(60% 80% at 50% 30%, rgba(231, 165, 75, 0.22), transparent 70%),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.015) 0 1px, transparent 1px 4px),
+    linear-gradient(180deg, #211c18, #0f0d0c);
+}
+.cphoto__glyph {
+  width: 46px;
+  height: 46px;
+  color: var(--g-amber);
+  filter: drop-shadow(0 0 8px rgba(231, 165, 75, 0.35));
 }
 
 /* ── Category shelf: title plate, filter, the category's parts ───────── */
@@ -421,8 +469,8 @@
   inset: 0;
   z-index: -1;
   background:
-    linear-gradient(90deg, rgba(11, 9, 8, 0.7) 0%, rgba(11, 9, 8, 0.2) 60%, rgba(11, 9, 8, 0) 85%),
-    linear-gradient(180deg, rgba(11, 9, 8, 0.55) 0%, rgba(11, 9, 8, 0) 30%, rgba(11, 9, 8, 0.1) 55%, var(--prt-ink) 100%);
+    radial-gradient(130% 80% at 0% 100%, rgba(11, 9, 8, 0.95) 0%, rgba(11, 9, 8, 0.8) 40%, rgba(11, 9, 8, 0.2) 72%, rgba(11, 9, 8, 0) 85%),
+    linear-gradient(180deg, rgba(11, 9, 8, 0.55) 0%, rgba(11, 9, 8, 0) 30%, rgba(11, 9, 8, 0.25) 60%, var(--prt-ink) 100%);
 }
 .pcat__head {
   position: absolute;
@@ -438,6 +486,13 @@
   font-size: 9.5px;
   letter-spacing: 0.16em;
   color: rgba(239, 227, 200, 0.7);
+}
+.pcat__crumbs,
+.pcat__desc {
+  text-shadow: 0 1px 8px #000, 0 0 2px #000;
+}
+.pcat__crumbs {
+  color: rgba(239, 227, 200, 0.92);
 }
 .pcat__crumbs a:hover,
 .pdp__eyebrow a:hover {

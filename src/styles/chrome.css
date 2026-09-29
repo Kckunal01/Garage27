@@ -96,7 +96,7 @@
    Canonical treatment from the home reference (measured at 393 px):
    floating pill 57 px tall, 12.5 px side inset on phones, centred at a
    fixed width on desktop, 33 px above the bottom edge, five equal columns,
-   mono labels, no separators. Active = red label + glowing bar + lit knob.
+   mono labels, no separators. Active = red label + thin glowing underline (no dot).
    There are NO breakpoints that hide or move it. */
 .gnav {
   position: fixed;
@@ -156,30 +156,12 @@
   transform: scaleX(0);
   transition: transform var(--dur) var(--ease-push);
 }
-.gnav__dot {
-  position: absolute;
-  left: 50%;
-  bottom: 5px;
-  width: 5px;
-  height: 5px;
-  margin-left: -2.5px;
-  border-radius: 50%;
-  background: #ff6f5a;
-  box-shadow:
-    0 0 3px 1px rgba(255, 110, 85, 0.8),
-    0 0 12px 4px rgba(255, 45, 35, 0.45);
-  opacity: 0;
-  transition: opacity var(--dur);
-}
 .gnav__link[aria-current='page'] {
   color: #f2453c;
   text-shadow: 0 0 10px rgba(255, 50, 40, 0.55);
 }
 .gnav__link[aria-current='page'] .gnav__text::after {
   transform: scaleX(1);
-}
-.gnav__link[aria-current='page'] .gnav__dot {
-  opacity: 1;
 }
 
 /* ── Rack trigger — three equal thin cream lines (Home reference) ──────── */

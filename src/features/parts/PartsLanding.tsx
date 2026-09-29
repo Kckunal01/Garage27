@@ -55,9 +55,11 @@ function LandingView({ parts, bikes, bike, setBike }: Data & { bike: string; set
           <PartsCategoryTile
             key={c}
             meta={PART_CATEGORY_META[c]}
+            index={i}
             href={categoryHref(c, bike)}
             count={counts[c]}
-            eager={i < 4}
+            eager={i < 2}
+            lead={i < 2}
             onNavigate={() => track('parts_category_opened', { category: c, bike: bike || 'all' })}
           />
         ))}

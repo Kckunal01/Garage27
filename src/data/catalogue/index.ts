@@ -35,14 +35,10 @@ export const BUILD_ZONES: BuildZone[] = [
   { id: 'luggage', label: 'LUGGAGE', descriptor: 'CARRY THE LONG ROAD.', glyph: 'luggage', slots: ['luggage'], rail: false },
 ]
 
-/**
- * Parts categories. Each has a photograph for its tile and page. LIGHTING and
- * COCKPIT have no dedicated shot yet, so they crop into the Garage 27
- * doorstep-installation photograph (its lit headlamp and its bars).
- */
+/** Parts categories: label, one-line description and the category photograph (tile, page, product fallback). */
 export const PART_CATEGORY_META: Record<PartCategory, CategoryMeta> = {
-  lighting: { id: 'lighting', label: 'LIGHTING', descriptor: 'Headlamps, indicators and tail lights.', image: { src: '/assets/service/doorstep-installation.png', focus: '64% 31%', zoom: 2.4 } },
-  cockpit: { id: 'cockpit', label: 'COCKPIT', descriptor: 'Bars, grips, mirrors and gauges.', image: { src: '/assets/service/doorstep-installation.png', focus: '53% 9%', zoom: 2.6 } },
+  lighting: { id: 'lighting', label: 'LIGHTING', descriptor: 'Headlamps, indicators and tail lights.', image: { src: '/assets/parts/lighting.png', focus: '55% 88%' } },
+  cockpit: { id: 'cockpit', label: 'COCKPIT', descriptor: 'Bars, grips, mirrors and gauges.', image: { src: '/assets/parts/cockpit.png', focus: '50% 45%' } },
   body: { id: 'body', label: 'BODY', descriptor: 'Tanks, fenders and panels.', image: { src: '/assets/parts/body.png', focus: '50% 45%' } },
   seat: { id: 'seat', label: 'SEAT', descriptor: 'Comfort, stance and character.', image: { src: '/assets/parts/seat.png', focus: '50% 55%' } },
   detail: { id: 'detail', label: 'DETAIL', descriptor: 'Badges, trim and the finishing touches.', image: { src: '/assets/parts/detail.png', focus: '50% 40%' } },

@@ -1,13 +1,8 @@
 import Image from 'next/image'
-import type { CSSProperties } from 'react'
 import { CategoryGlyph } from '@/components/media/CategoryGlyph'
 import type { CategoryMeta } from '@/types/catalogue'
 
-/**
- * A category's photograph, cropped by its catalogue focus/zoom (so one
- * Garage 27 photograph can serve several categories). No photograph → the
- * category stencil on a lit bench plate.
- */
+/** A category's photograph, framed on its catalogue focus point. No photograph → the category stencil. */
 export function CategoryPhoto({ meta, sizes, eager, className = '' }: { meta: CategoryMeta; sizes: string; eager?: boolean; className?: string }) {
   if (!meta.image) {
     return (
@@ -16,11 +11,9 @@ export function CategoryPhoto({ meta, sizes, eager, className = '' }: { meta: Ca
       </span>
     )
   }
-  const { src, focus = '50% 50%', zoom = 1 } = meta.image
-  const style = { objectPosition: focus, transformOrigin: focus, '--zoom': zoom } as CSSProperties
   return (
     <span className={`cphoto ${className}`} aria-hidden="true">
-      <Image className="cphoto__img" src={src} alt="" fill sizes={sizes} quality={75} loading={eager ? 'eager' : 'lazy'} style={style} />
+      <Image className="cphoto__img" src={meta.image.src} alt="" fill sizes={sizes} quality={75} loading={eager ? 'eager' : 'lazy'} style={{ objectPosition: meta.image.focus ?? '50% 50%' }} />
     </span>
   )
 }

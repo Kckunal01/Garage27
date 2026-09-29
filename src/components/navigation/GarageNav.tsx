@@ -24,7 +24,6 @@ export function GarageNav() {
             <li key={item.href} className="gnav__item">
               <Link href={item.href} className="gnav__link" aria-current={active ? 'page' : undefined} onClick={() => track(item.event, { surface: 'nav' })}>
                 <span className="gnav__text">{item.label}</span>
-                <span className="gnav__dot" aria-hidden="true" />
               </Link>
             </li>
           )
