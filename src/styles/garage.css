@@ -53,10 +53,8 @@
   margin: 0;
   font-family: var(--font-sign);
   font-weight: 400;
-  font-size: 34px;
-  line-height: 1.02;
-  letter-spacing: -0.01em;
-  text-transform: uppercase;
+  font-size: 46px;
+  line-height: 0.95;
   color: var(--gshow-cream);
   text-shadow: 0 2px 14px rgba(0, 0, 0, 0.7);
   transform: rotate(-6deg);
@@ -182,9 +180,8 @@
 .gshow__num {
   display: block;
   font-family: var(--font-sign);
-  font-size: 56px;
+  font-size: 62px;
   line-height: 0.9;
-  letter-spacing: -0.02em;
   color: var(--gshow-neon);
   -webkit-text-stroke: 0.5px #ff8a7d;
   text-shadow: var(--gshow-tube);
@@ -327,7 +324,7 @@
   }
   .gshow__script {
     grid-row: span 2;
-    font-size: clamp(50px, 4.4vw, 68px);
+    font-size: clamp(64px, 5.8vw, 92px);
   }
   .gshow__line {
     margin: 0;

@@ -1339,7 +1339,7 @@
 /* ── Service — the Service reference composition ──────────────────────
    Mobile first (390 × 844): workshop hero under the header with the neon
    SERVICE sign, then five lit service panels, each a way into the request
-   flow. Neon is hand-lettered marker caps (--font-sign) lit as solid tubes:
+   flow. Neon is the hand-lettered script (--font-sign) lit as solid tubes:
    a pale hot core, a red body and a soft bloom, so the strokes stay sharp. */
 .svc {
   --svc-neon: #ff5549;
