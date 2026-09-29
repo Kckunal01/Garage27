@@ -71,6 +71,10 @@ describe('catalogue integrity', () => {
     expect(new Set(ids).size, 'a slot id may belong to only one zone').toBe(ids.length)
   })
 
+  it('no part slug collides with a category page (/parts/<category>)', () => {
+    for (const p of parts) expect(PART_CATEGORIES as readonly string[], p.slug).not.toContain(p.slug)
+  })
+
   it('parts reference real bikes and categories, with valid prices', () => {
     for (const p of parts) {
       expect(PART_CATEGORIES).toContain(p.category)

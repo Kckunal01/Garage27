@@ -1,27 +1,12 @@
-import Image from 'next/image'
-import { CategoryGlyph } from '@/components/media/CategoryGlyph'
+import Link from 'next/link'
 import type { CategoryMeta } from '@/types/catalogue'
+import { CategoryPhoto } from './CategoryPhoto'
 
-/**
- * A category on the parts wall: its photograph (or, where Garage 27 has no
- * photograph yet, the category stencil) over a dark label bar with an arrow.
- */
-export function PartsCategoryTile({ meta, count, active, eager, onSelect }: { meta: CategoryMeta; count: number; active: boolean; eager?: boolean; onSelect(): void }) {
+/** A section of the parts wall: its photograph over a dark signage bar. Opens the category page. */
+export function PartsCategoryTile({ meta, href, count, eager, onNavigate }: { meta: CategoryMeta; href: string; count: number; eager?: boolean; onNavigate?: () => void }) {
   return (
-    <button
-      type="button"
-      className={`ptile${active ? ' is-active' : ''}${meta.image ? '' : ' ptile--stencil'}`}
-      aria-pressed={active}
-      aria-label={`${meta.label}: ${count} part${count === 1 ? '' : 's'}`}
-      onClick={onSelect}
-    >
-      <span className="ptile__media" aria-hidden="true">
-        {meta.image ? (
-          <Image className="ptile__img" src={meta.image.src} alt="" fill sizes="(width < 768px) 50vw, 25vw" quality={75} loading={eager ? 'eager' : 'lazy'} style={{ objectPosition: meta.image.focus ?? '50% 50%' }} />
-        ) : (
-          <CategoryGlyph category={meta.id} className="ptile__glyph" />
-        )}
-      </span>
+    <Link href={href} className="ptile" aria-label={`${meta.label}: ${count} part${count === 1 ? '' : 's'}`} onClick={onNavigate}>
+      <CategoryPhoto meta={meta} className="ptile__media" sizes="(width < 768px) 50vw, 25vw" eager={eager} />
       <span className="ptile__bar">
         <span className="ptile__label">{meta.label}</span>
         <span className="ptile__count" aria-hidden="true">
@@ -31,6 +16,6 @@ export function PartsCategoryTile({ meta, count, active, eager, onSelect }: { me
           <path d="M4 12h15M13 6l6 6-6 6" />
         </svg>
       </span>
-    </button>
+    </Link>
   )
 }

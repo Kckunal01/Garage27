@@ -18,7 +18,10 @@ const FINAL = new Set(['paid', 'failed', 'cancelled', 'refunded', 'fulfilled'])
 
 /** Polls the server's view of the order. The page never trusts the client callback. */
 export function OrderStatus() {
-  const ref = useSearchParams().get('ref') ?? ''
+  const search = useSearchParams()
+  const ref = search.get('ref') ?? ''
+  // A BUY NOW order was never in the cart, so the cart stays as it is.
+  const keepCart = search.get('direct') === '1'
   const { clear } = useCart()
   const [order, setOrder] = useState<OrderView | null>(null)
   const [error, setError] = useState(false)
@@ -37,7 +40,7 @@ export function OrderStatus() {
         if (stop) return
         setOrder(data)
         setError(false)
-        if (data.status === 'paid' && !cleared.current) {
+        if (data.status === 'paid' && !cleared.current && !keepCart) {
           cleared.current = true
           clear()
         }
@@ -50,7 +53,7 @@ export function OrderStatus() {
     return () => {
       stop = true
     }
-  }, [ref, clear, attempt])
+  }, [ref, clear, attempt, keepCart])
 
   if (!ref) return <ErrorState title="NO ORDER REFERENCE.">Check the link in your confirmation email.</ErrorState>
   if (error && !order) return <ErrorState onRetry={() => setAttempt((a) => a + 1)} />

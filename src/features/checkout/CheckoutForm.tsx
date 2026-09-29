@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
-import { useCart } from './cart-store'
+import { useCart, type CartLine } from './cart-store'
 import { Honeypot, TextField } from '@/components/forms/FormField'
 import { EmptyState, LoadingState } from '@/components/garage-ui/States'
 import { GarageButton } from '@/components/garage-ui/GarageButton'
@@ -44,8 +44,12 @@ function loadRazorpay(): Promise<void> {
 
 const empty = { name: '', email: '', phone: '', line1: '', line2: '', city: '', state: '', pincode: '' }
 
-export function CheckoutForm() {
-  const { lines, ready, subtotal } = useCart()
+/** `direct` = BUY NOW: check out exactly this line; the cart is left as it is. */
+export function CheckoutForm({ direct = null }: { direct?: CartLine | null }) {
+  const cart = useCart()
+  const lines = direct ? [direct] : cart.lines
+  const ready = direct ? true : cart.ready
+  const subtotal = direct ? direct.price * direct.quantity : cart.subtotal
   const router = useRouter()
   const [values, setValues] = useState(empty)
   const [hp, setHp] = useState('')
@@ -84,7 +88,7 @@ export function CheckoutForm() {
       track('payment_failed', { stage: 'verify' })
     }
     // Confirmation page shows the server's view of the order either way.
-    router.push(`/order/success?ref=${encodeURIComponent(reference)}`)
+    router.push(`/order/success?ref=${encodeURIComponent(reference)}${direct ? '&direct=1' : ''}`)
   }
 
   const submit = async (e: React.FormEvent) => {

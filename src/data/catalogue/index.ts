@@ -35,13 +35,18 @@ export const BUILD_ZONES: BuildZone[] = [
   { id: 'luggage', label: 'LUGGAGE', descriptor: 'CARRY THE LONG ROAD.', glyph: 'luggage', slots: ['luggage'], rail: false },
 ]
 
+/**
+ * Parts categories. Each has a photograph for its tile and page. LIGHTING and
+ * COCKPIT have no dedicated shot yet, so they crop into the Garage 27
+ * doorstep-installation photograph (its lit headlamp and its bars).
+ */
 export const PART_CATEGORY_META: Record<PartCategory, CategoryMeta> = {
-  lighting: { id: 'lighting', label: 'LIGHTING', descriptor: 'Headlights, indicators, tail.' },
-  cockpit: { id: 'cockpit', label: 'COCKPIT', descriptor: 'Bars, grips, mirrors, gauges.' },
-  body: { id: 'body', label: 'BODY', descriptor: 'Tanks, fenders, panels.', image: { src: '/assets/parts/body.png', focus: '50% 45%' } },
-  seat: { id: 'seat', label: 'SEAT', descriptor: 'Solo, bench, pillion.', image: { src: '/assets/parts/seat.png', focus: '50% 55%' } },
-  detail: { id: 'detail', label: 'DETAIL', descriptor: 'Badges, trim, finish.', image: { src: '/assets/parts/detail.png', focus: '50% 40%' } },
-  luggage: { id: 'luggage', label: 'LUGGAGE', descriptor: 'Bags, racks, tank bags.', image: { src: '/assets/parts/luggage.png', focus: '55% 45%' } },
-  rear: { id: 'rear', label: 'REAR', descriptor: 'Tail lights, fenders.', image: { src: '/assets/parts/rear.png', focus: '55% 45%' } },
-  wheel: { id: 'wheel', label: 'WHEEL', descriptor: 'Wheels and tyres.', image: { src: '/assets/parts/wheel.png', focus: '60% 45%' } },
+  lighting: { id: 'lighting', label: 'LIGHTING', descriptor: 'Headlamps, indicators and tail lights.', image: { src: '/assets/service/doorstep-installation.png', focus: '64% 31%', zoom: 2.4 } },
+  cockpit: { id: 'cockpit', label: 'COCKPIT', descriptor: 'Bars, grips, mirrors and gauges.', image: { src: '/assets/service/doorstep-installation.png', focus: '53% 9%', zoom: 2.6 } },
+  body: { id: 'body', label: 'BODY', descriptor: 'Tanks, fenders and panels.', image: { src: '/assets/parts/body.png', focus: '50% 45%' } },
+  seat: { id: 'seat', label: 'SEAT', descriptor: 'Comfort, stance and character.', image: { src: '/assets/parts/seat.png', focus: '50% 55%' } },
+  detail: { id: 'detail', label: 'DETAIL', descriptor: 'Badges, trim and the finishing touches.', image: { src: '/assets/parts/detail.png', focus: '50% 40%' } },
+  luggage: { id: 'luggage', label: 'LUGGAGE', descriptor: 'Bags and racks for the long road.', image: { src: '/assets/parts/luggage.png', focus: '55% 45%' } },
+  rear: { id: 'rear', label: 'REAR', descriptor: 'Tail lights, fenders and plates.', image: { src: '/assets/parts/rear.png', focus: '55% 45%' } },
+  wheel: { id: 'wheel', label: 'WHEEL', descriptor: 'Wheels, rims and rubber.', image: { src: '/assets/parts/wheel.png', focus: '60% 45%' } },
 }

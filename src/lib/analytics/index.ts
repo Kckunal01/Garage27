@@ -12,7 +12,7 @@ export type AnalyticsEvent =
   | 'build_option_selected' | 'build_option_blocked' | 'build_configuration_changed'
   | 'build_quote_started' | 'build_quote_submitted' | 'build_saved' | 'build_3d_failed'
   // parts & commerce
-  | 'parts_bike_filter_selected' | 'parts_category_opened' | 'product_viewed' | 'add_to_cart'
+  | 'parts_bike_filter_selected' | 'parts_category_opened' | 'product_viewed' | 'add_to_cart' | 'buy_now'
   | 'cart_viewed' | 'checkout_started' | 'payment_started' | 'payment_success' | 'payment_failed'
   // service
   | 'service_viewed' | 'service_selected' | 'service_form_started' | 'service_reference_uploaded' | 'service_request_submitted'
