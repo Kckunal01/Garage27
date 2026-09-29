@@ -246,6 +246,34 @@ export interface ShowcaseBuild {
   preset?: BuildConfiguration
 }
 
+/**
+ * A finished Garage 27 machine, shown in the Garage as a catalogue product.
+ * Not a configuration: nothing here opens the build bay.
+ */
+export interface GarageMachine {
+  /** Route segment: /garage/<slug>. */
+  slug: string
+  /** Catalogue number, shown as #01. */
+  number: number
+  name: string
+  /** One-line description of the machine, e.g. LONG RIDE CHOPPER. */
+  kind: string
+  image: {
+    /** Public path, URL-encoded (a file named "#01.png" is "%2301.png"). */
+    src: string
+    width: number
+    height: number
+    alt: string
+    /**
+     * The supplied file has its backdrop painted in (an opaque checkerboard,
+     * no alpha): the showcase keys it out on the client. Omit for a real cutout.
+     */
+    paintedBackdrop?: boolean
+    /** Where the tyres meet the floor, as fractions of the image: rear, then front. */
+    contact: { rear: [number, number]; front: [number, number] }
+  }
+}
+
 export interface ServiceOffering {
   id: string
   name: string

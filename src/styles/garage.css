@@ -1,0 +1,387 @@
+/* ── The Garage — one finished machine inside Garage 27 ──────────────────
+   Mobile first (390 × 844), after the Garage reference: the workshop is
+   the room, the house line and the three statements sit above the machine,
+   the machine stands on the wet floor with its catalogue plate beside it.
+   No card, no glass, no controls: the machine is the product. */
+.gshow {
+  --gshow-cream: #f1e6cf;
+  --gshow-neon: #ff5b4c;
+  --gshow-tube:
+    0 0 1px #ffd2ca,
+    0 0 3px rgba(255, 60, 45, 0.9),
+    0 0 10px rgba(255, 35, 25, 0.6),
+    0 0 24px rgba(255, 20, 15, 0.35);
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  /* The plate clears the floating nav on the first screen. */
+  min-height: 100svh;
+  margin-top: calc(-1 * var(--header-h));
+  padding: calc(var(--header-h) + 22px) 0 calc(var(--bottom-clearance) + 10px);
+  overflow: hidden;
+  color: var(--gshow-cream);
+}
+.gshow__env {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+}
+/* The room is out of focus behind the machine, as in a product photograph. */
+.gshow__envimg {
+  object-fit: cover;
+  object-position: 57% 58%;
+  filter: blur(1.6px) brightness(0.6) saturate(1.08);
+  transform: scale(1.04);
+}
+.gshow__grade {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(9, 8, 7, 0.78) 0%, rgba(9, 8, 7, 0.35) 30%, rgba(9, 8, 7, 0) 50%, rgba(9, 8, 7, 0) 78%, #090807 100%),
+    radial-gradient(120% 70% at 50% 64%, rgba(9, 8, 7, 0) 40%, rgba(9, 8, 7, 0.55) 100%);
+}
+
+/* House line, positioning, the three statements */
+.gshow__intro {
+  padding: 0 24px;
+}
+.gshow__script {
+  display: grid;
+  width: max-content;
+  margin: 0;
+  font-family: var(--font-sign);
+  font-weight: 400;
+  font-size: 34px;
+  line-height: 1.02;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  color: var(--gshow-cream);
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.7);
+  transform: rotate(-6deg);
+  transform-origin: 0 100%;
+}
+.gshow__script-red {
+  position: relative;
+  justify-self: start;
+  padding-left: 0.5em;
+  color: var(--gshow-neon);
+  text-shadow: 0 0 8px rgba(255, 40, 30, 0.45);
+}
+.gshow__script-red::after {
+  /* the brush stroke under ALWAYS. */
+  content: '';
+  position: absolute;
+  left: 0.3em;
+  right: -0.5em;
+  bottom: -0.04em;
+  height: 3px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, rgba(224, 38, 45, 0), var(--g-red) 14%, var(--g-red) 72%, rgba(224, 38, 45, 0));
+  transform: rotate(-2deg);
+}
+.gshow__line {
+  margin: 26px 0 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  color: var(--gshow-cream);
+}
+.gshow__legal {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.gshow__legal li {
+  padding: 2px 10px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 1.6;
+  letter-spacing: 0.14em;
+  text-align: center;
+  color: rgba(241, 230, 207, 0.88);
+}
+.gshow__legal li + li {
+  border-left: 1px solid rgba(224, 38, 45, 0.75);
+}
+
+/* The machine on the floor */
+.gshow__stage {
+  position: relative;
+  display: block;
+  margin-top: auto;
+  padding: 34px 10px 0;
+  color: inherit;
+  text-decoration: none;
+}
+.gbike {
+  position: relative;
+  width: 100%;
+  aspect-ratio: var(--ratio);
+}
+.gbike__canvas {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: var(--reflect);
+  opacity: 0;
+  transform-origin: 50% 64%;
+  transition:
+    opacity 0.7s var(--ease-out, ease-out),
+    transform 0.5s var(--ease-out, ease-out);
+}
+.gbike.is-ready .gbike__canvas {
+  opacity: 1;
+}
+.gbike__shadow {
+  position: absolute;
+  border-radius: 50%;
+  transform: translate(-50%, -50%) rotate(var(--tilt));
+  transition: opacity 0.5s;
+}
+/* Tyre contact: a tight, near-black line where rubber meets the floor, in a
+   softer spread. Drawn a touch below the contact point so it shows. */
+.gbike__shadow--rear,
+.gbike__shadow--front {
+  width: 30%;
+  height: 11%;
+  background:
+    radial-gradient(closest-side, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.9) 30%, rgba(0, 0, 0, 0) 100%) center / 58% 34% no-repeat,
+    radial-gradient(closest-side, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0));
+}
+.gbike__shadow--rear {
+  left: var(--rx);
+  top: calc(var(--ry) + 1%);
+}
+.gbike__shadow--front {
+  left: var(--fx);
+  top: calc(var(--fy) + 1%);
+}
+.gbike__shadow--body {
+  left: calc((var(--rx) + var(--fx)) / 2);
+  top: calc((var(--ry) + var(--fy)) / 2);
+  width: 92%;
+  height: 24%;
+  background: radial-gradient(closest-side, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.35) 60%, rgba(0, 0, 0, 0));
+  opacity: 0.85;
+}
+
+/* The catalogue plate: it belongs to the machine, on the floor in front of it */
+.gshow__plate {
+  position: relative;
+  display: grid;
+  justify-items: start;
+  gap: 6px;
+  margin-top: 4px;
+  padding: 0 14px;
+}
+.gshow__num {
+  display: block;
+  font-family: var(--font-sign);
+  font-size: 56px;
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+  color: var(--gshow-neon);
+  -webkit-text-stroke: 0.5px #ff8a7d;
+  text-shadow: var(--gshow-tube);
+  transform: rotate(-6deg);
+  transform-origin: 0 100%;
+  transition: text-shadow 0.4s;
+}
+.gshow__name {
+  margin: 4px 0 0;
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 1.2;
+  letter-spacing: 0.2em;
+  color: var(--gshow-cream);
+}
+.gshow__kind {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.3em;
+  color: rgba(241, 230, 207, 0.66);
+}
+.gshow__chev {
+  position: absolute;
+  right: 20px;
+  bottom: 6px;
+  width: 24px;
+  height: 24px;
+  color: rgba(241, 230, 207, 0.8);
+  transition:
+    transform 0.35s var(--ease-out, ease-out),
+    color 0.35s;
+}
+.gshow__stage--link {
+  cursor: pointer;
+}
+.gshow__stage--link:focus-visible {
+  outline: 1.5px solid var(--g-red);
+  outline-offset: -4px;
+  border-radius: 4px;
+}
+@media (hover: hover) {
+  .gshow__stage--link:hover .gbike__canvas {
+    transform: scale(1.018);
+  }
+  .gshow__stage--link:hover .gbike__shadow--body {
+    opacity: 1;
+  }
+  .gshow__stage--link:hover .gshow__num {
+    text-shadow:
+      var(--gshow-tube),
+      0 0 34px rgba(255, 30, 20, 0.45);
+  }
+  .gshow__stage--link:hover .gshow__chev {
+    transform: translateX(4px);
+    color: var(--gshow-neon);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gbike__canvas,
+  .gshow__chev {
+    transition: none;
+  }
+}
+
+/* Catalogue page: how to ask about the machine */
+.gsheet {
+  display: grid;
+  justify-items: start;
+  gap: 14px;
+  margin-top: 26px;
+  padding: 0 14px;
+}
+.gsheet__by {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.3em;
+  color: rgba(241, 230, 207, 0.8);
+}
+.gsheet__ask {
+  display: grid;
+  gap: 8px;
+  margin: 6px 0 0;
+}
+.gsheet__link {
+  justify-self: start;
+  padding-bottom: 4px;
+  border-bottom: 2px solid var(--g-red);
+  font-family: var(--font-ui);
+  font-size: 15px;
+  letter-spacing: 0.18em;
+  color: var(--gshow-cream);
+}
+.gsheet__or {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: rgba(241, 230, 207, 0.66);
+}
+.gsheet__or a {
+  color: var(--gshow-cream);
+  text-decoration: underline;
+  text-decoration-color: rgba(224, 38, 45, 0.7);
+  text-underline-offset: 3px;
+}
+.gsheet__back {
+  margin-top: 8px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.26em;
+  color: rgba(241, 230, 207, 0.7);
+}
+.gsheet__back::before {
+  content: '‹ ';
+}
+.gsheet a:focus-visible {
+  outline: 1.5px solid var(--g-red);
+  outline-offset: 4px;
+}
+
+/* ── Desktop: a wide cinematic room, the machine right of centre, its
+   plate on the floor by the rear wheel, the statements across the top ── */
+@media (--desktop) {
+  .gshow {
+    min-height: max(100svh, 760px);
+    padding: calc(var(--header-h) + 34px) 0 calc(var(--bottom-clearance) + 8px);
+  }
+  .gshow__envimg {
+    object-position: 50% 64%;
+    filter: blur(2.2px) brightness(0.56) saturate(1.08);
+  }
+  .gshow__intro {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: clamp(40px, 6vw, 110px);
+    align-items: end;
+    width: min(100%, var(--max));
+    margin-inline: auto;
+    padding: 0 var(--gutter);
+  }
+  .gshow__script {
+    grid-row: span 2;
+    font-size: clamp(50px, 4.4vw, 68px);
+  }
+  .gshow__line {
+    margin: 0;
+    font-size: 13px;
+  }
+  .gshow__legal {
+    display: flex;
+    margin-top: 16px;
+  }
+  .gshow__legal li {
+    padding-inline: 26px;
+    font-size: 11.5px;
+    white-space: nowrap;
+  }
+  .gshow__legal li:first-child {
+    padding-left: 0;
+  }
+  .gshow__stage {
+    width: min(100%, var(--max));
+    margin: auto auto 0;
+    padding: 30px var(--gutter) 0;
+  }
+  .gbike {
+    width: min(62%, 820px);
+    margin-left: auto;
+    margin-right: 3%;
+  }
+  .gshow__plate {
+    position: absolute;
+    left: var(--gutter);
+    bottom: 4%;
+    margin: 0;
+    padding: 0;
+  }
+  .gshow__num {
+    font-size: clamp(76px, 6.6vw, 104px);
+  }
+  .gshow__name {
+    font-size: clamp(20px, 1.8vw, 26px);
+  }
+  .gshow__kind {
+    font-size: 12px;
+  }
+  .gshow__chev {
+    right: var(--gutter);
+    bottom: 12%;
+    width: 30px;
+    height: 30px;
+  }
+  .gshow--detail .gshow__plate {
+    position: static;
+    margin-top: -6%;
+  }
+  .gsheet {
+    padding: 0;
+  }
+}
