@@ -23,24 +23,30 @@ export const DRAWER_LINKS: { href: string; label: string; event?: AnalyticsEvent
   { href: '/help', label: 'HELP' },
 ]
 
-/** Universal footer. No hours, addresses, cart or duplicate primary nav. */
-export const FOOTER = {
-  trackOrder: { href: '/track-order', label: 'TRACK ORDER' },
-  legal: [
-    { href: '/legal/privacy', label: 'Privacy Policy' },
-    { href: '/legal/terms', label: 'Terms & Conditions' },
-    { href: '/legal/shipping', label: 'Shipping Policy' },
-    { href: '/legal/refunds', label: 'Refund / Cancellation Policy' },
-  ],
-  help: { href: '/help', label: 'HELP' },
-  instagram: 'https://instagram.com/garage27',
-}
-
+/** Garage 27's contact details (supplied by Garage 27). One source for the whole site. */
 export const CONTACT = {
-  phone: '+91 00000 00000',
-  email: 'hello@garage27.in',
+  email: 'support@garage27.in',
+  phone: '+91 99841 02518',
+  /** tel: / wa.me form of the same number. */
+  phoneE164: '+919984102518',
+  whatsapp: 'https://wa.me/919984102518',
   instagram: 'https://instagram.com/garage27',
   hours: 'TUE–SUN · 10:00–19:00',
+}
+
+/** The global footer: three equal columns. No hours, addresses, cart or cards. */
+const TRACK_ORDER = { href: '/track-order', label: 'Track Order' }
+
+export const FOOTER = {
+  trackOrder: TRACK_ORDER,
+  pages: PRIMARY_NAV.map((n) => ({ href: n.href, label: n.label[0] + n.label.slice(1).toLowerCase() })),
+  quickLinks: [
+    { href: '/legal/privacy', label: 'Privacy Policy' },
+    { href: '/legal/shipping', label: 'Shipping' },
+    { href: '/legal/refunds', label: 'Returns & Cancellation' },
+    { href: '/legal/terms', label: 'Terms & Conditions' },
+    TRACK_ORDER,
+  ],
 }
 
 export function isActive(pathname: string, href: string) {
@@ -53,8 +59,8 @@ export function isNavItemActive(pathname: string, item: NavItem) {
 }
 
 /**
- * Routes whose environment image *is* the page: transparent header (logo +
- * rack control), no footer. (GarageNav is
+ * Routes whose environment image *is* the page: the header floats over it.
+ * The footer follows after the page, as everywhere. (GarageNav is
  * identical on every route, immersive or not.)
  */
 export const IMMERSIVE_ROUTES = ['/']

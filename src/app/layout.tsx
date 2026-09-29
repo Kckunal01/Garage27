@@ -23,7 +23,6 @@ import { Providers } from './providers'
 import { SiteHeader } from '@/components/navigation/SiteHeader'
 import { GarageFooter } from '@/components/navigation/GarageFooter'
 import { GarageNav } from '@/components/navigation/GarageNav'
-import { HideOnImmersive } from '@/components/navigation/ChromeShell'
 import { publicEnv } from '@/lib/env'
 
 export const metadata: Metadata = {
@@ -51,9 +50,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <Providers>
           <SiteHeader />
           <main id="main">{children}</main>
-          <HideOnImmersive>
-            <GarageFooter />
-          </HideOnImmersive>
+          <GarageFooter />
           <GarageNav />
         </Providers>
       </body>
