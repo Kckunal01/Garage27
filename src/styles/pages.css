@@ -125,35 +125,326 @@
   text-align: center;
 }
 
-/* ── Parts ───────────────────────────────────────────────────────────── */
-.parts-page {
-  display: grid;
-  gap: 28px;
+/* ── Parts — the Parts reference composition ───────────────────────────
+   Mobile first (390 × 844): parts-wall hero under the header, the SELECT
+   YOUR BIKE bar, then the 2 × 4 wall of categories — all above the nav —
+   and the chosen shelf of parts below. */
+.prt {
+  --prt-ink: #0b0908;
+  --prt-edge: rgba(255, 228, 196, 0.16);
+  background: var(--prt-ink);
 }
-.parts-toolbar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: end;
-  justify-content: space-between;
-  gap: 14px;
+.prt-hero {
+  position: relative;
+  isolation: isolate;
+  margin-top: calc(-1 * var(--header-h));
+  height: 312px;
+  overflow: hidden;
 }
-.bike-select {
+.prt-hero__media {
+  position: absolute;
+  inset: -2px;
+  z-index: -1;
+}
+.prt-hero__img {
+  object-fit: cover;
+  object-position: 58% 42%;
+}
+.prt-hero__shade {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(11, 9, 8, 0.72) 0%, rgba(11, 9, 8, 0.25) 55%, rgba(11, 9, 8, 0) 80%),
+    linear-gradient(180deg, rgba(11, 9, 8, 0.5) 0%, rgba(11, 9, 8, 0) 22%, rgba(11, 9, 8, 0) 55%, var(--prt-ink) 100%);
+}
+.prt-hero__copy {
+  position: absolute;
+  left: 22px;
+  right: 16px;
+  bottom: 10px;
+}
+.prt-hero__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 34px;
+  line-height: 0.95;
+  letter-spacing: 0.01em;
+  color: #efe3c8;
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.75);
+}
+.prt-hero__lede {
+  margin: 8px 0 0;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  line-height: 1.45;
+  letter-spacing: 0.06em;
+  color: rgba(239, 227, 200, 0.9);
+  text-shadow: 0 1px 8px #000;
+}
+.prt-hero__rule {
+  display: block;
+  width: 22px;
+  height: 2px;
+  margin-top: 10px;
+  background: var(--g-red);
+  box-shadow: 0 0 8px var(--g-red-glow);
+}
+.prt__body {
   display: grid;
   gap: 8px;
-  min-width: min(100%, 340px);
-  flex: 1 1 280px;
-  max-width: 420px;
+  padding: 4px 16px 32px;
 }
+
+/* SELECT YOUR BIKE (ref: full-width bar, bike art left, chevron right) */
+.bike-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  height: 46px;
+  margin: 0 4px 2px;
+  padding: 0 14px 0 8px;
+  border: 1px solid var(--prt-edge);
+  border-radius: 6px;
+  background: rgba(16, 13, 11, 0.94);
+  box-shadow: 0 12px 30px -18px #000;
+  cursor: pointer;
+}
+.bike-bar:focus-within {
+  border-color: rgba(224, 38, 45, 0.75);
+  box-shadow: 0 0 14px -4px var(--g-red-glow);
+}
+.bike-bar__art {
+  flex: none;
+  width: 58px;
+}
+.bike-bar__text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.16em;
+  color: var(--g-cream);
+}
+.bike-bar__chev {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  color: var(--g-cream-soft);
+}
+.bike-bar__select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  font-size: 16px; /* no zoom-on-focus on iOS */
+}
+
+/* The wall of categories (ref: 2 columns, ~88px tiles, dark label bar) */
+.ptile-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px 8px;
+}
+.ptile {
+  position: relative;
+  display: block;
+  height: 88px;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--prt-edge);
+  border-radius: 4px;
+  background: #120f0d;
+  color: var(--g-cream);
+  text-align: left;
+  transition:
+    border-color var(--dur-fast),
+    box-shadow var(--dur-fast);
+  -webkit-tap-highlight-color: transparent;
+}
+.ptile__media {
+  position: absolute;
+  inset: 0 0 22px;
+  overflow: hidden;
+}
+.ptile__img {
+  object-fit: cover;
+  transform: scale(1.03); /* trims the supplied files' edge lines */
+  transition: transform 700ms var(--ease-push);
+}
+.ptile:hover .ptile__img {
+  transform: scale(1.08);
+}
+/* No photograph for this category yet: its stencil on a lit bench plate. */
+.ptile--stencil .ptile__media {
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(60% 80% at 50% 30%, rgba(231, 165, 75, 0.22), transparent 70%),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.015) 0 1px, transparent 1px 4px),
+    linear-gradient(180deg, #211c18, #0f0d0c);
+}
+.ptile__glyph {
+  width: 46px;
+  height: 46px;
+  color: var(--g-amber);
+  filter: drop-shadow(0 0 8px rgba(231, 165, 75, 0.35));
+}
+.ptile__bar {
+  position: absolute;
+  inset: auto 0 0;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 8px 0 9px;
+  background: rgba(14, 12, 10, 0.94);
+  border-top: 1px solid rgba(255, 228, 196, 0.08);
+}
+.ptile__label {
+  flex: 1;
+  font-family: var(--font-display);
+  font-size: 15px;
+  line-height: 1;
+  letter-spacing: 0.02em;
+}
+.ptile__count {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  color: var(--g-muted);
+}
+.ptile__arrow {
+  width: 15px;
+  height: 15px;
+}
+.ptile:hover,
+.ptile:focus-visible {
+  border-color: rgba(255, 228, 196, 0.34);
+}
+.ptile.is-active {
+  border-color: rgba(255, 45, 55, 0.9);
+  box-shadow: 0 0 14px -3px rgba(255, 38, 48, 0.6);
+}
+.ptile.is-active .ptile__label,
+.ptile.is-active .ptile__arrow {
+  color: #ff5a5f;
+}
+
+@media (--desktop) {
+  .prt-hero {
+    height: min(70svh, 640px);
+    min-height: 460px;
+  }
+  .prt-hero__img {
+    object-position: 50% 45%;
+  }
+  .prt-hero__shade {
+    background:
+      linear-gradient(90deg, rgba(11, 9, 8, 0.82) 0%, rgba(11, 9, 8, 0.35) 36%, rgba(11, 9, 8, 0) 60%),
+      linear-gradient(180deg, rgba(11, 9, 8, 0.5) 0%, rgba(11, 9, 8, 0) 18%, rgba(11, 9, 8, 0) 62%, var(--prt-ink) 100%);
+  }
+  .prt-hero__copy {
+    left: max(var(--gutter), calc((100% - var(--max)) / 2 + var(--gutter)));
+    bottom: 16%;
+    max-width: 620px;
+  }
+  .prt-hero__title {
+    font-size: clamp(56px, 5.4vw, 84px);
+  }
+  .prt-hero__lede {
+    font-size: 15px;
+    margin-top: 16px;
+  }
+  .prt-hero__rule {
+    width: 40px;
+    margin-top: 18px;
+  }
+  .prt__body {
+    width: min(100%, var(--max));
+    margin-inline: auto;
+    gap: 18px;
+    padding: 0 var(--gutter) 56px;
+  }
+  .bike-bar {
+    width: min(100%, 560px);
+    height: 56px;
+    margin: -28px 0 0; /* sits on the hero's lower edge */
+    padding-right: 18px;
+  }
+  .bike-bar__art {
+    width: 74px;
+  }
+  .bike-bar__text {
+    font-size: 12px;
+  }
+  .ptile-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+  }
+  .ptile {
+    height: clamp(170px, 15vw, 230px);
+    border-radius: 6px;
+  }
+  .ptile__media {
+    bottom: 38px;
+  }
+  .ptile__bar {
+    height: 38px;
+    padding: 0 14px 0 16px;
+    gap: 10px;
+  }
+  .ptile__label {
+    font-size: 22px;
+  }
+  .ptile__count {
+    font-size: 10px;
+  }
+  .ptile__arrow {
+    width: 20px;
+    height: 20px;
+  }
+  .ptile__glyph {
+    width: 72px;
+    height: 72px;
+  }
+}
+
 .catalogue {
   display: grid;
   gap: 18px;
 }
+.catalogue {
+  scroll-margin-top: calc(var(--header-h) + 8px);
+  margin-top: 18px;
+}
 .catalogue__head {
   display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  border-bottom: 1px solid var(--g-line);
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  border-bottom: 1px solid rgba(224, 38, 45, 0.35);
   padding-bottom: 10px;
+}
+.catalogue__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(26px, 3vw, 40px);
+  line-height: 1;
+  color: #efe3c8;
+}
+.catalogue__count {
+  margin: 0 auto 0 0;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: var(--g-muted);
 }
 .pcard-grid {
   display: grid;
@@ -1008,9 +1299,4 @@
 .track__form {
   display: grid;
   gap: 14px;
-}
-.parts-toolbar__meta {
-  display: flex;
-  align-items: center;
-  gap: 12px;
 }

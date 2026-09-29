@@ -63,6 +63,8 @@ export interface CategoryMeta {
   id: string
   label: string
   descriptor: string
+  /** Category photograph (Parts page tile). `focus` is the CSS object-position. Without one, the category glyph is shown. */
+  image?: { src: string; focus?: string }
 }
 
 /** A 3D material description. Kept renderer-agnostic (no three.js types). */

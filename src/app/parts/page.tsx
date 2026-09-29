@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
-import { EnvironmentalHero } from '@/components/media/EnvironmentalHero'
 import { CatalogueNote } from '@/components/garage-ui/CatalogueNote'
 import { PartsBrowser } from '@/features/parts/PartsBrowser'
+import { PartsHero } from '@/features/parts/PartsHero'
 import { getCatalogue } from '@/lib/catalogue/repository'
 import { assetExists } from '@/lib/server/assets'
 import { pageMetadata } from '@/lib/seo/metadata'
@@ -19,19 +19,12 @@ export default async function PartsPage() {
   const images: Record<string, string> = {}
   for (const p of parts) if (assetExists(p.images[0]?.src)) images[p.id] = p.images[0]!.src
   return (
-    <>
-      <EnvironmentalHero environment="parts-wall" size="band">
-        <p className="label label--amber">PARTS</p>
-        <h1 className="display" style={{ marginTop: 12 }}>
-          The details
-          <br />
-          <em>make the bike.</em>
-        </h1>
-      </EnvironmentalHero>
-      <div className="section--tight wrap parts-page">
+    <div className="prt">
+      <PartsHero />
+      <div className="prt__body">
         <PartsBrowser parts={parts} bikes={bikes} images={images} />
         {source === 'local' && <CatalogueNote />}
       </div>
-    </>
+    </div>
   )
 }

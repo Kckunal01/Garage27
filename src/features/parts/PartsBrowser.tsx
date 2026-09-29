@@ -1,14 +1,14 @@
 'use client'
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { Suspense, useMemo } from 'react'
-import { CategoryTile } from '@/components/garage-ui/CategoryTile'
+import { Suspense, useEffect, useMemo, useRef } from 'react'
 import { EmptyState } from '@/components/garage-ui/States'
 import { track } from '@/lib/analytics'
 import { PART_CATEGORY_META } from '@/data/catalogue'
 import { PART_CATEGORIES, type Bike, type Part, type PartCategory } from '@/types/catalogue'
 import { BikeSelector } from './BikeSelector'
 import { PartCard } from './PartCard'
+import { PartsCategoryTile } from './PartsCategoryTile'
 import { CartLink } from '@/components/navigation/CartLink'
 
 interface Data {
@@ -38,11 +38,14 @@ function LivePartsBrowser(data: Data) {
   const rawCategory = params.get('category')
   const category = (PART_CATEGORIES as readonly string[]).includes(rawCategory ?? '') ? (rawCategory as PartCategory) : null
 
+  // Bike is a filter (replace); a category is a place (push — back returns to the wall).
   const setParam = (key: string, value: string | null) => {
     const next = new URLSearchParams(params.toString())
     if (value) next.set(key, value)
     else next.delete(key)
-    router.replace(`${pathname}${next.size ? `?${next}` : ''}`, { scroll: false })
+    const url = `${pathname}${next.size ? `?${next}` : ''}`
+    if (key === 'category') router.push(url, { scroll: false })
+    else router.replace(url, { scroll: false })
   }
   return <PartsView {...data} bike={bike} category={category} setParam={setParam} clearAll={() => router.replace(pathname, { scroll: false })} />
 }
@@ -61,37 +64,38 @@ function PartsView({
   const shown = category ? forBike.filter((p) => p.category === category) : forBike
   const counts = useMemo(() => Object.fromEntries(PART_CATEGORIES.map((c) => [c, forBike.filter((p) => p.category === c).length])), [forBike])
 
+  // Picking a category brings its shelf into view (the grid fills a phone screen).
+  const shelf = useRef<HTMLElement>(null)
+  const picked = useRef(false)
+  useEffect(() => {
+    if (!picked.current || !category) return
+    picked.current = false
+    shelf.current?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' })
+  }, [category])
+
   return (
     <>
-      <div className="parts-toolbar">
-        <BikeSelector
-          bikes={bikes}
-          value={bike}
-          onChange={(id) => {
-            setParam('bike', id || null)
-            track('parts_bike_filter_selected', { bike: id || 'all' })
-          }}
-        />
-        <div className="parts-toolbar__meta">
-          <p className="label" aria-live="polite">
-            {shown.length} PART{shown.length === 1 ? '' : 'S'} ON THE WALL
-          </p>
-          {/* Cart lives in the shopping flow, not the global header. */}
-          <CartLink />
-        </div>
-      </div>
+      <BikeSelector
+        bikes={bikes}
+        value={bike}
+        onChange={(id) => {
+          setParam('bike', id || null)
+          track('parts_bike_filter_selected', { bike: id || 'all' })
+        }}
+      />
 
       <h2 className="sr-only">Categories</h2>
-      <div className="ctile-grid">
+      <div className="ptile-grid">
         {PART_CATEGORIES.map((c, i) => (
-          <CategoryTile
+          <PartsCategoryTile
             key={c}
             meta={PART_CATEGORY_META[c]}
-            index={i}
-            count={counts[c]}
+            count={counts[c] ?? 0}
             active={category === c}
+            eager={i < 4}
             onSelect={() => {
               const next = category === c ? null : c
+              picked.current = !!next
               setParam('category', next)
               if (next) track('parts_category_opened', { category: next, bike: bike || 'all' })
             }}
@@ -99,16 +103,21 @@ function PartsView({
         ))}
       </div>
 
-      <section className="catalogue" aria-labelledby="catalogue-heading">
+      <section className="catalogue" aria-labelledby="catalogue-heading" ref={shelf}>
         <div className="catalogue__head">
-          <h2 id="catalogue-heading" className="title">
+          <h2 id="catalogue-heading" className="catalogue__title">
             {category ? PART_CATEGORY_META[category].label : 'EVERYTHING'}
           </h2>
+          <p className="catalogue__count" aria-live="polite">
+            {shown.length} PART{shown.length === 1 ? '' : 'S'}
+          </p>
           {category && (
             <button type="button" className="neon-link" onClick={() => setParam('category', null)}>
-              CLEAR
+              ALL PARTS
             </button>
           )}
+          {/* Cart lives in the shopping flow, not the global header. */}
+          <CartLink />
         </div>
         {shown.length ? (
           <div className="pcard-grid">

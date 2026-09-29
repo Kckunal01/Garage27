@@ -38,10 +38,10 @@ export const BUILD_ZONES: BuildZone[] = [
 export const PART_CATEGORY_META: Record<PartCategory, CategoryMeta> = {
   lighting: { id: 'lighting', label: 'LIGHTING', descriptor: 'Headlights, indicators, tail.' },
   cockpit: { id: 'cockpit', label: 'COCKPIT', descriptor: 'Bars, grips, mirrors, gauges.' },
-  body: { id: 'body', label: 'BODY', descriptor: 'Tanks, fenders, panels.' },
-  seat: { id: 'seat', label: 'SEAT', descriptor: 'Solo, bench, pillion.' },
-  detail: { id: 'detail', label: 'DETAIL', descriptor: 'Badges, trim, finish.' },
-  luggage: { id: 'luggage', label: 'LUGGAGE', descriptor: 'Bags, racks, tank bags.' },
-  rear: { id: 'rear', label: 'REAR', descriptor: 'Tail lights, fenders.' },
-  wheel: { id: 'wheel', label: 'WHEEL', descriptor: 'Wheels and tyres.' },
+  body: { id: 'body', label: 'BODY', descriptor: 'Tanks, fenders, panels.', image: { src: '/assets/parts/body.png', focus: '50% 45%' } },
+  seat: { id: 'seat', label: 'SEAT', descriptor: 'Solo, bench, pillion.', image: { src: '/assets/parts/seat.png', focus: '50% 55%' } },
+  detail: { id: 'detail', label: 'DETAIL', descriptor: 'Badges, trim, finish.', image: { src: '/assets/parts/detail.png', focus: '50% 40%' } },
+  luggage: { id: 'luggage', label: 'LUGGAGE', descriptor: 'Bags, racks, tank bags.', image: { src: '/assets/parts/luggage.png', focus: '55% 45%' } },
+  rear: { id: 'rear', label: 'REAR', descriptor: 'Tail lights, fenders.', image: { src: '/assets/parts/rear.png', focus: '55% 45%' } },
+  wheel: { id: 'wheel', label: 'WHEEL', descriptor: 'Wheels and tyres.', image: { src: '/assets/parts/wheel.png', focus: '60% 45%' } },
 }
