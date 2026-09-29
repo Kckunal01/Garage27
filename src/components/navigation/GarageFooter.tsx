@@ -76,11 +76,7 @@ export function GarageFooter() {
               <li>
                 <a href={`mailto:${CONTACT.email}`}>
                   <Mail />
-                  <span>
-                    {/* On a phone column the address breaks after the @, never mid-word. */}
-                    {CONTACT.email.split('@')[0]}@<wbr />
-                    {CONTACT.email.split('@')[1]}
-                  </span>
+                  <span>{CONTACT.email}</span>
                 </a>
               </li>
               <li>

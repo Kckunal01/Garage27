@@ -15,7 +15,7 @@ export function ServiceHero({ compact }: { compact?: boolean }) {
       </div>
       <div className="svc-hero__copy">
         <p className="svc-hero__neon" aria-hidden="true">
-          Service
+          SERVICE
         </p>
         <h1 className="svc-hero__title">
           <span className="sr-only">Service: </span>
