@@ -12,11 +12,10 @@ export const garageMachines: GarageMachine[] = [
     kind: 'LONG RIDE CHOPPER',
     image: {
       src: '/assets/garage/%2301.png',
-      width: 464,
-      height: 265,
-      alt: 'The Road Nomad: a black chopper with a red flame-painted tank, tan diamond-stitched solo seat, chrome spoked wheels and black exhaust',
-      paintedBackdrop: true,
-      contact: { rear: [0.155, 0.864], front: [0.802, 0.996] },
+      width: 1660,
+      height: 948,
+      alt: 'The Road Nomad: a black chopper with a red flame-painted tank, tan diamond-stitched solo seat, chrome spoked wheels and black exhaust, on the wet floor of the Garage 27 workshop',
+      frame: { x: 0.138, y: 0.214, w: 0.66, h: 0.751 },
     },
   },
 ]

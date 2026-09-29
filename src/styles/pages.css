@@ -1759,7 +1759,7 @@
   }
 }
 
-/* ── Help / Track order / Legal (shell pages) ────────────────────────── */
+/* ── Track order / Legal (shell pages) ───────────────────────────────── */
 .doc-page {
   display: grid;
   gap: 16px;
@@ -1790,33 +1790,6 @@
   display: grid;
   gap: 14px;
   color: var(--g-cream-soft);
-}
-.help-list {
-  display: grid;
-  gap: 12px;
-  margin-top: 8px;
-}
-.help-item {
-  display: grid;
-  gap: 8px;
-  padding: 18px;
-  border: 1px solid var(--g-line);
-  border-radius: var(--radius);
-  background: var(--g-concrete-900);
-}
-.help-item__q {
-  font-family: var(--font-display);
-  font-weight: 400;
-  font-size: 1.5rem;
-  line-height: 1.05;
-  color: #f3ecd9;
-}
-.help-item__a {
-  color: var(--g-cream-soft);
-}
-.help-item__cta {
-  justify-self: start;
-  min-width: 170px;
 }
 .track {
   display: grid;

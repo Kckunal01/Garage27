@@ -1,7 +1,6 @@
 import Image from 'next/image'
-import Link from 'next/link'
 import type { ReactNode } from 'react'
-import { machineHref, machineNumber } from '@/lib/catalogue/garage'
+import { machineNumber } from '@/lib/catalogue/garage'
 import type { GarageMachine } from '@/types/catalogue'
 import { GarageBike } from './GarageBike'
 
@@ -24,7 +23,7 @@ function MachinePlate({ machine, as: Name = 'p' }: { machine: GarageMachine; as?
  * The Garage: one finished machine standing inside Garage 27. The workshop
  * photograph is the room; the machine stands on its floor. Above it, the
  * house line and the three statements; beside it, its catalogue plate.
- * In the showcase the machine is the way in to its catalogue page.
+ * The showcase is not a link (yet): nothing here is interactive.
  */
 export function GarageScene({ machine, detail, children }: { machine: GarageMachine; detail?: boolean; children?: ReactNode }) {
   return (
@@ -55,21 +54,11 @@ export function GarageScene({ machine, detail, children }: { machine: GarageMach
         </ul>
       </div>
 
-      {detail ? (
-        <div className="gshow__stage">
-          <GarageBike image={machine.image} />
-          <MachinePlate machine={machine} as="h1" />
-          {children}
-        </div>
-      ) : (
-        <Link href={machineHref(machine)} className="gshow__stage gshow__stage--link" aria-label={`${machineNumber(machine)} ${machine.name}, ${machine.kind.toLowerCase()}. See this machine.`}>
-          <GarageBike image={machine.image} />
-          <MachinePlate machine={machine} />
-          <svg className="gshow__chev" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M9 5l7 7-7 7" />
-          </svg>
-        </Link>
-      )}
+      <div className="gshow__stage">
+        <GarageBike image={machine.image} />
+        <MachinePlate machine={machine} as={detail ? 'h1' : 'p'} />
+        {children}
+      </div>
     </section>
   )
 }

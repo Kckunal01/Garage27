@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
+import { CONTACT } from '@/components/navigation/nav-config'
 import { notFound } from 'next/navigation'
 import { LEGAL } from '@/lib/legal'
 import { pageMetadata } from '@/lib/seo/metadata'
@@ -32,10 +32,10 @@ export default async function LegalPage({ params }: PageProps<'/legal/[slug]'>) 
         </div>
       ) : (
         <p className="doc-page__notice">
-          This policy is being finalised by Garage 27 and will be published here. For anything you need in the meantime, visit{' '}
-          <Link className="neon-link" href="/help">
-            HELP
-          </Link>
+          This policy is being finalised by Garage 27 and will be published here. For anything you need in the meantime, write to{' '}
+          <a className="neon-link" href={`mailto:${CONTACT.email}`}>
+            {CONTACT.email}
+          </a>
           .
         </p>
       )}

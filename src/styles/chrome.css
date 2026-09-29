@@ -206,7 +206,7 @@
   transform: translateY(-7px) rotate(-45deg);
 }
 
-/* ── Rack drawer — full-height, typography-led, the pages + HELP only ──── */
+/* ── Rack drawer — full-height, typography-led, the five pages only ───── */
 .rack {
   position: fixed;
   inset: 0;
@@ -377,13 +377,13 @@
   letter-spacing: 0.2em;
   color: rgba(239, 230, 210, 0.78);
 }
-/* Phones: three columns sized to their content and spread across the row,
-   so each link, the email and the phone number stay on one line. */
+/* Phones: Pages and Support sized to their content; Quick links takes the
+   free width between them. Every link, the email and the phone number stay
+   on one line. */
 .gfoot__cols {
   display: grid;
-  grid-template-columns: repeat(3, auto);
-  justify-content: space-between;
-  gap: 12px;
+  grid-template-columns: auto minmax(max-content, 1fr) auto;
+  gap: 18px;
   align-items: start;
   margin-top: 30px;
 }
@@ -501,8 +501,8 @@
     font-size: 12px;
   }
   .gfoot__cols {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    justify-content: normal;
+    /* Quick links carries the longest entries: a little more of the row. */
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.2fr) minmax(0, 0.95fr);
     gap: clamp(24px, 4vw, 64px);
     margin-top: 52px;
   }

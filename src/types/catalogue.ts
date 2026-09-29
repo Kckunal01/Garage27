@@ -265,12 +265,10 @@ export interface GarageMachine {
     height: number
     alt: string
     /**
-     * The supplied file has its backdrop painted in (an opaque checkerboard,
-     * no alpha): the showcase keys it out on the client. Omit for a real cutout.
+     * The machine photographed inside Garage 27: the part of the photograph
+     * that frames it, as fractions of the image. The rest dissolves into the room.
      */
-    paintedBackdrop?: boolean
-    /** Where the tyres meet the floor, as fractions of the image: rear, then front. */
-    contact: { rear: [number, number]; front: [number, number] }
+    frame: { x: number; y: number; w: number; h: number }
   }
 }
 

@@ -17,11 +17,8 @@ export const PRIMARY_NAV: NavItem[] = [
   { href: '/about', label: 'ABOUT', event: 'nav_about' },
 ]
 
-/** The global drawer: the five pages + HELP. Nothing else. */
-export const DRAWER_LINKS: { href: string; label: string; event?: AnalyticsEvent }[] = [
-  ...PRIMARY_NAV,
-  { href: '/help', label: 'HELP' },
-]
+/** The global drawer: the five pages. Nothing else. */
+export const DRAWER_LINKS: { href: string; label: string; event?: AnalyticsEvent }[] = [...PRIMARY_NAV]
 
 /** Garage 27's contact details (supplied by Garage 27). One source for the whole site. */
 export const CONTACT = {

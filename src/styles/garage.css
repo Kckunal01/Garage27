@@ -119,53 +119,21 @@
   position: relative;
   width: 100%;
   aspect-ratio: var(--ratio);
+  overflow: hidden;
+  /* The photograph's edges dissolve into the room: no frame, no box. */
+  -webkit-mask-image:
+    linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent),
+    linear-gradient(180deg, transparent, #000 10%, #000 88%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent),
+    linear-gradient(180deg, transparent, #000 10%, #000 88%, transparent);
+  mask-composite: intersect;
 }
-.gbike__canvas {
+.gbike__photo {
   position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: var(--reflect);
-  opacity: 0;
-  transform-origin: 50% 64%;
-  transition:
-    opacity 0.7s var(--ease-out, ease-out),
-    transform 0.5s var(--ease-out, ease-out);
-}
-.gbike.is-ready .gbike__canvas {
-  opacity: 1;
-}
-.gbike__shadow {
-  position: absolute;
-  border-radius: 50%;
-  transform: translate(-50%, -50%) rotate(var(--tilt));
-  transition: opacity 0.5s;
-}
-/* Tyre contact: a tight, near-black line where rubber meets the floor, in a
-   softer spread. Drawn a touch below the contact point so it shows. */
-.gbike__shadow--rear,
-.gbike__shadow--front {
-  width: 30%;
-  height: 11%;
-  background:
-    radial-gradient(closest-side, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.9) 30%, rgba(0, 0, 0, 0) 100%) center / 58% 34% no-repeat,
-    radial-gradient(closest-side, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0));
-}
-.gbike__shadow--rear {
-  left: var(--rx);
-  top: calc(var(--ry) + 1%);
-}
-.gbike__shadow--front {
-  left: var(--fx);
-  top: calc(var(--fy) + 1%);
-}
-.gbike__shadow--body {
-  left: calc((var(--rx) + var(--fx)) / 2);
-  top: calc((var(--ry) + var(--fy)) / 2);
-  width: 92%;
-  height: 24%;
-  background: radial-gradient(closest-side, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.35) 60%, rgba(0, 0, 0, 0));
-  opacity: 0.85;
+  max-width: none;
+  height: auto;
 }
 
 /* The catalogue plate: it belongs to the machine, on the floor in front of it */
@@ -187,7 +155,6 @@
   text-shadow: var(--gshow-tube);
   transform: rotate(-6deg);
   transform-origin: 0 100%;
-  transition: text-shadow 0.4s;
 }
 .gshow__name {
   margin: 4px 0 0;
@@ -204,49 +171,6 @@
   letter-spacing: 0.3em;
   color: rgba(241, 230, 207, 0.66);
 }
-.gshow__chev {
-  position: absolute;
-  right: 20px;
-  bottom: 6px;
-  width: 24px;
-  height: 24px;
-  color: rgba(241, 230, 207, 0.8);
-  transition:
-    transform 0.35s var(--ease-out, ease-out),
-    color 0.35s;
-}
-.gshow__stage--link {
-  cursor: pointer;
-}
-.gshow__stage--link:focus-visible {
-  outline: 1.5px solid var(--g-red);
-  outline-offset: -4px;
-  border-radius: 4px;
-}
-@media (hover: hover) {
-  .gshow__stage--link:hover .gbike__canvas {
-    transform: scale(1.018);
-  }
-  .gshow__stage--link:hover .gbike__shadow--body {
-    opacity: 1;
-  }
-  .gshow__stage--link:hover .gshow__num {
-    text-shadow:
-      var(--gshow-tube),
-      0 0 34px rgba(255, 30, 20, 0.45);
-  }
-  .gshow__stage--link:hover .gshow__chev {
-    transform: translateX(4px);
-    color: var(--gshow-neon);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .gbike__canvas,
-  .gshow__chev {
-    transition: none;
-  }
-}
-
 /* Catalogue page: how to ask about the machine */
 .gsheet {
   display: grid;
@@ -367,12 +291,6 @@
   }
   .gshow__kind {
     font-size: 12px;
-  }
-  .gshow__chev {
-    right: var(--gutter);
-    bottom: 12%;
-    width: 30px;
-    height: 30px;
   }
   .gshow--detail .gshow__plate {
     position: static;
