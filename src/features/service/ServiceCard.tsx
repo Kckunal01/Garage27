@@ -2,25 +2,40 @@ import Image from 'next/image'
 import Link from 'next/link'
 import type { ServiceOffering } from '@/types/catalogue'
 
+/** Catalogue names are upper-case; the neon script only reads in title case. */
+const signCase = (name: string) => name.toLowerCase().replace(/(^|[\s-])(\p{L})/gu, (_, sep: string, ch: string) => sep + ch.toUpperCase())
+
 /** The sign lettering's own ampersand is illegible; set "&" in the house face. */
 const signText = (name: string) =>
-  name.split('&').flatMap((part, i) =>
-    i === 0
-      ? [part]
-      : [
-          <span key={i} className="svc-amp">
-            &amp;
-          </span>,
-          part,
-        ],
-  )
+  signCase(name)
+    .split('&')
+    .flatMap((part, i) =>
+      i === 0
+        ? [part]
+        : [
+            <span key={i} className="svc-amp">
+              &amp;
+            </span>,
+            part,
+          ],
+    )
 
 /**
  * One service, as a lit panel in the garage: neon title and copy on the
  * dark left, the service photograph bleeding in from the right.
  * With `href` it is the way into the request flow; without, it labels it.
  */
-export function ServiceCard({ service, href, eager, onClick }: { service: ServiceOffering; href?: string; eager?: boolean; onClick?: () => void }) {
+export function ServiceCard({
+  service,
+  href,
+  eager,
+  onClick,
+}: {
+  service: ServiceOffering
+  href?: string
+  eager?: boolean
+  onClick?: () => void
+}) {
   const lines = service.pitch ?? [service.summary]
   const body = (
     <>
