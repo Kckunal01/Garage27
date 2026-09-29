@@ -212,6 +212,24 @@ export interface Part {
   stock: number
   status: AvailabilityStatus
   images: { src: string; alt: string }[]
+  /** Product-page copy. Written only from facts in the record above — never invented specs. */
+  page?: PartPageContent
+}
+
+/**
+ * Editorial content for /parts/<slug>. Name, description, price, material,
+ * finish, SKU, fitment and installation notes come from the Part itself;
+ * this adds only what those fields can't say on their own.
+ */
+export interface PartPageContent {
+  /** Short headline under the name, one entry per line. */
+  headline: string[]
+  /** Three or four product-specific benefits. */
+  benefits: { title: string; text: string }[]
+  /** Extra specification rows stated in the description (size, capacity…). */
+  specs?: { label: string; value: string }[]
+  /** Only when a real installation guide exists. */
+  installationGuideUrl?: string
 }
 
 export interface ShowcaseBuild {

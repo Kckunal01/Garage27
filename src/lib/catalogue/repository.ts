@@ -98,6 +98,7 @@ const mapPart = (r: any, compat: any[]): Part => ({
   stock: r.stock,
   status: r.status,
   images: r.images ?? [],
+  page: r.page ?? undefined,
 })
 
 const mapShowcase = (r: any): ShowcaseBuild => ({

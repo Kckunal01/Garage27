@@ -45,7 +45,7 @@ parts.forEach((p) =>
     row('parts', {
       id: p.id, slug: p.slug, sku: p.sku, name: p.name, brand: p.brand, category: p.category, summary: p.summary,
       description: p.description, price: p.price, currency: p.currency, material: p.material, finish: p.finish,
-      installation_notes: p.installationNotes, stock: p.stock, status: p.status, images: p.images,
+      installation_notes: p.installationNotes, stock: p.stock, status: p.status, images: p.images, page: p.page ?? null,
     }),
   ),
 )

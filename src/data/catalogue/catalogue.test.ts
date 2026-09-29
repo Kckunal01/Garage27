@@ -71,6 +71,16 @@ describe('catalogue integrity', () => {
     expect(new Set(ids).size, 'a slot id may belong to only one zone').toBe(ids.length)
   })
 
+  it('product-page copy is complete where present (3–4 benefits, a headline, no empty spec rows)', () => {
+    for (const p of parts) {
+      if (!p.page) continue
+      expect(p.page.headline.length, p.slug).toBeGreaterThan(0)
+      expect(p.page.benefits.length, p.slug).toBeGreaterThanOrEqual(3)
+      expect(p.page.benefits.length, p.slug).toBeLessThanOrEqual(4)
+      for (const s of p.page.specs ?? []) expect(s.label && s.value, `${p.slug} spec`).toBeTruthy()
+    }
+  })
+
   it('no part slug collides with a category page (/parts/<category>)', () => {
     for (const p of parts) expect(PART_CATEGORIES as readonly string[], p.slug).not.toContain(p.slug)
   })

@@ -28,6 +28,19 @@ export const parts: Part[] = [
     stock: 12,
     status: 'active',
     images: [{ src: '/assets/parts/lighting/headlight-7-chrome.webp', alt: 'Chrome 7 inch headlight bucket on a workshop bench' }],
+    page: {
+      headline: ['Chrome up front.', 'LED inside.'],
+      benefits: [
+        { title: 'E-MARKED LED', text: 'LED projector insert behind the glass.' },
+        { title: 'BOLT-ON', text: 'Keeps the stock wiring connector.' },
+        { title: 'TRIPLE-PLATED', text: 'Deep-drawn steel, mirror chrome.' },
+        { title: 'SITS TIGHT', text: 'Built to sit low and close on the forks.' },
+      ],
+      specs: [
+        { label: 'Size', value: '7"' },
+        { label: 'Insert', value: 'E-marked LED projector' },
+      ],
+    },
   },
   {
     id: 'part-headlight-caged',
@@ -47,6 +60,19 @@ export const parts: Part[] = [
     stock: 6,
     status: 'active',
     images: [{ src: '/assets/parts/lighting/headlight-caged.webp', alt: 'Black caged scrambler headlight' }],
+    page: {
+      headline: ['Blacked out.', 'Guarded.'],
+      benefits: [
+        { title: 'MESH GUARD', text: 'Steel mesh that comes off when you want it to.' },
+        { title: 'MATTE BLACK', text: '5.75" aluminium housing.' },
+        { title: 'BRACKET INCLUDED', text: 'Relocation bracket is in the box.' },
+        { title: 'DIRT TO CITY', text: 'Built for dirt. Looks right in town.' },
+      ],
+      specs: [
+        { label: 'Size', value: '5.75"' },
+        { label: 'Guard', value: 'Removable steel mesh' },
+      ],
+    },
   },
   {
     id: 'part-bar-end-mirrors',
@@ -66,6 +92,20 @@ export const parts: Part[] = [
     stock: 30,
     status: 'active',
     images: [{ src: '/assets/parts/cockpit/bar-end-mirrors.webp', alt: 'Pair of round bar-end mirrors' }],
+    page: {
+      headline: ['See behind you.', 'Keep the bars clean.'],
+      benefits: [
+        { title: 'CNC ALUMINIUM', text: 'Machined, then anodised black.' },
+        { title: 'E-MARKED GLASS', text: 'Convex glass for a wider view.' },
+        { title: 'ADJUSTABLE ARM', text: 'Set the angle once.' },
+        { title: 'SOLD AS A PAIR', text: 'Left and right.' },
+      ],
+      specs: [
+        { label: 'Glass', value: 'Convex, E-marked' },
+        { label: 'Bars', value: '22 mm with hollow ends' },
+        { label: 'Quantity', value: 'Pair' },
+      ],
+    },
   },
   {
     id: 'part-clipons-32',
@@ -85,6 +125,14 @@ export const parts: Part[] = [
     stock: 4,
     status: 'active',
     images: [{ src: '/assets/parts/cockpit/clipons.webp', alt: 'Clip-on handlebars' }],
+    page: {
+      headline: ['Drop the bars.', 'Change the ride.'],
+      benefits: [
+        { title: 'FORGED CLAMPS', text: 'Aluminium clamps, steel bars.' },
+        { title: 'CAFÉ POSITION', text: 'Low and forward. A different bike to ride.' },
+        { title: 'PAIR IT', text: 'Made to go with a solo seat.' },
+      ],
+    },
   },
   {
     id: 'part-knee-pads',
@@ -104,6 +152,19 @@ export const parts: Part[] = [
     stock: 18,
     status: 'active',
     images: [{ src: '/assets/parts/body/knee-pads.webp', alt: 'Tan leather tank knee pads' }],
+    page: {
+      headline: ['Grip where your knees sit.', 'Paint stays clean.'],
+      benefits: [
+        { title: 'FULL-GRAIN LEATHER', text: 'Hand-stitched, in tan.' },
+        { title: '3M BACKING', text: 'Self-adhesive. No drilling.' },
+        { title: 'PROTECTS PAINT', text: 'Covers the spots your knees wear.' },
+        { title: 'ADDS GRIP', text: 'More hold on the tank.' },
+      ],
+      specs: [
+        { label: 'Backing', value: '3M adhesive' },
+        { label: 'Quantity', value: 'Pair' },
+      ],
+    },
   },
   {
     id: 'part-seat-solo-brown',
@@ -123,6 +184,19 @@ export const parts: Part[] = [
     stock: 5,
     status: 'active',
     images: [{ src: '/assets/parts/seat/solo-brown.webp', alt: 'Brown leather sprung solo seat' }],
+    page: {
+      headline: ['One seat.', 'Sprung the old way.'],
+      benefits: [
+        { title: 'TWIN SPRINGS', text: 'Chrome springs under a steel pan.' },
+        { title: 'BROWN LEATHER', text: 'Vintage solo saddle.' },
+        { title: 'KIT INCLUDED', text: 'Spring mount kit in the box.' },
+        { title: 'SOLO ONLY', text: 'Replaces the pillion seat.' },
+      ],
+      specs: [
+        { label: 'Springs', value: 'Twin, chrome' },
+        { label: 'Base', value: 'Steel pan' },
+      ],
+    },
   },
   {
     id: 'part-tank-badge',
@@ -142,6 +216,15 @@ export const parts: Part[] = [
     stock: 0,
     status: 'active',
     images: [{ src: '/assets/parts/detail/tank-badge.webp', alt: 'Brass Garage 27 badge' }],
+    page: {
+      headline: ['Cast.', 'Finished by hand. Numbered.'],
+      benefits: [
+        { title: 'SAND-CAST BRASS', text: 'Poured, not stamped.' },
+        { title: 'HAND-FINISHED', text: 'Aged brass.' },
+        { title: 'NUMBERED', text: 'Each badge carries its own number.' },
+        { title: 'TWO WAYS TO MOUNT', text: 'Adhesive or rivets.' },
+      ],
+    },
   },
   {
     id: 'part-saddlebags-waxed',
@@ -161,6 +244,19 @@ export const parts: Part[] = [
     stock: 7,
     status: 'active',
     images: [{ src: '/assets/parts/luggage/saddlebags.webp', alt: 'Dark brown leather saddlebags' }],
+    page: {
+      headline: ['Carry more.', 'Keep the look.'],
+      benefits: [
+        { title: '12 L EACH', text: 'Two bags, 24 L between them.' },
+        { title: 'WAXED LEATHER', text: 'Dark brown, with brass buckles.' },
+        { title: 'QUICK-RELEASE', text: 'Quick-release mounts.' },
+      ],
+      specs: [
+        { label: 'Capacity', value: '12 L each' },
+        { label: 'Mounting', value: 'Quick-release' },
+        { label: 'Quantity', value: 'Pair' },
+      ],
+    },
   },
   {
     id: 'part-tail-light-frenched',
@@ -180,6 +276,18 @@ export const parts: Part[] = [
     stock: 9,
     status: 'active',
     images: [{ src: '/assets/parts/rear/tail-light.webp', alt: 'Flush LED tail light' }],
+    page: {
+      headline: ['Flush at the back.', 'Brake light built in.'],
+      benefits: [
+        { title: 'FRENCHED', text: 'Sits flush in the fender.' },
+        { title: 'E-MARKED LED', text: 'Integrated brake light.' },
+        { title: 'FOR BOBBED FENDERS', text: 'Needs a cut-out — best done in the bay.' },
+      ],
+      specs: [
+        { label: 'Mount', value: 'Flush (frenched)' },
+        { label: 'Brake light', value: 'Integrated' },
+      ],
+    },
   },
   {
     id: 'part-spoke-wheel-set',
@@ -199,5 +307,17 @@ export const parts: Part[] = [
     stock: 2,
     status: 'active',
     images: [{ src: '/assets/parts/wheel/spoke-set.webp', alt: 'Black spoke wheel set' }],
+    page: {
+      headline: ['New stance.', 'Laced and blacked out.'],
+      benefits: [
+        { title: '19" / 18"', text: 'Front 19, rear 18.' },
+        { title: 'STAINLESS SPOKES', text: 'Laced to black rims.' },
+        { title: 'BALANCED', text: 'Balancing included with bay fitting.' },
+      ],
+      specs: [
+        { label: 'Sizes', value: '19" front / 18" rear' },
+        { label: 'Spokes', value: 'Stainless steel' },
+      ],
+    },
   },
 ]

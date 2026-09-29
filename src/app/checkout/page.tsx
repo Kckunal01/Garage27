@@ -24,9 +24,11 @@ export default async function CheckoutPage({ searchParams }: PageProps<'/checkou
     }
   }
   return (
-    <div className="wrap section--tight flow-page">
-      <p className="label label--amber">CHECKOUT</p>
-      <h1 className="headline">Almost on the road</h1>
+    <div className="co-page">
+      <header className="co-page__head">
+        <p className="co-page__eyebrow">CHECKOUT</p>
+        <h1 className="co-page__title">Almost on the road.</h1>
+      </header>
       <CheckoutForm direct={direct} />
     </div>
   )

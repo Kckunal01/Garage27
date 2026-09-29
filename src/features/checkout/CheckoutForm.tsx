@@ -4,6 +4,9 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 import { useCart, type CartLine } from './cart-store'
+import { PART_CATEGORY_META } from '@/data/catalogue'
+import { CategoryPhoto } from '@/features/parts/CategoryPhoto'
+import type { PartCategory } from '@/types/catalogue'
 import { Honeypot, TextField } from '@/components/forms/FormField'
 import { EmptyState, LoadingState } from '@/components/garage-ui/States'
 import { GarageButton } from '@/components/garage-ui/GarageButton'
@@ -58,6 +61,9 @@ export function CheckoutForm({ direct = null }: { direct?: CartLine | null }) {
   const [stage, setStage] = useState<'form' | 'creating' | 'gateway' | 'verifying'>('form')
   const [mockSession, setMockSession] = useState<{ reference: string; session: ClientPaymentSession } | null>(null)
   const started = useRef(false)
+  // Long orders start folded on phones; desktop always shows the summary.
+  const [summaryToggled, setSummaryToggled] = useState<boolean | null>(null)
+  const summaryOpen = summaryToggled ?? lines.length <= 2
 
   useEffect(() => {
     if (ready && lines.length && !started.current) {
@@ -165,19 +171,66 @@ export function CheckoutForm({ direct = null }: { direct?: CartLine | null }) {
   }
 
   const busy = stage !== 'form'
+  const total = subtotal + shipping
+  const items = lines.reduce((n, l) => n + l.quantity, 0)
   return (
-    <div className="checkout">
-      <form className="checkout__form" onSubmit={submit} noValidate aria-describedby={formError ? 'checkout-error' : undefined}>
-        <fieldset disabled={busy}>
-          <legend className="title">CONTACT</legend>
+    <div className="co">
+      <aside className={`co-sum${summaryOpen ? '' : ' is-collapsed'}`} aria-label="Order summary">
+        <button type="button" className="co-sum__toggle" aria-expanded={summaryOpen} onClick={() => setSummaryToggled(!summaryOpen)}>
+          <span className="co-step">ORDER SUMMARY</span>
+          <span className="co-sum__peek">
+            {items} ITEM{items === 1 ? '' : 'S'} · {formatINR(total)}
+          </span>
+        </button>
+        <div className="co-sum__body">
+          <ul className="co-sum__items">
+            {lines.map((l) => {
+              const meta = PART_CATEGORY_META[l.category as PartCategory]
+              return (
+                <li key={l.partId} className="co-line">
+                  <span className="co-line__img">{meta && <CategoryPhoto meta={meta} sizes="72px" />}</span>
+                  <span className="co-line__info">
+                    <span className="co-line__cat">{meta?.label ?? ''}</span>
+                    <span className="co-line__name">{l.name}</span>
+                    <span className="co-line__qty">QTY {l.quantity}</span>
+                  </span>
+                  <span className="co-line__price">{formatINR(l.price * l.quantity)}</span>
+                </li>
+              )
+            })}
+          </ul>
+          <dl className="co-sum__totals">
+            <div>
+              <dt>Subtotal</dt>
+              <dd>{formatINR(subtotal)}</dd>
+            </div>
+            <div>
+              <dt>Shipping</dt>
+              <dd>{shipping ? formatINR(shipping) : 'FREE'}</dd>
+            </div>
+            <div className="co-sum__total">
+              <dt>Total</dt>
+              <dd>{formatINR(total)}</dd>
+            </div>
+          </dl>
+        </div>
+      </aside>
+
+      <form className="co-form" onSubmit={submit} noValidate aria-describedby={formError ? 'checkout-error' : undefined}>
+        <fieldset disabled={busy} className="co-set">
+          <legend className="co-step">
+            <span>01</span> CUSTOMER DETAILS
+          </legend>
           <div className="form-grid form-grid--2">
             <TextField label="Full name" autoComplete="name" value={values.name} onChange={set('name')} error={errors['contact.name']} className="span-2" />
-            <TextField label="Email" type="email" autoComplete="email" inputMode="email" value={values.email} onChange={set('email')} error={errors['contact.email']} />
             <TextField label="Mobile" type="tel" autoComplete="tel-national" inputMode="tel" value={values.phone} onChange={set('phone')} error={errors['contact.phone']} hint="For delivery updates only." />
+            <TextField label="Email" type="email" autoComplete="email" inputMode="email" value={values.email} onChange={set('email')} error={errors['contact.email']} />
           </div>
         </fieldset>
-        <fieldset disabled={busy}>
-          <legend className="title">SHIPPING</legend>
+        <fieldset disabled={busy} className="co-set">
+          <legend className="co-step">
+            <span>02</span> DELIVERY
+          </legend>
           <div className="form-grid form-grid--2">
             <TextField label="Address" autoComplete="address-line1" value={values.line1} onChange={set('line1')} error={errors['address.line1']} className="span-2" />
             <TextField label="Apartment, landmark (optional)" autoComplete="address-line2" value={values.line2} onChange={set('line2')} className="span-2" />
@@ -187,44 +240,24 @@ export function CheckoutForm({ direct = null }: { direct?: CartLine | null }) {
           </div>
         </fieldset>
         <Honeypot value={hp} onChange={setHp} />
-        {formError && (
-          <p className="form-error" id="checkout-error" role="alert">
-            {formError}
+        <div className="co-set co-pay">
+          <p className="co-step">
+            <span>03</span> PAYMENT
           </p>
-        )}
-        <GarageButton type="submit" variant="ignite" block busy={busy}>
-          {stage === 'creating' ? 'OPENING GATEWAY…' : stage === 'verifying' ? 'CONFIRMING PAYMENT…' : stage === 'gateway' ? 'WAITING FOR PAYMENT…' : `PAY ${formatINR(subtotal + shipping)}`}
-        </GarageButton>
-        <p className="muted summary__note">Payments are processed securely by our gateway. We never see or store your card details.</p>
+          <p className="co-pay__note">Payments are processed securely by our gateway. We never see or store your card details.</p>
+          {formError && (
+            <p className="form-error" id="checkout-error" role="alert">
+              {formError}
+            </p>
+          )}
+          <button type="submit" className="co-pay__cta" disabled={busy} aria-busy={busy || undefined}>
+            <span>{stage === 'creating' ? 'OPENING GATEWAY…' : stage === 'verifying' ? 'CONFIRMING PAYMENT…' : stage === 'gateway' ? 'WAITING FOR PAYMENT…' : `PAY ${formatINR(total)}`}</span>
+            <span className="co-pay__arrow" aria-hidden="true">
+              →
+            </span>
+          </button>
+        </div>
       </form>
-
-      <aside className="summary plate" aria-label="Order summary">
-        <p className="label">YOUR ORDER</p>
-        <ul className="summary__items">
-          {lines.map((l) => (
-            <li key={l.partId}>
-              <span>
-                {l.quantity} × {l.name}
-              </span>
-              <span>{formatINR(l.price * l.quantity)}</span>
-            </li>
-          ))}
-        </ul>
-        <dl>
-          <div>
-            <dt>Subtotal</dt>
-            <dd>{formatINR(subtotal)}</dd>
-          </div>
-          <div>
-            <dt>Shipping</dt>
-            <dd>{shipping ? formatINR(shipping) : 'FREE'}</dd>
-          </div>
-          <div className="summary__total">
-            <dt>Total</dt>
-            <dd>{formatINR(subtotal + shipping)}</dd>
-          </div>
-        </dl>
-      </aside>
 
       {mockSession && (
         <div className="mock-gateway" role="dialog" aria-modal="true" aria-labelledby="mock-title">

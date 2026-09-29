@@ -3,14 +3,17 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { CatalogueNote } from '@/components/garage-ui/CatalogueNote'
 import { PART_CATEGORY_META } from '@/data/catalogue'
-import { BuyNow } from '@/features/parts/BuyNow'
 import { CategoryPhoto } from '@/features/parts/CategoryPhoto'
 import { CategoryShelf } from '@/features/parts/CategoryShelf'
-import { fitmentLine } from '@/features/parts/fitment'
+import { ProductBenefits } from '@/features/parts/product/ProductBenefits'
+import { ProductHero } from '@/features/parts/product/ProductHero'
+import { ProductInstallation } from '@/features/parts/product/ProductInstallation'
+import { ProductSpecifications } from '@/features/parts/product/ProductSpecifications'
+import { RelatedProducts } from '@/features/parts/product/RelatedProducts'
+import { relatedParts } from '@/lib/catalogue/related'
 import { getCatalogue, getPartBySlug } from '@/lib/catalogue/repository'
 import { assetExists } from '@/lib/server/assets'
 import { publicEnv } from '@/lib/env'
-import { formatINR } from '@/lib/pricing/money'
 import { pageMetadata } from '@/lib/seo/metadata'
 import { PART_CATEGORIES, type Part, type PartCategory } from '@/types/catalogue'
 
@@ -74,11 +77,13 @@ async function CategoryPage({ category }: { category: PartCategory }) {
 }
 
 async function ProductPage({ part }: { part: Part }) {
-  const { bikes } = await getCatalogue()
+  const { parts, bikes } = await getCatalogue()
   const images = part.images.filter((i) => assetExists(i.src))
   const meta = PART_CATEGORY_META[part.category]
   const inStock = part.status === 'active' && part.stock > 0
-  const availability = !inStock ? 'Sold out' : part.stock <= 3 ? `Only ${part.stock} left` : 'In stock'
+  const related = relatedParts(part, parts)
+  const relatedImages: Record<string, string> = {}
+  for (const p of related) if (assetExists(p.images[0]?.src)) relatedImages[p.id] = p.images[0]!.src
 
   // Truthful structured data only: no invented ratings or reviews.
   const jsonLd = {
@@ -100,60 +105,20 @@ async function ProductPage({ part }: { part: Part }) {
   }
 
   return (
-    <article className="pdp">
+    <article className="prod">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }} />
-      <div className="pdp__media">
-        {images[0] ? (
-          // eslint-disable-next-line @next/next/no-img-element -- catalogue images are pre-optimised at delivery size
-          <img className="pdp__img" src={images[0].src} alt={images[0].alt} loading="eager" decoding="async" />
-        ) : (
-          <CategoryPhoto meta={meta} className="pdp__photo" sizes="(width < 768px) 100vw, 55vw" eager />
-        )}
-        <div className="pdp__shade" aria-hidden="true" />
-      </div>
-      <div className="pdp__info">
-        <nav className="pdp__eyebrow" aria-label="Breadcrumb">
-          <Link href="/parts">PARTS</Link> <span aria-hidden="true">/</span> <Link href={`/parts/${part.category}`}>{meta.label}</Link>
-        </nav>
-        <h1 className="pdp__name">{part.name}</h1>
-        <p className="pdp__summary">{part.summary}</p>
-        <p className="pdp__price">{formatINR(part.price)}</p>
-        <dl className="pdp__facts">
-          <div>
-            <dt>FITMENT</dt>
-            <dd>{fitmentLine(part, bikes)}</dd>
-          </div>
-          <div>
-            <dt>AVAILABILITY</dt>
-            <dd className={inStock ? 'is-in' : 'is-out'}>{availability}</dd>
-          </div>
-        </dl>
-        <BuyNow part={part} />
-        <p className="pdp__desc">{part.description}</p>
-        <dl className="pdp__specs">
-          <div>
-            <dt>MATERIAL</dt>
-            <dd>{part.material}</dd>
-          </div>
-          <div>
-            <dt>FINISH</dt>
-            <dd>{part.finish}</dd>
-          </div>
-          <div>
-            <dt>INSTALLATION</dt>
-            <dd>
-              {part.installationNotes}{' '}
-              <Link className="neon-link" href="/service?request=doorstep-installation">
-                BOOK FITTING
-              </Link>
-            </dd>
-          </div>
-          <div>
-            <dt>SKU</dt>
-            <dd>{part.sku}</dd>
-          </div>
-        </dl>
-      </div>
+      <nav className="prod__crumbs" aria-label="Breadcrumb">
+        <Link href="/parts">PARTS</Link>
+        <span aria-hidden="true">/</span>
+        <Link href={`/parts/${part.category}`}>{meta.label}</Link>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">{part.name}</span>
+      </nav>
+      <ProductHero part={part} meta={meta} number={PART_CATEGORIES.indexOf(part.category) + 1} images={images} />
+      <ProductBenefits part={part} />
+      <ProductSpecifications part={part} bikes={bikes} meta={meta} image={images[1] ?? images[0]} />
+      <ProductInstallation part={part} />
+      <RelatedProducts parts={related} images={relatedImages} />
     </article>
   )
 }
