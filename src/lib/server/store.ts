@@ -3,6 +3,7 @@ import { randomBytes } from 'node:crypto'
 import { getAdminSupabase } from '@/lib/supabase/admin'
 import type { BuildConfiguration, Paise } from '@/types/catalogue'
 import type { BuildEstimate } from '@/features/build/engine'
+import type { PaymentMethod } from '@/lib/pricing/cart'
 
 /**
  * Persistence for customer records. Supabase (service role) in production;
@@ -10,7 +11,8 @@ import type { BuildEstimate } from '@/features/build/engine'
  * refuses writes rather than silently dropping customer data.
  */
 
-export type OrderStatus = 'pending' | 'awaiting_payment' | 'paid' | 'failed' | 'cancelled' | 'refunded' | 'fulfilled'
+/** `placed` = cash-on-delivery order accepted; payment is collected on delivery. */
+export type OrderStatus = 'pending' | 'awaiting_payment' | 'placed' | 'paid' | 'failed' | 'cancelled' | 'refunded' | 'fulfilled'
 
 export interface Contact {
   name: string
@@ -53,8 +55,11 @@ export interface OrderRecord {
   status: OrderStatus
   subtotal: Paise
   shipping: Paise
+  /** Cash-on-delivery surcharge; 0 for online payment. */
+  codFee: Paise
   total: Paise
   currency: 'INR'
+  paymentMethod: PaymentMethod
   contact: Contact
   shippingAddress: Record<string, string>
   paymentProvider: string
@@ -155,8 +160,10 @@ function supabaseStore(): Store | null {
     status: row.status as OrderStatus,
     subtotal: row.subtotal as number,
     shipping: row.shipping as number,
+    codFee: (row.cod_fee as number) ?? 0,
     total: row.total as number,
     currency: 'INR',
+    paymentMethod: ((row.payment_method as PaymentMethod) ?? 'online'),
     contact: { name: row.customer_name as string, email: row.customer_email as string, phone: row.customer_phone as string },
     shippingAddress: row.shipping_address as Record<string, string>,
     paymentProvider: row.payment_provider as string,
@@ -225,8 +232,10 @@ function supabaseStore(): Store | null {
             status: o.status,
             subtotal: o.subtotal,
             shipping: o.shipping,
+            cod_fee: o.codFee,
             total: o.total,
             currency: o.currency,
+            payment_method: o.paymentMethod,
             customer_name: o.contact.name,
             customer_email: o.contact.email,
             customer_phone: o.contact.phone,

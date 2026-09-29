@@ -7,8 +7,9 @@ import { SHIPPING_RULES } from '@/lib/pricing/cart'
 export const metadata: Metadata = { title: 'Checkout', robots: { index: false } }
 
 /**
- * `?buy=<slug>[&qty=n]` is BUY NOW: checkout for that one part, straight
- * from the catalogue, without touching the cart. Otherwise the cart is used.
+ * `?buy=<slug>[&qty=n]` is BUY NOW: that part, straight from the catalogue,
+ * starts (or, after "Want to add something?", joins) the checkout selection.
+ * `?selection=1` shows that selection; no params checks out the saved cart.
  * Either way the server re-prices every line.
  */
 export default async function CheckoutPage({ searchParams }: PageProps<'/checkout'>) {
@@ -29,7 +30,7 @@ export default async function CheckoutPage({ searchParams }: PageProps<'/checkou
         <p className="co-page__eyebrow">CHECKOUT</p>
         <h1 className="co-page__title">Almost on the road.</h1>
       </header>
-      <CheckoutForm direct={direct} />
+      <CheckoutForm mode={direct ? 'buy' : params.selection ? 'selection' : 'cart'} direct={direct} />
     </div>
   )
 }

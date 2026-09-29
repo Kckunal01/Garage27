@@ -9,14 +9,9 @@ export function RelatedProducts({ parts, images }: { parts: Part[]; images: Reco
   if (!parts.length) return null
   return (
     <section className="prel" aria-labelledby="related-title">
-      <div className="prel__head">
-        <h2 id="related-title" className="psec__title">
-          RELATED PRODUCTS
-        </h2>
-        <Link href="/parts" className="prel__more">
-          EXPLORE MORE PARTS <span aria-hidden="true">→</span>
-        </Link>
-      </div>
+      <h2 id="related-title" className="psec__title">
+        RELATED PRODUCTS
+      </h2>
       <ul className="prel__list">
         {parts.map((p) => {
           const meta = PART_CATEGORY_META[p.category]

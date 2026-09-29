@@ -8,9 +8,11 @@ import { getStore, makeReference } from '@/lib/server/store'
 export const dynamic = 'force-dynamic'
 
 /**
- * Checkout → server prices the cart from the catalogue → creates the order →
- * asks the gateway for a payment order. The browser receives only what it
- * needs to open the gateway; the order is marked paid later, server-side.
+ * Checkout → server prices the cart from the catalogue (plus the COD fee for
+ * cash on delivery) → creates the order. Online: asks the gateway for a
+ * payment order; the order is marked paid later, server-side. COD: no
+ * gateway; the order is `placed` and paid on delivery. The browser only ever
+ * sends part ids, quantities and the method — never an amount.
  */
 export async function POST(req: Request) {
   if (!isSameOrigin(req)) return json({ error: 'Forbidden' }, 403)
@@ -22,25 +24,33 @@ export async function POST(req: Request) {
 
   try {
     const { parts } = await getCatalogue()
-    const cart = priceCart(parsed.data.items, parts)
+    const method = parsed.data.paymentMethod
+    const cart = priceCart(parsed.data.items, parts, method)
     if (cart.problems.length) return json({ error: 'Some parts are no longer on the shelf.', problems: cart.problems }, 409)
 
-    const provider = getPaymentProvider()
     const store = getStore()
     const reference = makeReference('O')
     const { address } = parsed.data
-    await store.insertOrder({
+    const order = {
       reference,
-      status: 'pending',
       subtotal: cart.subtotal,
       shipping: cart.shipping,
+      codFee: cart.codFee,
       total: cart.total,
-      currency: 'INR',
+      currency: 'INR' as const,
+      paymentMethod: method,
       contact: parsed.data.contact,
       shippingAddress: { line1: address.line1, line2: address.line2, city: address.city, state: address.state, pincode: address.pincode },
-      paymentProvider: provider.id,
       items: cart.lines.map((l) => ({ partId: l.part.id, name: l.part.name, sku: l.part.sku, unitPrice: l.part.price, quantity: l.quantity })),
-    })
+    }
+
+    if (method === 'cod') {
+      await store.insertOrder({ ...order, status: 'placed', paymentProvider: 'cod' })
+      return json({ reference, payment: { provider: 'cod', amount: cart.total, currency: 'INR' } }, 201)
+    }
+
+    const provider = getPaymentProvider()
+    await store.insertOrder({ ...order, status: 'pending', paymentProvider: provider.id })
     const session = await provider.createPayment({ orderReference: reference, amount: cart.total, currency: 'INR', customer: parsed.data.contact })
     await store.setOrderProviderId(reference, session.providerOrderId, 'awaiting_payment')
     return json({ reference, payment: session }, 201)

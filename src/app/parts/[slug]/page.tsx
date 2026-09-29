@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { CatalogueNote } from '@/components/garage-ui/CatalogueNote'
 import { PART_CATEGORY_META } from '@/data/catalogue'
 import { CategoryPhoto } from '@/features/parts/CategoryPhoto'
 import { CategoryShelf } from '@/features/parts/CategoryShelf'
@@ -50,7 +49,7 @@ export default async function PartsSlugPage({ params }: PageProps<'/parts/[slug]
 }
 
 async function CategoryPage({ category }: { category: PartCategory }) {
-  const { parts, bikes, source } = await getCatalogue()
+  const { parts, bikes } = await getCatalogue()
   const meta = PART_CATEGORY_META[category]
   const own = parts.filter((p) => p.category === category)
   const images: Record<string, string> = {}
@@ -70,7 +69,6 @@ async function CategoryPage({ category }: { category: PartCategory }) {
       </section>
       <div className="prt__body pcat__body">
         <CategoryShelf parts={own} bikes={bikes} images={images} />
-        {source === 'local' && <CatalogueNote />}
       </div>
     </div>
   )

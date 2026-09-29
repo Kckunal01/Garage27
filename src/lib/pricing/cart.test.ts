@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { localCatalogue } from '@/data/catalogue'
-import { priceCart, SHIPPING_RULES } from './cart'
+import { PAYMENT_RULES, priceCart, SHIPPING_RULES } from './cart'
 import { checkoutSchema, contactSchema } from '@/lib/validation/schemas'
 
 const parts = localCatalogue.parts
@@ -27,6 +27,26 @@ describe('priceCart', () => {
   })
 })
 
+describe('payment method pricing (server-side)', () => {
+  const items = [{ partId: 'part-headlight-7-chrome', quantity: 1 }, { partId: 'part-knee-pads', quantity: 1 }]
+  it('online: total = items + shipping, no COD fee', () => {
+    const r = priceCart(items, parts, 'online')
+    expect(r.codFee).toBe(0)
+    expect(r.total).toBe(r.subtotal + r.shipping)
+  })
+  it('cod: total = items + shipping + ₹500', () => {
+    const online = priceCart(items, parts, 'online')
+    const cod = priceCart(items, parts, 'cod')
+    expect(PAYMENT_RULES.codFee).toBe(50_000)
+    expect(cod.codFee).toBe(50_000)
+    expect(cod.subtotal).toBe(online.subtotal) // product prices untouched
+    expect(cod.total).toBe(online.total + 50_000)
+  })
+  it('defaults to online when no method is given', () => {
+    expect(priceCart(items, parts).codFee).toBe(0)
+  })
+})
+
 describe('schemas', () => {
   it('normalises Indian mobile numbers', () => {
     expect(contactSchema.parse({ name: 'Ravi', email: 'R@X.IN', phone: '98765 43210' })).toEqual({ name: 'Ravi', email: 'r@x.in', phone: '9876543210' })
@@ -41,5 +61,10 @@ describe('schemas', () => {
     }
     expect(checkoutSchema.safeParse(base).success).toBe(true)
     expect(checkoutSchema.safeParse({ ...base, website: 'spam' }).success).toBe(false)
+    // payment method: defaults to online, only known values, and no client total is accepted
+    expect(checkoutSchema.parse(base).paymentMethod).toBe('online')
+    expect(checkoutSchema.parse({ ...base, paymentMethod: 'cod' }).paymentMethod).toBe('cod')
+    expect(checkoutSchema.safeParse({ ...base, paymentMethod: 'crypto' }).success).toBe(false)
+    expect('total' in checkoutSchema.parse({ ...base, total: 1 })).toBe(false)
   })
 })

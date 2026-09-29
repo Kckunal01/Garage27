@@ -11,6 +11,15 @@ export interface PricedLine {
   lineTotal: Paise
 }
 
+/** How the customer pays. Chosen at checkout; priced here, on the server. */
+export const PAYMENT_METHODS = ['online', 'cod'] as const
+export type PaymentMethod = (typeof PAYMENT_METHODS)[number]
+
+export const PAYMENT_RULES = {
+  /** Cash on delivery surcharge. */
+  codFee: 50_000 as Paise, // ₹500
+}
+
 export const SHIPPING_RULES = {
   flat: 15_000 as Paise, // ₹150
   freeOver: 500_000 as Paise, // ₹5,000
@@ -24,11 +33,19 @@ export interface PricedCart {
   problems: CartProblem[]
   subtotal: Paise
   shipping: Paise
+  /** Cash-on-delivery surcharge (0 for online payment). */
+  codFee: Paise
   total: Paise
 }
 
-/** Authoritative on the server; the browser uses it for display only. */
-export function priceCart(items: CartLineInput[], parts: Part[]): PricedCart {
+/** COD fee for a method — the one place the surcharge is decided. */
+export const codFeeFor = (method: PaymentMethod): Paise => (method === 'cod' ? PAYMENT_RULES.codFee : 0)
+
+/**
+ * Authoritative on the server; the browser uses it for display only.
+ * online: total = items + shipping · cod: total = items + shipping + COD fee.
+ */
+export function priceCart(items: CartLineInput[], parts: Part[], method: PaymentMethod = 'online'): PricedCart {
   const lines: PricedLine[] = []
   const problems: CartProblem[] = []
   const merged = new Map<string, number>()
@@ -53,5 +70,6 @@ export function priceCart(items: CartLineInput[], parts: Part[]): PricedCart {
   }
   const subtotal = lines.reduce((s, l) => s + l.lineTotal, 0)
   const shipping = subtotal === 0 || subtotal >= SHIPPING_RULES.freeOver ? 0 : SHIPPING_RULES.flat
-  return { lines, problems, subtotal, shipping, total: subtotal + shipping }
+  const codFee = subtotal === 0 ? 0 : codFeeFor(method)
+  return { lines, problems, subtotal, shipping, codFee, total: subtotal + shipping + codFee }
 }

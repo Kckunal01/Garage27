@@ -16,6 +16,8 @@ export async function GET(_req: Request, ctx: { params: Promise<{ reference: str
     return json({
       reference: order.reference,
       status: order.status,
+      paymentMethod: order.paymentMethod,
+      codFee: order.codFee,
       total: order.total,
       items: order.items.map((i) => ({ name: i.name, quantity: i.quantity, unitPrice: i.unitPrice })),
     })

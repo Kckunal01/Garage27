@@ -15,6 +15,7 @@ interface OrderView {
 const STATUS: Record<string, string> = {
   pending: 'Order received — waiting for payment.',
   awaiting_payment: 'Waiting for payment confirmation.',
+  placed: 'Order placed — cash on delivery. We’re packing your parts.',
   paid: 'Paid — we’re packing your parts.',
   fulfilled: 'Dispatched — on its way to you.',
   failed: 'Payment failed — you have not been charged.',

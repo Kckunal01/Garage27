@@ -13,14 +13,19 @@ import { GarageButton } from '@/components/garage-ui/GarageButton'
 import { track } from '@/lib/analytics'
 import { postJson } from '@/lib/http-client'
 import { formatINR, valueBand } from '@/lib/pricing/money'
-import { SHIPPING_RULES } from '@/lib/pricing/cart'
+import { codFeeFor, PAYMENT_RULES, SHIPPING_RULES, type PaymentMethod } from '@/lib/pricing/cart'
+import { consumeAdding, mergeLine, readSelection, removeLine, setLineQuantity, startAdding, writeSelection } from './selection'
 import { checkoutSchema, fieldErrors } from '@/lib/validation/schemas'
 import type { ClientPaymentSession } from '@/lib/payments/types'
 
 interface CheckoutResponse {
   reference: string
+  /** COD orders come back with `provider: 'cod'` and no gateway session. */
   payment: ClientPaymentSession
 }
+
+/** buy = BUY NOW just landed (?buy=) · selection = the BUY NOW selection · cart = the saved cart. */
+export type CheckoutMode = 'buy' | 'selection' | 'cart'
 
 interface RazorpayResponse {
   razorpay_payment_id: string
@@ -47,13 +52,39 @@ function loadRazorpay(): Promise<void> {
 
 const empty = { name: '', email: '', phone: '', line1: '', line2: '', city: '', state: '', pincode: '' }
 
-/** `direct` = BUY NOW: check out exactly this line; the cart is left as it is. */
-export function CheckoutForm({ direct = null }: { direct?: CartLine | null }) {
+/**
+ * One checkout for two sources. BUY NOW (mode buy/selection) checks out the
+ * checkout selection — started fresh by BUY NOW, or appended to after
+ * "Want to add something?" — and never touches the cart. Mode cart checks
+ * out the saved cart exactly as before. `direct` is the part BUY NOW sent.
+ */
+export function CheckoutForm({ mode, direct = null }: { mode: CheckoutMode; direct?: CartLine | null }) {
   const cart = useCart()
-  const lines = direct ? [direct] : cart.lines
-  const ready = direct ? true : cart.ready
-  const subtotal = direct ? direct.price * direct.quantity : cart.subtotal
   const router = useRouter()
+  const fromCart = mode === 'cart'
+  const [selection, setSelection] = useState<CartLine[] | null>(null)
+  const initialised = useRef(false)
+  useEffect(() => {
+    // Once per visit (StrictMode re-runs effects): build the selection, then
+    // drop ?buy= from the URL so a reload can't add the same part twice.
+    if (fromCart || initialised.current) return
+    initialised.current = true
+    let next = readSelection()
+    if (mode === 'buy' && direct) {
+      next = consumeAdding() ? mergeLine(next, direct) : [direct]
+      writeSelection(next)
+      router.replace('/checkout?selection=1', { scroll: false })
+    }
+    setSelection(next)
+  }, [fromCart, mode, direct, router])
+  const updateSelection = (next: CartLine[]) => {
+    writeSelection(next)
+    setSelection(next)
+  }
+  const lines = fromCart ? cart.lines : (selection ?? [])
+  const ready = fromCart ? cart.ready : selection !== null
+  const subtotal = lines.reduce((s, l) => s + l.price * l.quantity, 0)
+  const [method, setMethod] = useState<PaymentMethod>('online')
   const [values, setValues] = useState(empty)
   const [hp, setHp] = useState('')
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -83,6 +114,8 @@ export function CheckoutForm({ direct = null }: { direct?: CartLine | null }) {
     )
 
   const shipping = subtotal >= SHIPPING_RULES.freeOver ? 0 : SHIPPING_RULES.flat
+  // Display only: the server prices the order (including this fee) itself.
+  const codFee = codFeeFor(method)
   const set = (k: keyof typeof empty) => (e: React.ChangeEvent<HTMLInputElement>) => setValues((v) => ({ ...v, [k]: e.target.value }))
 
   const verify = async (reference: string, providerOrderId: string, providerPaymentId: string, signature: string) => {
@@ -94,7 +127,7 @@ export function CheckoutForm({ direct = null }: { direct?: CartLine | null }) {
       track('payment_failed', { stage: 'verify' })
     }
     // Confirmation page shows the server's view of the order either way.
-    router.push(`/order/success?ref=${encodeURIComponent(reference)}${direct ? '&direct=1' : ''}`)
+    router.push(`/order/success?ref=${encodeURIComponent(reference)}${fromCart ? '' : '&direct=1'}`)
   }
 
   const submit = async (e: React.FormEvent) => {
@@ -104,6 +137,7 @@ export function CheckoutForm({ direct = null }: { direct?: CartLine | null }) {
       items: lines.map((l) => ({ partId: l.partId, quantity: l.quantity })),
       contact: { name: values.name, email: values.email, phone: values.phone },
       address: { line1: values.line1, line2: values.line2, city: values.city, state: values.state, pincode: values.pincode },
+      paymentMethod: method,
       website: hp || undefined,
     }
     const local = checkoutSchema.safeParse(payload)
@@ -122,6 +156,12 @@ export function CheckoutForm({ direct = null }: { direct?: CartLine | null }) {
     }
     const { reference, payment } = r.data
     track('payment_started', { provider: payment.provider, value_band: valueBand(payment.amount) })
+
+    if (payment.provider === 'cod') {
+      // No gateway: the order is placed; the confirmation page shows the server's view of it.
+      router.push(`/order/success?ref=${encodeURIComponent(reference)}${fromCart ? '' : '&direct=1'}`)
+      return
+    }
 
     if (payment.provider === 'mock') {
       setStage('gateway')
@@ -171,7 +211,7 @@ export function CheckoutForm({ direct = null }: { direct?: CartLine | null }) {
   }
 
   const busy = stage !== 'form'
-  const total = subtotal + shipping
+  const total = subtotal + shipping + codFee
   const items = lines.reduce((n, l) => n + l.quantity, 0)
   return (
     <div className="co">
@@ -184,15 +224,33 @@ export function CheckoutForm({ direct = null }: { direct?: CartLine | null }) {
         </button>
         <div className="co-sum__body">
           <ul className="co-sum__items">
-            {lines.map((l) => {
+            {lines.map((l, i) => {
               const meta = PART_CATEGORY_META[l.category as PartCategory]
               return (
                 <li key={l.partId} className="co-line">
                   <span className="co-line__img">{meta && <CategoryPhoto meta={meta} sizes="72px" />}</span>
                   <span className="co-line__info">
-                    <span className="co-line__cat">{meta?.label ?? ''}</span>
+                    <span className="co-line__n">{String(i + 1).padStart(2, '0')}</span>
                     <span className="co-line__name">{l.name}</span>
-                    <span className="co-line__qty">QTY {l.quantity}</span>
+                    <span className="co-line__cat">{meta?.label ?? ''}</span>
+                    {fromCart ? (
+                      <span className="co-line__qty">QTY {l.quantity}</span>
+                    ) : (
+                      <span className="co-qty" role="group" aria-label={`Quantity for ${l.name}`}>
+                        <button type="button" disabled={busy || l.quantity <= 1} onClick={() => updateSelection(setLineQuantity(lines, l.partId, l.quantity - 1))} aria-label="Decrease quantity">
+                          −
+                        </button>
+                        <output aria-live="polite">QTY {l.quantity}</output>
+                        <button type="button" disabled={busy || l.quantity >= SHIPPING_RULES.maxQtyPerLine} onClick={() => updateSelection(setLineQuantity(lines, l.partId, l.quantity + 1))} aria-label="Increase quantity">
+                          +
+                        </button>
+                        {lines.length > 1 && (
+                          <button type="button" className="co-qty__remove" disabled={busy} onClick={() => updateSelection(removeLine(lines, l.partId))} aria-label={`Remove ${l.name}`}>
+                            REMOVE
+                          </button>
+                        )}
+                      </span>
+                    )}
                   </span>
                   <span className="co-line__price">{formatINR(l.price * l.quantity)}</span>
                 </li>
@@ -208,12 +266,26 @@ export function CheckoutForm({ direct = null }: { direct?: CartLine | null }) {
               <dt>Shipping</dt>
               <dd>{shipping ? formatINR(shipping) : 'FREE'}</dd>
             </div>
+            {codFee > 0 && (
+              <div className="co-sum__cod">
+                <dt>COD fee</dt>
+                <dd>{formatINR(codFee)}</dd>
+              </div>
+            )}
             <div className="co-sum__total">
               <dt>Total</dt>
               <dd>{formatINR(total)}</dd>
             </div>
           </dl>
         </div>
+        {!fromCart && (
+          <p className="co-more">
+            <span className="co-more__q">WANT TO ADD SOMETHING?</span>
+            <Link href="/parts" className="co-more__link" onClick={() => startAdding()}>
+              ADD ANOTHER PART <span aria-hidden="true">→</span>
+            </Link>
+          </p>
+        )}
       </aside>
 
       <form className="co-form" onSubmit={submit} noValidate aria-describedby={formError ? 'checkout-error' : undefined}>
@@ -244,14 +316,33 @@ export function CheckoutForm({ direct = null }: { direct?: CartLine | null }) {
           <p className="co-step">
             <span>03</span> PAYMENT
           </p>
-          <p className="co-pay__note">Payments are processed securely by our gateway. We never see or store your card details.</p>
+          <fieldset className="co-methods" disabled={busy}>
+            <legend className="sr-only">Payment method</legend>
+            <label className={`co-method${method === 'online' ? ' is-on' : ''}`}>
+              <input type="radio" name="paymentMethod" value="online" checked={method === 'online'} onChange={() => setMethod('online')} />
+              <span className="co-method__mark" aria-hidden="true" />
+              <span className="co-method__text">
+                <span className="co-method__name">ONLINE PAYMENT</span>
+                <span className="co-method__desc">Secure payment via Razorpay. We never see or store your card details.</span>
+              </span>
+            </label>
+            <label className={`co-method${method === 'cod' ? ' is-on' : ''}`}>
+              <input type="radio" name="paymentMethod" value="cod" checked={method === 'cod'} onChange={() => setMethod('cod')} />
+              <span className="co-method__mark" aria-hidden="true" />
+              <span className="co-method__text">
+                <span className="co-method__name">CASH ON DELIVERY</span>
+                <span className="co-method__desc">Pay {formatINR(PAYMENT_RULES.codFee)} extra for COD.</span>
+              </span>
+              <span className="co-method__fee">+ {formatINR(PAYMENT_RULES.codFee)}</span>
+            </label>
+          </fieldset>
           {formError && (
             <p className="form-error" id="checkout-error" role="alert">
               {formError}
             </p>
           )}
           <button type="submit" className="co-pay__cta" disabled={busy} aria-busy={busy || undefined}>
-            <span>{stage === 'creating' ? 'OPENING GATEWAY…' : stage === 'verifying' ? 'CONFIRMING PAYMENT…' : stage === 'gateway' ? 'WAITING FOR PAYMENT…' : `PAY ${formatINR(total)}`}</span>
+            <span>{stage === 'creating' ? (method === 'cod' ? 'PLACING ORDER…' : 'OPENING GATEWAY…') : stage === 'verifying' ? 'CONFIRMING PAYMENT…' : stage === 'gateway' ? 'WAITING FOR PAYMENT…' : method === 'cod' ? `PLACE ORDER ${formatINR(total)}` : `PAY ${formatINR(total)}`}</span>
             <span className="co-pay__arrow" aria-hidden="true">
               →
             </span>

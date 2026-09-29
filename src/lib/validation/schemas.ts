@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { PAYMENT_METHODS } from '@/lib/pricing/cart'
 
 /** Shared client + server validation. Messages are in the garage voice. */
 
@@ -62,6 +63,8 @@ export const checkoutSchema = z.object({
     .max(20),
   contact: contactSchema,
   address: addressSchema,
+  /** Only the method is accepted from the browser — never an amount. */
+  paymentMethod: z.enum(PAYMENT_METHODS).default('online'),
   website: honeypot,
 })
 export type CheckoutInput = z.infer<typeof checkoutSchema>

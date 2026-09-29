@@ -1,5 +1,4 @@
 import type { Metadata } from 'next'
-import { CatalogueNote } from '@/components/garage-ui/CatalogueNote'
 import { PartsHero } from '@/features/parts/PartsHero'
 import { PartsLanding } from '@/features/parts/PartsLanding'
 import { getCatalogue } from '@/lib/catalogue/repository'
@@ -14,13 +13,12 @@ export const metadata: Metadata = pageMetadata({
 })
 
 export default async function PartsPage() {
-  const { parts, bikes, source } = await getCatalogue()
+  const { parts, bikes } = await getCatalogue()
   return (
     <div className="prt">
       <PartsHero />
       <div className="prt__body">
         <PartsLanding parts={parts} bikes={bikes} />
-        {source === 'local' && <CatalogueNote />}
       </div>
     </div>
   )
