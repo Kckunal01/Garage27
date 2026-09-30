@@ -8,7 +8,7 @@ import type { AcceptedFile } from '@/lib/server/http'
  * storage paths (not public URLs); staff view them via signed URLs.
  * In local development without Supabase, files are acknowledged but not kept.
  */
-export async function storeReferenceImages(kind: 'quotes' | 'services', reference: string, files: AcceptedFile[]): Promise<string[]> {
+export async function storeReferenceImages(kind: 'quotes' | 'services' | 'enquiries', reference: string, files: AcceptedFile[]): Promise<string[]> {
   if (!files.length) return []
   const sb = getAdminSupabase()
   const bucket = process.env.SUPABASE_UPLOADS_BUCKET || 'references'

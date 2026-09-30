@@ -42,6 +42,17 @@ export interface ServiceRequestRecord {
   attachments: string[]
 }
 
+/** About → LET'S TALK: a free-form enquiry with optional references. */
+export interface EnquiryRecord {
+  reference: string
+  name: string
+  /** WhatsApp number or email, as given. */
+  reach: string
+  message: string
+  link?: string
+  attachments: string[]
+}
+
 export interface OrderItemRecord {
   partId: string
   name: string
@@ -81,6 +92,7 @@ export interface Store {
   kind: 'supabase' | 'memory'
   insertQuote(q: QuoteRecord): Promise<void>
   insertServiceRequest(s: ServiceRequestRecord): Promise<void>
+  insertEnquiry(e: EnquiryRecord): Promise<void>
   insertOrder(o: OrderRecord): Promise<void>
   setOrderProviderId(reference: string, providerOrderId: string, status: OrderStatus): Promise<void>
   getOrderByReference(reference: string): Promise<OrderRecord | null>
@@ -97,7 +109,7 @@ export class StoreUnavailableError extends Error {
 }
 
 /** Human-friendly, unguessable reference, e.g. G27-Q-7KX3M9QD. */
-export function makeReference(prefix: 'Q' | 'S' | 'O'): string {
+export function makeReference(prefix: 'Q' | 'S' | 'O' | 'E'): string {
   const alphabet = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ'
   const bytes = randomBytes(8)
   let out = ''
@@ -109,11 +121,13 @@ export function makeReference(prefix: 'Q' | 'S' | 'O'): string {
 interface MemoryDb {
   quotes: QuoteRecord[]
   services: ServiceRequestRecord[]
+  enquiries: EnquiryRecord[]
   orders: Map<string, OrderRecord>
   events: Set<string>
 }
 const g = globalThis as unknown as { __g27db?: MemoryDb }
-const memory: MemoryDb = (g.__g27db ??= { quotes: [], services: [], orders: new Map(), events: new Set() } as MemoryDb)
+const memory: MemoryDb = (g.__g27db ??= { quotes: [], services: [], enquiries: [], orders: new Map(), events: new Set() } as MemoryDb)
+memory.enquiries ??= [] // a dev server started before enquiries existed
 
 const memoryStore: Store = {
   kind: 'memory',
@@ -122,6 +136,9 @@ const memoryStore: Store = {
   },
   async insertServiceRequest(s) {
     memory.services.push(s)
+  },
+  async insertEnquiry(e) {
+    memory.enquiries.push(e)
   },
   async insertOrder(o) {
     memory.orders.set(o.reference, structuredClone(o))
@@ -221,6 +238,19 @@ function supabaseStore(): Store | null {
           attachments: s.attachments,
         }),
         'service_request.insert',
+      )
+    },
+    async insertEnquiry(e) {
+      must(
+        await sb.from('enquiries').insert({
+          reference: e.reference,
+          customer_name: e.name,
+          customer_contact: e.reach,
+          message: e.message,
+          link: e.link || null,
+          attachments: e.attachments,
+        }),
+        'enquiry.insert',
       )
     },
     async insertOrder(o) {

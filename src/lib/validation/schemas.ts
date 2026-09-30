@@ -87,6 +87,25 @@ export function fieldErrors(error: z.ZodError): Record<string, string> {
 }
 
 // ── Reference uploads ────────────────────────────────────────────────────
+/** About → LET'S TALK: one way to reach the visitor (WhatsApp number or email). */
+const EMAIL = z.string().email()
+const INDIAN_MOBILE = /^(\+?91)?[6-9]\d{9}$/
+export const enquirySchema = z.object({
+  name: trimmed(2, 80, 'Tell us your name.'),
+  reach: z
+    .string()
+    .trim()
+    .max(120, 'Keep it under 120 characters.')
+    .refine((v) => EMAIL.safeParse(v).success || INDIAN_MOBILE.test(v.replace(/[\s-]/g, '')), 'Add a WhatsApp number or an email.'),
+  message: trimmed(10, 1000, 'Tell us what’s on your mind (10+ characters).'),
+  link: z.union([z.literal(''), z.string().trim().url('That link doesn’t look right.').max(500)]).optional(),
+  website: honeypot,
+})
+export type EnquiryInput = z.infer<typeof enquirySchema>
+
+/** Enquiry references may also be PDFs. */
+export const ENQUIRY_ACCEPT = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'] as const
+
 export const UPLOAD_LIMITS = {
   maxFiles: 3,
   maxBytesPerFile: 3 * 1024 * 1024,

@@ -64,6 +64,7 @@ const MAGIC: Record<string, (b: Uint8Array) => boolean> = {
   'image/png': (b) => b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4e && b[3] === 0x47,
   'image/webp': (b) => b[0] === 0x52 && b[1] === 0x49 && b[2] === 0x46 && b[3] === 0x46 && b[8] === 0x57 && b[9] === 0x45,
 }
+const PDF_MAGIC = (b: Uint8Array) => b[0] === 0x25 && b[1] === 0x50 && b[2] === 0x44 && b[3] === 0x46 // %PDF
 
 export interface AcceptedFile {
   bytes: Uint8Array
@@ -82,6 +83,21 @@ export async function readImageFiles(files: File[]): Promise<{ ok: true; files: 
     const bytes = new Uint8Array(await f.arrayBuffer())
     if (!check(bytes)) return { ok: false, error: 'That file isn’t a real image.' }
     out.push({ bytes, type: f.type, ext: f.type.split('/')[1]!.replace('jpeg', 'jpg') })
+  }
+  return { ok: true, files: out }
+}
+
+/** Enquiry references: images as above, or a PDF (checked by its %PDF header). */
+export async function readReferenceFiles(files: File[]): Promise<{ ok: true; files: AcceptedFile[] } | { ok: false; error: string }> {
+  if (files.length > UPLOAD_LIMITS.maxFiles) return { ok: false, error: `Up to ${UPLOAD_LIMITS.maxFiles} files.` }
+  const out: AcceptedFile[] = []
+  for (const f of files) {
+    if (f.size > UPLOAD_LIMITS.maxBytesPerFile) return { ok: false, error: 'Each file must be under 3 MB.' }
+    const check = f.type === 'application/pdf' ? PDF_MAGIC : MAGIC[f.type]
+    if (!check) return { ok: false, error: 'Use JPG, PNG, WebP or PDF.' }
+    const bytes = new Uint8Array(await f.arrayBuffer())
+    if (!check(bytes)) return { ok: false, error: 'That file isn’t what it says it is.' }
+    out.push({ bytes, type: f.type, ext: f.type === 'application/pdf' ? 'pdf' : f.type.split('/')[1]!.replace('jpeg', 'jpg') })
   }
   return { ok: true, files: out }
 }

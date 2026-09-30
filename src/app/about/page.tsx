@@ -1,109 +1,161 @@
 import type { Metadata } from 'next'
-import { EnvironmentalHero } from '@/components/media/EnvironmentalHero'
-import { ContactForm } from '@/features/service/ContactForm'
-import { CONTACT } from '@/components/navigation/nav-config'
-import { getCatalogue } from '@/lib/catalogue/repository'
+import Image from 'next/image'
+import { EnquiryForm } from '@/features/about/EnquiryForm'
+import { ValueIcon } from '@/features/about/ValueIcon'
 import { pageMetadata } from '@/lib/seo/metadata'
-
-export const revalidate = 300
 
 export const metadata: Metadata = pageMetadata({
   title: 'About Us — People. Motorcycles. Good Times.',
-  description: 'Garage 27 is a custom motorcycle workshop built on community, craftsmanship and creativity. Ideate, build, ride.',
+  description: 'Garage 27 exists to make better humans through motorcycles: community, craftsmanship, creativity and good times. Ideate, build, ride.',
   path: '/about',
 })
 
-const PILLARS = [
-  { k: 'COMMUNITY', t: 'Every bike brings its rider into the family. Sunday rides, late nights, shared tools.' },
-  { k: 'CRAFTSMANSHIP', t: 'Measured twice, cut once. Welded, stitched and painted by hand, in-house.' },
-  { k: 'CREATIVITY', t: 'No catalogue builds. Your bike starts with your story, not our template.' },
-  { k: 'GOOD TIMES', t: 'If it isn’t fun to ride, it isn’t finished.' },
+/** The supplied About photographs (public/assets/about). */
+const A = (name: string) => `/assets/about/${name}.webp`
+
+const VALUES = [
+  { icon: 'helmet', title: 'COMMUNITY', line: ['RIDERS,', 'NOT CUSTOMERS.'] },
+  { icon: 'wrenches', title: 'CRAFTSMANSHIP', line: ['DETAILS', 'THAT MATTER.'] },
+  { icon: 'plug', title: 'CREATIVITY', line: ['IDEAS', 'ON TWO WHEELS.'] },
+  { icon: 'peaks', title: 'GOOD TIMES', line: ['RIDES THAT', 'TURN INTO FAMILY.'] },
+] as const
+
+const WAY = [
+  { word: 'IDEATE', photo: '07-idea-sketch', alt: 'A hand sketching a motorcycle on the workbench', title: 'YOUR VISION', text: ['Ideas, inspirations or just a vibe.', 'We start with you.'] },
+  { word: 'BUILD', photo: '06-craft-welding', alt: 'Sparks flying as a tank is ground in the workshop', title: 'OUR CRAFT', text: ['From concept to components,', 'we build with purpose.'] },
+  { word: 'RIDE', photo: '08-result-ride', alt: 'A rider on a finished Garage 27 machine at sunset', title: 'THE RESULT', text: ['A machine that feels like you.', 'And a story that keeps going.'] },
 ]
 
-const PROCESS = [
-  { k: 'IDEATE', t: 'We sit down, sketch, and pull the build sheet together.' },
-  { k: 'BUILD', t: 'The bike comes into the bay. You see progress, not just an invoice.' },
-  { k: 'RIDE', t: 'Handover, first ride, and a workshop that has your back after.' },
-]
+const Arrow = ({ className }: { className: string }) => (
+  <svg className={className} viewBox="0 0 30 12" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M1 6h27M23 1l5 5-5 5" />
+  </svg>
+)
 
-export default async function AboutPage() {
-  const { services } = await getCatalogue()
+/**
+ * About — after the About Us reference: garage hero, mission beside a taped
+ * sunset print, four values, the Garage 27 way as one IDEATE → BUILD → RIDE
+ * line, and LET'S TALK inside the workshop. Only the supplied About assets.
+ */
+export default function AboutPage() {
   return (
-    <>
-      <EnvironmentalHero environment="editorial" size="tall" sign="since day one">
-        <p className="label label--amber">ABOUT US</p>
-        <h1 className="display" style={{ marginTop: 12 }}>
-          People. Motorcycles.
-          <br />
-          <em>Good times.</em>
-        </h1>
-      </EnvironmentalHero>
-
-      <section className="section wrap about-mission">
-        <p className="label label--amber">THE MISSION</p>
-        <p className="about-mission__text">
-          Garage 27 exists to turn the bike in your head into the bike in your driveway — <em>custom without compromise</em>, built by people who ride.
-        </p>
+    <div className="abt">
+      <section className="abt-hero" aria-labelledby="abt-title">
+        <Image className="abt-hero__img" src={A('01-hero-garage')} alt="" fill sizes="100vw" quality={90} preload />
+        <div className="abt-hero__shade" aria-hidden="true" />
+        <div className="abt-hero__copy">
+          <h1 id="abt-title" className="abt-hero__title">
+            ABOUT
+            <br />
+            US
+          </h1>
+          <p className="abt-hero__motto">
+            <span>PEOPLE.</span>
+            <span>MOTORCYCLES.</span>
+            <span>GOOD TIMES.</span>
+          </p>
+        </div>
       </section>
 
-      <section className="section--tight wrap" aria-labelledby="pillars">
-        <h2 id="pillars" className="sr-only">
-          What we stand for
-        </h2>
-        <ul className="pillars">
-          {PILLARS.map((p, i) => (
-            <li key={p.k} className="pillar">
-              <span className="pillar__n">0{i + 1}</span>
-              <h3 className="title">{p.k}</h3>
-              <p className="muted">{p.t}</p>
+      <section className="abt-mission" aria-labelledby="abt-mission-title">
+        <Image className="abt-bg" src={A('02-mission-workbench')} alt="" fill sizes="100vw" />
+        <div className="abt-mission__inner">
+          <div className="abt-mission__text">
+            <p className="abt-label">OUR MISSION</p>
+            <h2 id="abt-mission-title" className="abt-mission__title">
+              BETTER HUMANS
+              <br />
+              THROUGH
+              <br />
+              MOTORCYCLES.
+            </h2>
+            <p className="abt-mission__body">
+              We believe motorcycles do more than take you places. They make you more mindful, more present and more alive. Garage 27 exists to bring people, ideas and machines together to create a stronger, freer
+              and more connected community.
+            </p>
+          </div>
+          <figure className="abt-print">
+            <span className="abt-print__photo">
+              <Image src={A('05-ride-sunset')} alt="A Garage 27 rider watching the sun set over the city" fill sizes="(width < 768px) 42vw, 320px" />
+            </span>
+            <figcaption className="abt-print__caption">
+              SAME ROADS.
+              <br />
+              BETTER HUMANS.
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section className="abt-values" aria-label="What Garage 27 stands for">
+        <Image className="abt-bg abt-bg--faint" src={A('03-detail-wheel')} alt="" fill sizes="100vw" />
+        <ul className="abt-values__list">
+          {VALUES.map((v) => (
+            <li key={v.title} className="abt-value">
+              <ValueIcon name={v.icon} />
+              <h3 className="abt-value__title">{v.title}</h3>
+              <p className="abt-value__line">
+                {v.line[0]}
+                <br />
+                {v.line[1]}
+              </p>
             </li>
           ))}
         </ul>
       </section>
 
-      <section className="section wrap" aria-labelledby="process">
-        <h2 id="process" className="label label--amber">
-          HOW A BUILD HAPPENS
+      <section className="abt-way" aria-labelledby="abt-way-title">
+        <Image className="abt-bg abt-bg--faint" src={A('09-garage-workshop')} alt="" fill sizes="100vw" />
+        <h2 id="abt-way-title" className="abt-label abt-way__label">
+          THE GARAGE 27 WAY
         </h2>
-        <ol className="process">
-          {PROCESS.map((p, i) => (
-            <li key={p.k} className="process__step">
-              <span className="process__word headline">{p.k}</span>
-              {i < PROCESS.length - 1 && (
-                <span className="process__arrow" aria-hidden="true">
-                  →
+        <ol className="abt-way__steps">
+          {WAY.map((s, i) => (
+            <li key={s.word} className="abt-step">
+              <p className="abt-step__word">
+                {s.word}
+                {i < WAY.length - 1 && <Arrow className="abt-step__arrow" />}
+              </p>
+              <div className="abt-step__frame">
+                <span className="abt-step__photo">
+                  <Image src={A(s.photo)} alt={s.alt} fill sizes="(width < 768px) 30vw, 320px" />
                 </span>
-              )}
-              <p className="muted">{p.t}</p>
+                {i < WAY.length - 1 && <Arrow className="abt-step__arrow" />}
+              </div>
+              <h3 className="abt-step__title">{s.title}</h3>
+              <p className="abt-step__text">
+                {s.text[0]}
+                <br />
+                {s.text[1]}
+              </p>
             </li>
           ))}
         </ol>
       </section>
 
-      <section id="contact" className="section wrap about-contact" aria-labelledby="contact-heading">
-        <div>
-          <p className="label label--amber">COME BY THE GARAGE</p>
-          <h2 id="contact-heading" className="headline">
-            Talk to a builder.
+      <section id="contact" className="abt-talk" aria-labelledby="abt-talk-title">
+        <Image className="abt-talk__img" src={A('10-workshop-rider')} alt="" fill sizes="100vw" />
+        <div className="abt-talk__shade" aria-hidden="true" />
+        <p className="abt-talk__aside">
+          CAN’T FIND
+          <br />
+          WHAT YOU’RE
+          <br />
+          LOOKING FOR?
+          <Arrow className="abt-talk__aside-arrow" />
+        </p>
+        <div className="abt-talk__panel">
+          <h2 id="abt-talk-title" className="abt-talk__title">
+            LET’S TALK.
           </h2>
-          <p className="lede">Tell us what you ride and what you’re dreaming of. We’ll take it from there.</p>
-          <dl className="specs">
-            <div>
-              <dt className="label">HOURS</dt>
-              <dd>{CONTACT.hours}</dd>
-            </div>
-            <div>
-              <dt className="label">EMAIL</dt>
-              <dd>
-                <a className="neon-link" href={`mailto:${CONTACT.email}`}>
-                  {CONTACT.email}
-                </a>
-              </dd>
-            </div>
-          </dl>
+          <p className="abt-talk__copy">
+            Upload a reference or tell us what’s on your mind.
+            <br />
+            We’ll get back with ideas, possibilities and next steps.
+          </p>
+          <EnquiryForm />
         </div>
-        <ContactForm services={services} />
       </section>
-    </>
+    </div>
   )
 }
