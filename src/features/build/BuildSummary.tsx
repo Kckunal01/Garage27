@@ -9,7 +9,7 @@ import { customisations, encodeConfiguration, type BikeBundle } from './engine'
 import { slotWhere } from './zones'
 
 /**
- * REVIEW BUILD: only what the visitor added — each product with its price,
+ * SELECTED: only what the visitor added — each product with its price,
  * then the customisation value. The bike itself is never priced here.
  * REQUEST BUILD takes the exact configuration to /service/request.
  */
@@ -35,13 +35,12 @@ export function BuildSummary({ bundle, config }: { bundle: BikeBundle; config: B
   return (
     <section className="bsum" aria-labelledby="bsum-title">
       <h2 id="bsum-title" className="bsum__title">
-        REVIEW BUILD
+        SELECTED
       </h2>
       {lines.length ? (
         <ul className="bsum__lines">
           {lines.map((l) => (
             <li key={l.key}>
-              <span className="bsum__where">{l.where}</span>
               <span className="bsum__name">{l.name}</span>
               <span className="bsum__price">{formatPrice(l.price)}</span>
             </li>
@@ -57,14 +56,12 @@ export function BuildSummary({ bundle, config }: { bundle: BikeBundle; config: B
         </strong>
       </p>
       {unpriced > 0 && <p className="bsum__unpriced">+ {unpriced === 1 ? 'ONE ITEM' : `${unpriced} ITEMS`} PRICE ON REQUEST</p>}
-      <div className="bsum__actions">
-        <Link className="bsum__request" href={`/service/request?c=${code}`}>
-          REQUEST BUILD
-        </Link>
-        <button type="button" className="bsum__share" onClick={share}>
-          SAVE / SHARE BUILD
-        </button>
-      </div>
+      <Link className="bsum__request" href={`/service/request?c=${code}`}>
+        REQUEST BUILD
+      </Link>
+      <button type="button" className="bsum__share" onClick={share}>
+        SAVE / SHARE BUILD
+      </button>
     </section>
   )
 }

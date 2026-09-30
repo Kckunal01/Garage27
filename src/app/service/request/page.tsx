@@ -1,23 +1,21 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { BuildRequest } from '@/features/build/BuildRequest'
+import { EnquiryForm } from '@/features/about/EnquiryForm'
 import { customisations, decodeConfiguration, getBikeBundle, sanitizeConfiguration } from '@/features/build/engine'
-import { slotWhere } from '@/features/build/zones'
-import { ContactForm } from '@/features/service/ContactForm'
 import { getCatalogue } from '@/lib/catalogue/repository'
 import { formatINR, formatPrice } from '@/lib/pricing/money'
 import { pageMetadata } from '@/lib/seo/metadata'
 
 export const metadata: Metadata = pageMetadata({
-  title: 'Request a Build',
-  description: 'Send your Garage 27 build or service request to the workshop. A builder comes back with a confirmed plan and quote.',
+  title: 'Let’s Talk — Request a Build',
+  description: 'Tell Garage 27 what you’re building or looking for, or upload a reference. A builder comes back with ideas and next steps.',
   path: '/service/request',
 })
 
 /**
- * The dedicated request page. From the visualizer (?c=<build>) it carries the
- * exact build — bike, colour and the add-ons chosen — into the request form;
- * without a build it is the workshop's service request.
+ * LET'S TALK — the dedicated request page. From the visualizer (?c=<build>)
+ * it shows the build (bike, colour, the add-ons chosen) and carries it into
+ * the message; otherwise it is the open request form.
  */
 export default async function ServiceRequestPage({ searchParams }: PageProps<'/service/request'>) {
   const params = await searchParams
@@ -25,61 +23,70 @@ export default async function ServiceRequestPage({ searchParams }: PageProps<'/s
   const catalogue = await getCatalogue()
   const decoded = code ? decodeConfiguration(code) : null
   const bundle = decoded?.bikeId ? getBikeBundle(catalogue, decoded.bikeId) : null
-
-  if (bundle && decoded) {
+  const build = bundle && decoded ? (() => {
     const config = sanitizeConfiguration(decoded, bundle)
     const colour = bundle.colours.find((c) => c.id === config.colourId)
-    const { lines, total, unpriced } = customisations(config, bundle, slotWhere)
-    return (
-      <div className="sreq">
-        <div className="sreq__inner">
-          <section className="sreq__build" aria-labelledby="sreq-title">
-            <p className="sreq__label">REQUEST BUILD</p>
-            <h1 id="sreq-title" className="sreq__bike">
-              <span>{bundle.bike.brand.toUpperCase()}</span>
+    return { config, colour, ...customisations(config, bundle) }
+  })() : null
+
+  const message =
+    bundle && build
+      ? [
+          `Build request: ${bundle.bike.brand} ${bundle.bike.model}${build.colour ? ` in ${build.colour.name}` : ''}.`,
+          ...build.lines.map((l) => `- ${l.name}: ${formatPrice(l.price)}`),
+          `Customisation value: ${formatINR(build.total)}${build.unpriced ? ' + price on request' : ''}.`,
+          '',
+        ]
+          .join('\n')
+          .slice(0, 900)
+      : ''
+
+  return (
+    <div className="abt sreq">
+      <div className="sreq__inner">
+        <header className="sreq__head">
+          <p className="sreq__label">{bundle ? 'REQUEST BUILD' : 'REQUEST'}</p>
+          <h1 className="sreq__title">LET’S TALK.</h1>
+          <p className="sreq__copy">
+            Tell us what you’re building, what you’re looking for,
+            <br />
+            or upload a reference.
+          </p>
+        </header>
+
+        {bundle && build && (
+          <section className="sreq__build" aria-labelledby="sreq-build">
+            <p className="sreq__brand">{bundle.bike.brand.toUpperCase()}</p>
+            <h2 id="sreq-build" className="sreq__bike">
               {bundle.bike.name}
-            </h1>
-            {colour && !lines.some((l) => l.key === 'paint') && <p className="sreq__colour">{colour.name}</p>}
-            {lines.length ? (
+            </h2>
+            {build.colour && <p className="sreq__colour">{build.colour.name}</p>}
+            {build.lines.length ? (
               <ul className="sreq__lines">
-                {lines.map((l) => (
+                {build.lines.map((l) => (
                   <li key={l.key}>
-                    <span className="sreq__where">{l.where}</span>
-                    <span className="sreq__name">{l.name}</span>
-                    <span className="sreq__price">{formatPrice(l.price)}</span>
+                    <span>{l.name}</span>
+                    <span>{formatPrice(l.price)}</span>
                   </li>
                 ))}
               </ul>
             ) : (
-              <p className="sreq__empty">NO CUSTOMISATIONS SELECTED</p>
+              <p className="sreq__colour">NO CUSTOMISATIONS SELECTED</p>
             )}
             <p className="sreq__total">
               <span>CUSTOMISATION VALUE</span>
-              <strong>{formatINR(total)}</strong>
+              <strong>{formatINR(build.total)}</strong>
             </p>
-            {unpriced > 0 && <p className="sreq__colour">+ {unpriced === 1 ? 'ONE ITEM' : `${unpriced} ITEMS`} PRICE ON REQUEST</p>}
+            {build.unpriced > 0 && <p className="sreq__colour">+ {build.unpriced === 1 ? 'ONE ITEM' : `${build.unpriced} ITEMS`} PRICE ON REQUEST</p>}
             <Link className="sreq__edit" href={`/build/visualiser?c=${code}`}>
               EDIT BUILD
             </Link>
           </section>
-          <section className="sreq__form" aria-label="Your details">
-            <BuildRequest configuration={config} value={total} />
-          </section>
-        </div>
-      </div>
-    )
-  }
+        )}
+        {code && !bundle && <p className="sreq__copy">That build link didn’t load. Tell us about it below, or start again from Build.</p>}
 
-  return (
-    <div className="sreq">
-      <div className="sreq__inner sreq__inner--single">
-        <section className="sreq__build">
-          <p className="sreq__label">REQUEST A SERVICE</p>
-          <h1 className="sreq__bike">Tell the workshop what you need.</h1>
-          {code && <p className="sreq__text">That build link didn’t load — start from Build, or send a service request below.</p>}
-        </section>
-        <section className="sreq__form" aria-label="Service request">
-          <ContactForm services={catalogue.services} />
+        <section className="sreq__form" aria-label="Your request">
+          <EnquiryForm initialMessage={message} />
         </section>
       </div>
     </div>

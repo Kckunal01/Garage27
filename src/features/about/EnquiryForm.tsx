@@ -10,8 +10,8 @@ import { ENQUIRY_ACCEPT, enquirySchema, fieldErrors, UPLOAD_LIMITS } from '@/lib
  * name and one way to reach you. Posts to /api/enquiries; the server
  * re-validates everything and answers with a reference.
  */
-export function EnquiryForm() {
-  const [v, setV] = useState({ name: '', reach: '', message: '', link: '' })
+export function EnquiryForm({ initialMessage = '' }: { initialMessage?: string } = {}) {
+  const [v, setV] = useState({ name: '', reach: '', message: initialMessage, link: '' })
   const [files, setFiles] = useState<File[]>([])
   const [showLink, setShowLink] = useState(false)
   const [hp, setHp] = useState('')

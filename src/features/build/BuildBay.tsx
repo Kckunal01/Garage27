@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { BikeSilhouette } from '@/components/media/BikeSilhouette'
 import { useToast } from '@/components/garage-ui/Toast'
 import { track } from '@/lib/analytics'
@@ -65,7 +65,7 @@ export function BuildBayShell() {
   return (
     <div className="vz">
       <VisualiserHead />
-      <div className="vz__main">
+      <div className="vz__top">
         <div className="vz__stage">
           <ProductFrame />
         </div>
@@ -88,6 +88,8 @@ export function BuildBay({ bikes, colours, options, presets, optionImages }: Pro
   const params = useSearchParams()
   const toast = useToast()
   const booted = useRef(false)
+  // A part the cursor is resting on in the nav: its options show until the cursor leaves.
+  const [preview, setPreview] = useState<string | null>(null)
 
   // Entry points: ?preset= (garage showcase), ?c= (shared build), ?saved=1, ?bike= (+ &colour= from the Build landing).
   // Without a bike there is nothing to build here: choosing one happens on /build.
@@ -131,6 +133,8 @@ export function BuildBay({ bikes, colours, options, presets, optionImages }: Pro
   const interactive = isInteractive(bundle.bike)
   // The panel always shows a part: the chosen one, else the first this bike has.
   const zone = getZone(state.zone) ?? BUILD_ZONES.find((z) => z.rail && isZoneAvailable(z, bundle)) ?? null
+  const previewZone = getZone(preview)
+  const shown = previewZone && isZoneAvailable(previewZone, bundle) ? previewZone : zone
   const factory = createDefaultConfiguration(bundle)
   const modified = new Set<string>()
   for (const s of bundle.bike.slots) {
@@ -149,66 +153,74 @@ export function BuildBay({ bikes, colours, options, presets, optionImages }: Pro
     if (!r.ok) toast({ tone: 'error', title: INVALID_OPTION_MESSAGE, body: r.reason })
   }
 
+  const frame = (
+    <ProductFrame>
+      {interactive ? (
+        <BuildViewport
+          bike={bundle.bike}
+          config={config}
+          options={bundle.options}
+          paint={paint}
+          activeSlots={activeSlots}
+          litSlot={state.litSlot}
+          pulse={state.pulse}
+          fallbackAction={
+            <a className="vz-link" href="#bsum-title">
+              REVIEW &amp; REQUEST
+            </a>
+          }
+        />
+      ) : (
+        <div className="vz-preview">
+          <BikeSilhouette className="vz-preview__bike" silhouette={bundle.bike.silhouette} paint={colour?.swatch} title={`Preview of the ${bundle.bike.brand} ${bundle.bike.model}`} />
+          <p className="vz-preview__note">INTERACTIVE 3D FOR THIS BIKE IS STILL IN THE WORKSHOP</p>
+        </div>
+      )}
+    </ProductFrame>
+  )
+
   return (
     <div className="vz">
       <VisualiserHead />
-      <div className="vz__main">
+      <div className="vz__top">
         <div className="vz__stage">
-          <ProductFrame>
-            {interactive ? (
-              <BuildViewport
-                bike={bundle.bike}
-                config={config}
-                options={bundle.options}
-                paint={paint}
-                activeSlots={activeSlots}
-                litSlot={state.litSlot}
-                pulse={state.pulse}
-                fallbackAction={
-                  <a className="vz-link" href="#bsum-title">
-                    REVIEW &amp; REQUEST
-                  </a>
-                }
-              />
-            ) : (
-              <div className="vz-preview">
-                <BikeSilhouette className="vz-preview__bike" silhouette={bundle.bike.silhouette} paint={colour?.swatch} title={`Preview of the ${bundle.bike.brand} ${bundle.bike.model}`} />
-                <p className="vz-preview__note">INTERACTIVE 3D FOR THIS BIKE IS STILL IN THE WORKSHOP</p>
-              </div>
-            )}
-          </ProductFrame>
+          {frame}
           <p className="vz-id">
             <span className="vz-id__brand">{bundle.bike.brand.toUpperCase()}</span>
             <span className="vz-id__model">{bundle.bike.name}</span>
           </p>
         </div>
+        <BuildNav bikes={bikes} bundle={bundle} active={zone?.id ?? null} previewing={shown && shown.id !== zone?.id ? shown.id : null} modified={modified} onBike={(id) => pickBike(id)} onZone={openZone} onPreview={setPreview} />
+      </div>
 
-        <aside className="vz__panel" aria-label="Build controls">
-          <BuildNav bikes={bikes} bundle={bundle} active={zone?.id ?? null} modified={modified} onBike={(id) => pickBike(id)} onZone={openZone} />
-          {interactive && zone ? (
-            <section className="vz-zone" aria-labelledby="vz-zone-title">
-              <header className="vz-zone__head">
-                <h2 id="vz-zone-title" className="vz-zone__title">
-                  {zone.label}
-                </h2>
-                <p className="vz-zone__desc">{zone.descriptor}</p>
+      <section className="vz-bottom" aria-label="Build options">
+        <div className="vz-options">
+          {interactive && shown ? (
+            <>
+              <header className="vz-options__head">
+                <h2 className="vz-options__title">{shown.label}</h2>
+                <p className="vz-options__desc">{shown.descriptor}</p>
               </header>
-              {zone.paint && <ColourPicker colours={bundle.colours} value={config.colourId} onChange={selectColour} />}
-              <OptionTray bundle={bundle} config={config} zone={zone} blocked={state.blocked} images={optionImages} onSelect={choose} />
-              {zoneSlots(zone, bundle).length === 0 && (
-                <p className="vz-zone__note">
-                  Paint only — no {zone.label.toLowerCase()} parts for the {bundle.bike.name} in the catalogue yet.
+              {shown.paint && <ColourPicker colours={bundle.colours} value={config.colourId} onChange={selectColour} />}
+              <OptionTray bundle={bundle} config={config} zone={shown} blocked={state.blocked} images={optionImages} onSelect={choose} />
+              {zoneSlots(shown, bundle).length === 0 && (
+                <p className="vz-options__note">
+                  Paint only — no {shown.label.toLowerCase()} parts for the {bundle.bike.name} in the catalogue yet.
                 </p>
               )}
-            </section>
+            </>
           ) : (
-            <section className="vz-zone" aria-label="Colour">
+            <>
+              <header className="vz-options__head">
+                <h2 className="vz-options__title">COLOUR</h2>
+                <p className="vz-options__desc">Parts for this bike are still coming to the bay.</p>
+              </header>
               <ColourPicker colours={bundle.colours} value={config.colourId} onChange={selectColour} />
-            </section>
+            </>
           )}
-          <BuildSummary bundle={bundle} config={config} />
-        </aside>
-      </div>
+        </div>
+        <BuildSummary bundle={bundle} config={config} />
+      </section>
     </div>
   )
 }
