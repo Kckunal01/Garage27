@@ -85,7 +85,7 @@ export default async function ServiceRequestPage({ searchParams }: PageProps<'/s
         )}
         {code && !bundle && <p className="sreq__copy">That build link didn’t load. Tell us about it below, or start again from Build.</p>}
 
-        <section className="sreq__form" aria-label="Your request">
+        <section className="sf sreq__form" aria-label="Your request">
           <EnquiryForm initialMessage={message} />
         </section>
       </div>

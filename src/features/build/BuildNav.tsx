@@ -39,9 +39,13 @@ export function BuildNav({
   return (
     <nav className="bnav" aria-label="Build">
       <p className="bnav__title">BUILD</p>
-      <label className="bnav__group">
+      <label className="bnav__group bnav__bikepick">
         <span className="bnav__label">BIKE</span>
-        <select className="bnav__bike" value={bundle.bike.id} onChange={(e) => onBike(e.target.value)}>
+        <span className="bnav__bikename" aria-hidden="true">
+          <span>{bundle.bike.brand.toUpperCase()}</span>
+          <strong>{bundle.bike.name}</strong>
+        </span>
+        <select className="bnav__bike" value={bundle.bike.id} onChange={(e) => onBike(e.target.value)} aria-label="Bike">
           {bikes
             .filter((b) => b.status === 'active')
             .map((b) => (

@@ -105,7 +105,7 @@ export function ServiceRequestForm({ services, selected, onSelect, compact }: { 
 
   if (done) {
     return (
-      <div className="sform sform--done plate" role="status">
+      <div className="sf sform sform--done" role="status">
         <p className="label label--amber">REQUEST RECEIVED</p>
         <h3 className="headline" tabIndex={-1} ref={headingRef}>
           We’ll call you back.
@@ -130,7 +130,7 @@ export function ServiceRequestForm({ services, selected, onSelect, compact }: { 
   }
 
   return (
-    <form className={`sform plate${compact ? ' sform--compact' : ''}`} onSubmit={submit} noValidate>
+    <form className={`sf sform${compact ? ' sform--compact' : ''}`} onSubmit={submit} noValidate>
       <ol className="steps" aria-label="Progress">
         {['THE JOB', 'THE DETAILS', 'ANYTHING ELSE'].map((label, i) => (
           <li key={label} className={step === i + 1 ? 'is-current' : step > i + 1 ? 'is-done' : ''} aria-current={step === i + 1 ? 'step' : undefined}>
