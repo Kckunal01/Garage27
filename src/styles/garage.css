@@ -5,12 +5,6 @@
    No card, no glass, no controls: the machine is the product. */
 .gshow {
   --gshow-cream: #f1e6cf;
-  --gshow-neon: #ff5b4c;
-  --gshow-tube:
-    0 0 1px #ffd2ca,
-    0 0 3px rgba(255, 60, 45, 0.9),
-    0 0 10px rgba(255, 35, 25, 0.6),
-    0 0 24px rgba(255, 20, 15, 0.35);
   position: relative;
   isolation: isolate;
   display: flex;
@@ -47,37 +41,27 @@
 .gshow__intro {
   padding: 0 24px;
 }
+/* The house line in the Home display serif, white; a short red accent under it */
 .gshow__script {
   display: grid;
   width: max-content;
   margin: 0;
-  font-family: var(--font-sign);
+  font-family: var(--font-display);
   font-weight: 400;
-  font-size: 46px;
+  font-size: 36px;
   line-height: 0.95;
-  color: var(--gshow-cream);
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: #fff;
   text-shadow: 0 2px 14px rgba(0, 0, 0, 0.7);
-  transform: rotate(-6deg);
-  transform-origin: 0 100%;
 }
-.gshow__script-red {
-  position: relative;
-  justify-self: start;
-  padding-left: 0.5em;
-  color: var(--gshow-neon);
-  text-shadow: 0 0 8px rgba(255, 40, 30, 0.45);
-}
-.gshow__script-red::after {
-  /* the brush stroke under ALWAYS. */
+.gshow__script-last::after {
   content: '';
-  position: absolute;
-  left: 0.3em;
-  right: -0.5em;
-  bottom: -0.04em;
-  height: 3px;
-  border-radius: 3px;
-  background: linear-gradient(90deg, rgba(224, 38, 45, 0), var(--g-red) 14%, var(--g-red) 72%, rgba(224, 38, 45, 0));
-  transform: rotate(-2deg);
+  display: block;
+  width: 26px;
+  height: 2px;
+  margin-top: 12px;
+  background: var(--g-red);
 }
 .gshow__line {
   margin: 26px 0 0;
@@ -147,14 +131,13 @@
 }
 .gshow__num {
   display: block;
-  font-family: var(--font-sign);
-  font-size: 62px;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 58px;
   line-height: 0.9;
-  color: var(--gshow-neon);
-  -webkit-text-stroke: 0.5px #ff8a7d;
-  text-shadow: var(--gshow-tube);
-  transform: rotate(-6deg);
-  transform-origin: 0 100%;
+  letter-spacing: 0.01em;
+  color: #fff;
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.7);
 }
 .gshow__name {
   margin: 4px 0 0;
@@ -248,7 +231,7 @@
   }
   .gshow__script {
     grid-row: span 2;
-    font-size: clamp(64px, 5.8vw, 92px);
+    font-size: clamp(52px, 4.8vw, 76px);
   }
   .gshow__line {
     margin: 0;

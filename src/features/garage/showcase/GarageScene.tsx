@@ -37,13 +37,13 @@ export function GarageScene({ machine, detail, children }: { machine: GarageMach
         {detail ? (
           <p className="gshow__script" aria-hidden="true">
             <span>Built different.</span>
-            <span className="gshow__script-red">Always.</span>
+            <span className="gshow__script-last">Always.</span>
           </p>
         ) : (
           <h1 className="gshow__script">
             <span className="sr-only">The Garage: </span>
             <span>Built different.</span>
-            <span className="gshow__script-red">Always.</span>
+            <span className="gshow__script-last">Always.</span>
           </h1>
         )}
         <p className="gshow__line">CUSTOMISE WITHOUT COMPROMISING.</p>

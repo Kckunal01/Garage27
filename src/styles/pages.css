@@ -1339,15 +1339,10 @@
 /* ── Service — the Service reference composition ──────────────────────
    Mobile first (390 × 844): workshop hero under the header with the neon
    SERVICE sign, then five lit service panels, each a way into the request
-   flow. Neon is the hand-lettered script (--font-sign) lit as solid tubes:
-   a pale hot core, a red body and a soft bloom, so the strokes stay sharp. */
+   flow. Typography is the Home page's: the display serif, set in white;
+   red is kept for the images' own neon and small accents. */
 .svc {
   --svc-neon: #ff5549;
-  --svc-tube:
-    0 0 1px #ffd2ca,
-    0 0 3px rgba(255, 60, 45, 0.95),
-    0 0 9px rgba(255, 35, 25, 0.75),
-    0 0 22px rgba(255, 20, 15, 0.45);
   --svc-edge: rgba(255, 86, 52, 0.55);
   --svc-ink: #0b0807;
   background: var(--svc-ink);
@@ -1382,17 +1377,18 @@
   top: 88px;
 }
 /* Neon tube sign: outlined script, red glow (ref: x 30–176, rising to the right) */
+/* The SERVICE sign: the Home display serif, large and white */
 .svc-hero__neon {
-  display: inline-block;
-  margin: 0 0 4px -6px;
-  font-family: var(--font-sign);
-  font-size: 48px;
-  line-height: 1;
-  color: #ff6f61;
-  -webkit-text-stroke: 0.6px #ff8a7d;
-  text-shadow: var(--svc-tube);
-  transform: rotate(-14deg) scaleY(1.18);
-  transform-origin: 0 100%;
+  display: block;
+  margin: 0 0 6px;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 50px;
+  line-height: 0.92;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: #fff;
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.7);
 }
 .svc-hero__title {
   margin: 0;
@@ -1401,7 +1397,7 @@
   font-size: 31px;
   line-height: 0.95;
   letter-spacing: 0.01em;
-  color: #efe3c8;
+  color: #fff;
   text-shadow: 0 2px 16px rgba(0, 0, 0, 0.7);
 }
 .svc-hero__lede {
@@ -1485,22 +1481,14 @@
 }
 .svc-card__title {
   display: block;
-  font-family: var(--font-sign);
-  font-size: 20px;
-  line-height: 1.1;
-  letter-spacing: 0.01em;
-  color: #ff6f61;
-  -webkit-text-stroke: 0.4px #ff8a7d;
-  text-shadow: var(--svc-tube);
-  transform: rotate(-3deg);
-  transform-origin: 0 50%;
-}
-.svc-amp {
-  display: inline-block;
-  font-family: var(--font-ui);
+  font-family: var(--font-display);
   font-weight: 400;
-  font-size: 0.82em;
-  transform: skewX(-12deg);
+  font-size: 22px;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: #fff;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.8);
 }
 .svc-card__copy {
   display: grid;
@@ -1554,8 +1542,7 @@
   }
   .svc-hero__neon {
     font-size: clamp(80px, 8.4vw, 124px);
-    -webkit-text-stroke-width: 1px;
-    margin: 0 0 10px 12px;
+    margin: 0 0 10px;
   }
   .svc-hero__title {
     font-size: clamp(52px, 5vw, 76px);
@@ -1604,7 +1591,6 @@
   }
   .svc-card__title {
     font-size: clamp(30px, 2.8vw, 42px);
-    -webkit-text-stroke-width: 0.7px;
   }
   .svc-card__copy {
     font-size: 15px;
