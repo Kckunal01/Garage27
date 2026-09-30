@@ -69,7 +69,7 @@ export function BuildLanding({ models }: { models: LandingModel[] }) {
         </div>
 
         <div className="blnd__intro">
-          <p className="blnd__kicker">BUILD / VISUALISER</p>
+          <p className="blnd__kicker">BUILD / VISUALIZER</p>
           <h1 id="blnd-title" className="blnd__title">
             CHOOSE
             <br />

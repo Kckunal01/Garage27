@@ -146,7 +146,9 @@ export interface ValidationIssue {
 export function validateConfiguration(config: BuildConfiguration, bundle: BikeBundle): ValidationIssue[] {
   const issues: ValidationIssue[] = []
   if (config.bikeId !== bundle.bike.id) issues.push({ message: 'Unknown bike.' })
-  if (!bundle.colours.some((c) => c.id === config.colourId && c.status === 'active')) issues.push({ message: 'Unknown colour.' })
+  // A bike without verified colours yet is built without one.
+  const hasColours = bundle.colours.some((c) => c.status === 'active')
+  if (hasColours && !bundle.colours.some((c) => c.id === config.colourId && c.status === 'active')) issues.push({ message: 'Unknown colour.' })
 
   const known = new Set(bundle.bike.slots.map((s) => s.id))
   for (const key of Object.keys(config.components)) if (!known.has(key)) issues.push({ slot: key, message: 'Unknown slot.' })

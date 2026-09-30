@@ -14,14 +14,23 @@ const { bikes, colours, options, parts, showcase } = localCatalogue
 
 describe('build landing catalogue', () => {
   const active = bikes.filter((b) => b.status === 'active')
-  it('offers all 16 motorcycles, each selectable with its own factory colours', () => {
+  it('offers all 16 motorcycles; colours only where verified, with a valid default', () => {
     expect(active).toHaveLength(16)
     expect(new Set(active.map((b) => b.slug)).size).toBe(16)
     for (const b of active) {
       const own = colours.filter((c) => c.bikeId === b.id && c.status === 'active')
-      expect(own.length, b.id).toBeGreaterThan(0)
-      expect(own.some((c) => c.id === b.defaultColourId), `${b.id} default colour`).toBe(true)
+      if (!own.length) expect(b.defaultColourId, `${b.id} has no colours, so no default`).toBeUndefined()
+      else expect(own.some((c) => c.id === b.defaultColourId), `${b.id} default colour`).toBe(true)
       for (const c of own) expect(c.swatch, c.id).toMatch(/^#[0-9a-f]{6}$/i)
+    }
+  })
+  it('only bikes with a 3D rig open the interactive editor', () => {
+    expect(active.filter(isInteractive).map((b) => b.name)).toEqual(['CLASSIC 350', 'JAWA 42'])
+  })
+  it('a bike without verified colours still builds and quotes (no colour)', () => {
+    for (const b of active.filter((x) => !colours.some((c) => c.bikeId === x.id))) {
+      const bundle = getBikeBundle(localCatalogue, b.id)!
+      expect(validateConfiguration(createDefaultConfiguration(bundle), bundle), b.id).toEqual([])
     }
   })
   it('lists real models, never Garage custom-build names', () => {
