@@ -8,13 +8,13 @@ export function PriceSummary({ estimate, detailed }: { estimate: BuildEstimate; 
     <div className="psum">
       <p className="label">ESTIMATED BUILD VALUE</p>
       <p className="psum__total" aria-live="polite" aria-atomic="true">
-        {formatINR(estimate.total)}
+        {estimate.priced ? formatINR(estimate.total) : 'PRICE ON REQUEST'}
       </p>
       {detailed && (
         <dl className="psum__lines">
           <div>
             <dt>Base bike</dt>
-            <dd>{formatINR(estimate.base)}</dd>
+            <dd>{estimate.priced ? formatINR(estimate.base) : 'On request'}</dd>
           </div>
           {estimate.colour && (
             <div>

@@ -1,33 +1,39 @@
 import type { Metadata } from 'next'
-import { Suspense } from 'react'
-import { BikePickerShell } from '@/features/build/BikePicker'
-import { CatalogueNote } from '@/components/garage-ui/CatalogueNote'
-import { BuildBay } from '@/features/build/BuildBay'
+import { redirect } from 'next/navigation'
+import { BuildLanding, type LandingModel } from '@/features/build/landing/BuildLanding'
 import { getCatalogue } from '@/lib/catalogue/repository'
 import { pageMetadata } from '@/lib/seo/metadata'
 
-export const revalidate = 300
-
 export const metadata: Metadata = pageMetadata({
-  title: 'Build Your Bike — 3D Motorcycle Customiser',
-  description: 'Choose your bike, pick a colour and customise lighting, cockpit, body, seat, detail, luggage and rear wheel in the Garage 27 3D build bay. Live estimate, custom quote.',
+  title: 'Build Your Bike — Choose Your Motorcycle',
+  description: 'Choose your motorcycle and its factory colour, then customise it in the Garage 27 build bay. Royal Enfield, Jawa, Yezdi and Triumph.',
   path: '/build',
 })
 
-export default async function BuildPage() {
-  const { bikes, colours, options, showcase, source } = await getCatalogue()
-  // Only what the bay needs crosses to the client. 3D assets load per bike, on demand.
-  const presets = showcase.filter((s) => s.preset).map((s) => ({ id: s.id, name: s.name, preset: s.preset }))
-  return (
-    <>
-      <Suspense fallback={<BikePickerShell bikes={bikes} />}>
-        <BuildBay bikes={bikes} colours={colours} options={options} presets={presets} />
-      </Suspense>
-      {source === 'local' && (
-        <div className="wrap">
-          <CatalogueNote />
-        </div>
-      )}
-    </>
-  )
+/** Links that used to open the bay at /build keep working. */
+const BAY_PARAMS = ['bike', 'preset', 'c', 'saved']
+
+export default async function BuildLandingPage({ searchParams }: PageProps<'/build'>) {
+  const params = await searchParams
+  if (BAY_PARAMS.some((k) => typeof params[k] === 'string')) {
+    const query = new URLSearchParams(Object.entries(params).flatMap(([k, v]) => (typeof v === 'string' ? [[k, v]] : [])))
+    redirect(`/build/visualiser?${query}`)
+  }
+  const { bikes, colours } = await getCatalogue()
+  const models: LandingModel[] = bikes
+    .filter((b) => b.status === 'active')
+    .map((b) => ({
+      id: b.id,
+      brand: b.brand,
+      name: b.name,
+      tagline: b.tagline,
+      silhouette: b.silhouette,
+      image: b.previewImage,
+      thumbnail: b.thumbnail,
+      defaultColourId: b.defaultColourId,
+      colours: colours
+        .filter((c) => c.bikeId === b.id && c.status === 'active')
+        .map((c) => ({ id: c.id, name: c.name, swatch: c.swatch, accent: c.material.accent })),
+    }))
+  return <BuildLanding models={models} />
 }

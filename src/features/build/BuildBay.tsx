@@ -32,6 +32,9 @@ interface Props {
  * stands on its floor. Zones, options, colours and prices all come from the
  * catalogue — this file never names a bike, part or price.
  */
+/** The bay's own route (the Build landing lives at /build). */
+const BAY = '/build/visualiser'
+
 export function BuildBay({ bikes, colours, options, presets }: Props) {
   const ctx: BuildContext = useMemo(() => ({ bikes, colours, options }), [bikes, colours, options])
   const { state, bundle, estimate, pickBike, selectColour, openZone, selectOption, setStage, resetToBikes, resetBuild } = useBuildState(ctx)
@@ -40,7 +43,7 @@ export function BuildBay({ bikes, colours, options, presets }: Props) {
   const toast = useToast()
   const booted = useRef(false)
 
-  // Entry points: ?preset= (garage showcase), ?c= (shared build), ?saved=1, ?bike=
+  // Entry points: ?preset= (garage showcase), ?c= (shared build), ?saved=1, ?bike= (+ &colour= from the Build landing)
   useEffect(() => {
     if (booted.current) return
     booted.current = true
@@ -65,15 +68,15 @@ export function BuildBay({ bikes, colours, options, presets }: Props) {
       if (last && pickBike(last, { stage: 'editor', source: 'saved' })) return
       toast({ tone: 'info', title: 'NO SAVED BUILD YET.', body: 'Pick a bike to start one.' })
     }
-    if (bikeParam) pickBike(bikeParam, { source: 'link' })
+    if (bikeParam) pickBike(bikeParam, { source: params.get('colour') ? 'landing' : 'link', colourId: params.get('colour') ?? undefined })
   }, [params, presets, pickBike, toast])
 
   // Keep the URL shareable as the visitor moves between bikes.
   useEffect(() => {
     if (!booted.current) return
-    const want = state.bikeId ? `/build?bike=${state.bikeId}` : '/build'
+    const want = state.bikeId ? `${BAY}?bike=${state.bikeId}` : BAY
     const current = `${window.location.pathname}${window.location.search}`
-    if (current !== want && !(state.bikeId === null && current === '/build')) router.replace(want, { scroll: false })
+    if (current !== want && !(state.bikeId === null && current === BAY)) router.replace(want, { scroll: false })
   }, [state.bikeId, router])
 
   // Scroll to top on stage change (mobile especially).

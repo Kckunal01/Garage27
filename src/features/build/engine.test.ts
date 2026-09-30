@@ -29,7 +29,7 @@ describe('build engine — vertical slice', () => {
 
   it('base estimate equals the bike base price', () => {
     const est = estimateBuild(createDefaultConfiguration(bundle), bundle)
-    expect(est.total).toBe(bundle.bike.basePrice)
+    expect(est.total).toBe(bundle.bike.basePrice!)
     expect(est.modifiedSlots).toBe(0)
   })
 
@@ -40,7 +40,7 @@ describe('build engine — vertical slice', () => {
     expect(result.ok).toBe(true)
     const est = estimateBuild(next, bundle)
     expect(est.total).toBe(
-      bundle.bike.basePrice + 1_200_000 + 850_000 + PRICING_RULES.bayChargePerModifiedSlot,
+      bundle.bike.basePrice! + 1_200_000 + 850_000 + PRICING_RULES.bayChargePerModifiedSlot,
     )
   })
 
@@ -142,8 +142,8 @@ describe('multi-vehicle compatibility (derived from catalogue data)', () => {
 
   it('the same engine prices each vehicle from its own base + options', () => {
     let cfg = createDefaultConfiguration(jawa)
-    expect(estimateBuild(cfg, jawa).total).toBe(jawa.bike.basePrice)
+    expect(estimateBuild(cfg, jawa).total).toBe(jawa.bike.basePrice!)
     cfg = applyOption(cfg, jawa.options.find((o) => o.id === 'opt-seat-solo')!, jawa).config
-    expect(estimateBuild(cfg, jawa).total).toBe(jawa.bike.basePrice + 1_250_000 + PRICING_RULES.bayChargePerModifiedSlot)
+    expect(estimateBuild(cfg, jawa).total).toBe(jawa.bike.basePrice! + 1_250_000 + PRICING_RULES.bayChargePerModifiedSlot)
   })
 })

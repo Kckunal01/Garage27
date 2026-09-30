@@ -206,6 +206,8 @@ export interface PriceLine {
 }
 
 export interface BuildEstimate {
+  /** False when the bike has no base price yet: the total covers changes only and reads PRICE ON REQUEST. */
+  priced: boolean
   base: Paise
   colour: { id: string; name: string; delta: Paise } | null
   lines: PriceLine[]
@@ -232,10 +234,11 @@ export function estimateBuild(config: BuildConfiguration, bundle: BikeBundle): B
     }
   })
   const bayCharge = modified * PRICING_RULES.bayChargePerModifiedSlot
-  const total =
-    bundle.bike.basePrice + (colour?.priceDelta ?? 0) + lines.reduce((sum, l) => sum + l.delta, 0) + bayCharge
+  const base = bundle.bike.basePrice ?? 0
+  const total = base + (colour?.priceDelta ?? 0) + lines.reduce((sum, l) => sum + l.delta, 0) + bayCharge
   return {
-    base: bundle.bike.basePrice,
+    priced: bundle.bike.basePrice !== undefined,
+    base,
     colour: colour ? { id: colour.id, name: colour.name, delta: colour.priceDelta } : null,
     lines,
     bayCharge,

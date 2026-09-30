@@ -39,7 +39,7 @@ export function BikePicker({ bikes, onPick }: { bikes: Bike[]; onPick(id: string
                   {b.variant ? ` · ${b.variant.toUpperCase()}` : ''}
                 </span>
                 <span className="bike-tile__name">{b.name}</span>
-                <span className="bike-tile__price muted">{disabled ? b.summary : `From ${formatINR(b.basePrice)}`}</span>
+                <span className="bike-tile__price muted">{disabled ? b.summary : b.basePrice !== undefined ? `From ${formatINR(b.basePrice)}` : 'PRICE ON REQUEST'}</span>
                 <span className="neon-link bike-tile__cta">{copy.cta}</span>
               </button>
             </li>

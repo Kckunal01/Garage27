@@ -15,3 +15,7 @@ No Build-page code changes. Data, a model, and QA. The bay only ever reads the c
 8. **Hotspots** — `bike_slots.hotspot = [x, y, z]` in model space (metres, +X forward, +Y up, +Z right).
 9. **QA** — `npm run catalogue:check`: ids, defaults, renderable assets, stable node ids, rule targets, fixed nodes, hotspots.
 10. **Activate** — `status = 'active'`. Without a GLB yet: `'preview-only'` (static preview + quote), or run it on the procedural TEST rig (`kind: 'procedural'`), as the sample Classic 350 and Jawa 42 do.
+
+## The Build landing (`/build`, Choose your bike)
+
+`/build` lists every `active` bike in catalogue order (`sort_order`); the first is featured by default. It reads, per bike: `name`, `brand`, optional `tagline`, `previewImage` (the large featured photograph) and `thumbnail` (the catalogue card). Until photographs are delivered the line drawing (`silhouette`) stands in, painted in the selected colour. Only the featured bike shows its `bike_colours`. **BUILD NOW** opens the bay at `/build/visualiser?bike=<id>&colour=<colourId>`: interactive bikes open the 3D editor with that colour, the rest open preview + quote. A bike without `base_price` shows **PRICE ON REQUEST** in the bay. Old `/build?bike=…`, `?preset=`, `?c=`, `?saved=1` links redirect to the bay.

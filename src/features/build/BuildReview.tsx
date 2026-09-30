@@ -24,7 +24,7 @@ export function BuildReview({ bundle, config, estimate, onBack, previewOnly }: {
   }, [reference])
 
   const share = async () => {
-    const url = `${window.location.origin}/build?c=${encodeConfiguration(config)}`
+    const url = `${window.location.origin}/build/visualiser?c=${encodeConfiguration(config)}`
     track('build_saved', { bike: config.bikeId, method: 'link' })
     try {
       if (navigator.share) await navigator.share({ title: 'My Garage 27 build', url })

@@ -12,6 +12,24 @@ import { isZoneAvailable, unzonedSlots } from '@/features/build/zones'
  */
 const { bikes, colours, options, parts, showcase } = localCatalogue
 
+describe('build landing catalogue', () => {
+  const active = bikes.filter((b) => b.status === 'active')
+  it('offers all 16 motorcycles, each selectable with its own factory colours', () => {
+    expect(active).toHaveLength(16)
+    expect(new Set(active.map((b) => b.slug)).size).toBe(16)
+    for (const b of active) {
+      const own = colours.filter((c) => c.bikeId === b.id && c.status === 'active')
+      expect(own.length, b.id).toBeGreaterThan(0)
+      expect(own.some((c) => c.id === b.defaultColourId), `${b.id} default colour`).toBe(true)
+      for (const c of own) expect(c.swatch, c.id).toMatch(/^#[0-9a-f]{6}$/i)
+    }
+  })
+  it('lists real models, never Garage custom-build names', () => {
+    const buildNames = new Set(showcase.map((s) => s.name))
+    for (const b of bikes) expect(buildNames.has(b.name), b.name).toBe(false)
+  })
+})
+
 describe('catalogue integrity', () => {
   it('ids are unique', () => {
     for (const list of [bikes, colours, options, parts, showcase]) {

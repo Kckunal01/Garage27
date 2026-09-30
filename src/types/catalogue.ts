@@ -131,8 +131,11 @@ export interface Bike {
   variant?: string
   /** Vehicle-picker thumbnail (optimised still). Falls back to the silhouette. */
   thumbnail?: string
+  /** Short line under the name on the Build landing, where Garage 27 has one. */
+  tagline?: string
   status: AvailabilityStatus
-  basePrice: Paise
+  /** Indicative base price. Absent until Garage 27 sets one: PRICE ON REQUEST. */
+  basePrice?: Paise
   summary: string
   /** Static preview used when 3D is not available (and as the poster). */
   previewImage?: string

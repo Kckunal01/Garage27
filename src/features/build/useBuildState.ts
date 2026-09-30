@@ -115,11 +115,13 @@ export function useBuildState(ctx: BuildContext) {
   }, [state.config, state.bikeId, bundle])
 
   const pickBike = useCallback(
-    (bikeId: string, opts: { config?: Partial<BuildConfiguration> | null; stage?: BuildStage; source?: string } = {}) => {
+    (bikeId: string, opts: { config?: Partial<BuildConfiguration> | null; stage?: BuildStage; source?: string; colourId?: string } = {}) => {
       const b = getBikeBundle(ctx, bikeId)
       if (!b || b.bike.status === 'coming-soon' || b.bike.status === 'retired') return false
       const wanted = opts.config ?? (isInteractive(b.bike) ? readDraft(bikeId) : null)
-      const config = wanted ? sanitizeConfiguration(wanted, b) : createDefaultConfiguration(b)
+      const start = wanted ? sanitizeConfiguration(wanted, b) : createDefaultConfiguration(b)
+      // A colour chosen on the Build landing wins over the draft's (if the bike has it).
+      const config = (opts.colourId && applyColour(start, opts.colourId, b)) || start
       dispatch({ type: 'pick-bike', bundle: b, config, stage: opts.stage })
       track('build_bike_selected', { bike: bikeId, interactive: isInteractive(b.bike), source: opts.source ?? 'picker' })
       return true
