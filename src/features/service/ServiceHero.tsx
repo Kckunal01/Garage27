@@ -4,7 +4,7 @@ export const SERVICE_HERO = '/assets/service/service-hero.png'
 
 /**
  * The Service reference hero: the workshop photograph full-bleed under the
- * header, the neon SERVICE sign, then the editorial headline.
+ * header, then the editorial headline.
  */
 export function ServiceHero({ compact }: { compact?: boolean }) {
   return (
@@ -14,9 +14,6 @@ export function ServiceHero({ compact }: { compact?: boolean }) {
         <div className="svc-hero__shade" />
       </div>
       <div className="svc-hero__copy">
-        <p className="svc-hero__neon" aria-hidden="true">
-          Service
-        </p>
         <h1 className="svc-hero__title">
           <span className="sr-only">Service: </span>
           FROM IDEA

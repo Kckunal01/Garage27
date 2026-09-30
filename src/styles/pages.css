@@ -1339,8 +1339,8 @@
 /* ── Service — the Service reference composition ──────────────────────
    Mobile first (390 × 844): workshop hero under the header with the neon
    SERVICE sign, then five lit service panels, each a way into the request
-   flow. Typography is the Home page's: the display serif, set in white;
-   red is kept for the images' own neon and small accents. */
+   flow. Typography is the Home page's display serif: the headline in
+   white, the service titles in the house red. */
 .svc {
   --svc-neon: #ff5549;
   --svc-edge: rgba(255, 86, 52, 0.55);
@@ -1374,22 +1374,9 @@
   position: absolute;
   left: 30px;
   right: 16px;
-  top: 88px;
+  top: 108px;
 }
 /* Neon tube sign: outlined script, red glow (ref: x 30–176, rising to the right) */
-/* The SERVICE sign: the Home display serif, large and white */
-.svc-hero__neon {
-  display: block;
-  margin: 0 0 6px;
-  font-family: var(--font-display);
-  font-weight: 400;
-  font-size: 50px;
-  line-height: 0.92;
-  letter-spacing: 0.01em;
-  text-transform: uppercase;
-  color: #fff;
-  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.7);
-}
 .svc-hero__title {
   margin: 0;
   font-family: var(--font-display);
@@ -1487,7 +1474,7 @@
   line-height: 1;
   letter-spacing: 0.01em;
   text-transform: uppercase;
-  color: #fff;
+  color: var(--g-red);
   text-shadow: 0 1px 10px rgba(0, 0, 0, 0.8);
 }
 .svc-card__copy {
@@ -1539,10 +1526,6 @@
     top: auto;
     bottom: 14%;
     max-width: 560px;
-  }
-  .svc-hero__neon {
-    font-size: clamp(80px, 8.4vw, 124px);
-    margin: 0 0 10px;
   }
   .svc-hero__title {
     font-size: clamp(52px, 5vw, 76px);
