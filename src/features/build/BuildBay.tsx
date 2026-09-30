@@ -1,49 +1,96 @@
 'use client'
 
+import Image from 'next/image'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useMemo, useRef } from 'react'
-import { GarageButton } from '@/components/garage-ui/GarageButton'
+import { BikeSilhouette } from '@/components/media/BikeSilhouette'
 import { useToast } from '@/components/garage-ui/Toast'
 import { track } from '@/lib/analytics'
 import { BUILD_ZONES } from '@/data/catalogue'
-import { formatINR } from '@/lib/pricing/money'
 import type { BikeColour, Bike, ComponentOption, ShowcaseBuild } from '@/types/catalogue'
-import { BikePicker } from './BikePicker'
-import { BuildEnvironment } from './BuildEnvironment'
-import { BuildReview } from './BuildReview'
-import { CategoryRail } from './CategoryRail'
+import { BuildNav } from './BuildNav'
+import { BuildSummary } from './BuildSummary'
 import { ColourPicker } from './ColourPicker'
 import { createDefaultConfiguration, decodeConfiguration, INVALID_OPTION_MESSAGE, isInteractive, type BuildContext } from './engine'
 import { OptionTray } from './OptionTray'
 import { readLastBikeId, useBuildState } from './useBuildState'
 import { BuildViewport } from './viewport/BuildViewport'
-import { getZone, zoneForSlot, zoneSlots } from './zones'
+import { getZone, isZoneAvailable, zoneForSlot, zoneSlots } from './zones'
+
+/** The clean Build plate: the product frame's workshop floor. The bike is never in it. */
+const BUILD_ENVIRONMENT = '/assets/environments/build-base.png'
+/** The bay's own route (the Build landing lives at /build). */
+const BAY = '/build/visualiser'
+const LEGAL = ['NO LEGAL ISSUES.', 'NO INSURANCE ISSUES.', 'NO RESALE ISSUES.']
 
 interface Props {
   bikes: Bike[]
   colours: BikeColour[]
   options: ComponentOption[]
   presets: Pick<ShowcaseBuild, 'id' | 'name' | 'preset'>[]
+  /** Option id → real product photograph (resolved on the server; only files that exist). */
+  optionImages: Record<string, string>
+}
+
+/** The compact editorial head: house line, positioning, the three statements. */
+function VisualiserHead() {
+  return (
+    <header className="vz-head">
+      <h1 className="vz-head__title">
+        <span className="sr-only">Build visualizer: </span>BUILT DIFFERENT. ALWAYS.
+      </h1>
+      <p className="vz-head__sub">CUSTOMISE WITHOUT COMPROMISING.</p>
+      <ul className="vz-head__legal">
+        {LEGAL.map((l) => (
+          <li key={l}>{l}</li>
+        ))}
+      </ul>
+    </header>
+  )
+}
+
+/** The product frame: the workshop floor, with the bike (3D or preview) standing on it. */
+function ProductFrame({ children }: { children?: React.ReactNode }) {
+  return (
+    <div className="vz-frame">
+      <Image className="vz-frame__floor" src={BUILD_ENVIRONMENT} alt="" fill sizes="(width < 768px) 100vw, 64vw" quality={75} preload />
+      <div className="vz-frame__shade" aria-hidden="true" />
+      {children}
+    </div>
+  )
+}
+
+/** Server-renderable shell while the bay hydrates (and the Suspense fallback). */
+export function BuildBayShell() {
+  return (
+    <div className="vz">
+      <VisualiserHead />
+      <div className="vz__main">
+        <div className="vz__stage">
+          <ProductFrame />
+        </div>
+      </div>
+    </div>
+  )
 }
 
 /**
- * SELECT BIKE → EDITOR (zone → colour / option → live 3D + price) → REVIEW → QUOTE.
- * Everything happens inside the Build environment photograph; the 3D bike
- * stands on its floor. Zones, options, colours and prices all come from the
+ * THE BUILD VISUALIZER — one selected bike: the product frame, its identity,
+ * and a single panel that is the build navigation (BIKE, PARTS → the chosen
+ * part's colour and products) → REVIEW BUILD → REQUEST BUILD. Bikes are
+ * chosen on /build; zones, options, colours and prices all come from the
  * catalogue — this file never names a bike, part or price.
  */
-/** The bay's own route (the Build landing lives at /build). */
-const BAY = '/build/visualiser'
-
-export function BuildBay({ bikes, colours, options, presets }: Props) {
+export function BuildBay({ bikes, colours, options, presets, optionImages }: Props) {
   const ctx: BuildContext = useMemo(() => ({ bikes, colours, options }), [bikes, colours, options])
-  const { state, bundle, estimate, pickBike, selectColour, openZone, selectOption, setStage, resetToBikes, resetBuild } = useBuildState(ctx)
+  const { state, bundle, pickBike, selectColour, openZone, selectOption } = useBuildState(ctx)
   const router = useRouter()
   const params = useSearchParams()
   const toast = useToast()
   const booted = useRef(false)
 
-  // Entry points: ?preset= (garage showcase), ?c= (shared build), ?saved=1, ?bike= (+ &colour= from the Build landing)
+  // Entry points: ?preset= (garage showcase), ?c= (shared build), ?saved=1, ?bike= (+ &colour= from the Build landing).
+  // Without a bike there is nothing to build here: choosing one happens on /build.
   useEffect(() => {
     if (booted.current) return
     booted.current = true
@@ -61,57 +108,29 @@ export function BuildBay({ bikes, colours, options, presets }: Props) {
     if (code) {
       const decoded = decodeConfiguration(code)
       if (decoded?.bikeId && pickBike(decoded.bikeId, { config: decoded, stage: 'editor', source: 'share' })) return
-      toast({ tone: 'error', title: 'THAT BUILD LINK MISFIRED.', body: 'Starting you fresh.' })
+      toast({ tone: 'error', title: 'THAT BUILD LINK MISFIRED.', body: 'Choose your bike to start fresh.' })
     }
     if (params.get('saved')) {
       const last = readLastBikeId()
       if (last && pickBike(last, { stage: 'editor', source: 'saved' })) return
-      toast({ tone: 'info', title: 'NO SAVED BUILD YET.', body: 'Pick a bike to start one.' })
     }
-    if (bikeParam) pickBike(bikeParam, { source: params.get('colour') ? 'landing' : 'link', colourId: params.get('colour') ?? undefined })
-  }, [params, presets, pickBike, toast])
+    if (bikeParam && pickBike(bikeParam, { source: params.get('colour') ? 'landing' : 'link', colourId: params.get('colour') ?? undefined })) return
+    router.replace('/build')
+  }, [params, presets, pickBike, toast, router])
 
   // Keep the URL shareable as the visitor moves between bikes.
   useEffect(() => {
-    if (!booted.current) return
-    const want = state.bikeId ? `${BAY}?bike=${state.bikeId}` : BAY
-    const current = `${window.location.pathname}${window.location.search}`
-    if (current !== want && !(state.bikeId === null && current === BAY)) router.replace(want, { scroll: false })
+    if (!booted.current || !state.bikeId) return
+    const want = `${BAY}?bike=${state.bikeId}`
+    if (`${window.location.pathname}${window.location.search}` !== want) router.replace(want, { scroll: false })
   }, [state.bikeId, router])
 
-  // Scroll to top on stage change (mobile especially).
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'auto' })
-  }, [state.stage])
-
-  const onPick = (id: string) => pickBike(id)
-
-  if (!bundle || !state.config || !estimate || state.stage === 'bikes') {
-    return (
-      <BuildEnvironment stage="picker">
-        <BikePicker bikes={bikes} onPick={onPick} />
-      </BuildEnvironment>
-    )
-  }
-
-  if (state.stage === 'review' || state.stage === 'preview') {
-    return (
-      <BuildEnvironment stage="review" title={false}>
-        <div className="bbay__sheet">
-          <BuildReview
-            bundle={bundle}
-            config={state.config}
-            estimate={estimate}
-            previewOnly={state.stage === 'preview'}
-            onBack={() => (state.stage === 'preview' || !isInteractive(bundle.bike) ? resetToBikes() : setStage('editor'))}
-          />
-        </div>
-      </BuildEnvironment>
-    )
-  }
+  if (!bundle || !state.config) return <BuildBayShell />
 
   const config = state.config
-  const zone = getZone(state.zone)
+  const interactive = isInteractive(bundle.bike)
+  // The panel always shows a part: the chosen one, else the first this bike has.
+  const zone = getZone(state.zone) ?? BUILD_ZONES.find((z) => z.rail && isZoneAvailable(z, bundle)) ?? null
   const factory = createDefaultConfiguration(bundle)
   const modified = new Set<string>()
   for (const s of bundle.bike.slots) {
@@ -127,81 +146,78 @@ export function BuildBay({ bikes, colours, options, presets }: Props) {
     if (z) hotspotLabels[h.slot] = z.label
   }
   const activeSlots = zone ? zoneSlots(zone, bundle).map((s) => s.id) : []
-  const paint = bundle.colours.find((c) => c.id === config.colourId)?.material ?? { color: '#333', metalness: 0.4, roughness: 0.4 }
+  const colour = bundle.colours.find((c) => c.id === config.colourId)
+  const paint = colour?.material ?? { color: '#333', metalness: 0.4, roughness: 0.4 }
 
   const choose = (o: ComponentOption) => {
     const r = selectOption(o)
     if (!r.ok) toast({ tone: 'error', title: INVALID_OPTION_MESSAGE, body: r.reason })
   }
 
-  const vehicle = (
-    <p className="bbay__vehicle">
-      <span>
-        {bundle.bike.brand.toUpperCase()} · <strong>{bundle.bike.name}</strong>
-      </span>
-      <button type="button" className="bbay__change" onClick={resetToBikes}>
-        CHANGE BIKE
-      </button>
-    </p>
-  )
-
   return (
-    <BuildEnvironment stage="editor" head={vehicle}>
-      <div className="bbay__stage">
-        <div className="bbay__rail">
-          <CategoryRail bundle={bundle} active={zone?.id ?? null} modified={modified} onPick={openZone} />
+    <div className="vz">
+      <VisualiserHead />
+      <div className="vz__main">
+        <div className="vz__stage">
+          <ProductFrame>
+            {interactive ? (
+              <BuildViewport
+                bike={bundle.bike}
+                config={config}
+                options={bundle.options}
+                paint={paint}
+                activeSlots={activeSlots}
+                hotspotLabels={hotspotLabels}
+                litSlot={state.litSlot}
+                pulse={state.pulse}
+                conflictSlots={state.blocked?.conflicts ?? []}
+                showHotspots
+                onHotspot={(slot) => openZone(zoneForSlot(slot)?.id ?? null)}
+                fallbackAction={
+                  <a className="vz-link" href="#bsum-title">
+                    REVIEW &amp; REQUEST
+                  </a>
+                }
+              />
+            ) : (
+              <div className="vz-preview">
+                <BikeSilhouette className="vz-preview__bike" silhouette={bundle.bike.silhouette} paint={colour?.swatch} title={`Preview of the ${bundle.bike.brand} ${bundle.bike.model}`} />
+                <p className="vz-preview__note">INTERACTIVE 3D FOR THIS BIKE IS STILL IN THE WORKSHOP</p>
+              </div>
+            )}
+          </ProductFrame>
+          <p className="vz-id">
+            <span className="vz-id__brand">{bundle.bike.brand.toUpperCase()}</span>
+            <span className="vz-id__model">{bundle.bike.name}</span>
+          </p>
         </div>
-        <div className="bbay__viewport">
-          <BuildViewport
-            bike={bundle.bike}
-            config={config}
-            options={bundle.options}
-            paint={paint}
-            activeSlots={activeSlots}
-            hotspotLabels={hotspotLabels}
-            litSlot={state.litSlot}
-            pulse={state.pulse}
-            conflictSlots={state.blocked?.conflicts ?? []}
-            showHotspots
-            onHotspot={(slot) => openZone(zoneForSlot(slot)?.id ?? null)}
-            fallbackAction={
-              <GarageButton variant="amber" size="sm" onClick={() => setStage('review')}>
-                REVIEW & REQUEST QUOTE
-              </GarageButton>
-            }
-          />
-        </div>
-      </div>
 
-      <section className="bbay__panel" aria-labelledby="bbay-zone">
-        {zone && (
-          <header className="bbay__panel-head">
-            <h2 id="bbay-zone" className="bbay__zone">
-              {zone.label}
-            </h2>
-            <p className="bbay__zone-desc">{zone.descriptor}</p>
-          </header>
-        )}
-        <div className="bbay__panel-body">
-          {zone && <OptionTray bundle={bundle} config={config} zone={zone} blocked={state.blocked} onSelect={choose} />}
-          {zone?.paint && <ColourPicker colours={bundle.colours} value={config.colourId} onChange={selectColour} />}
-          {zone && zoneSlots(zone, bundle).length === 0 && <p className="bbay__note">PAINT ONLY — NO {zone.label} PARTS FOR THE {bundle.bike.name} IN THE CATALOGUE YET.</p>}
-        </div>
-        <footer className="bbay__panel-foot">
-          <div className="bbay__price">
-            <span className="bbay__price-label">ESTIMATED BUILD VALUE</span>
-            <span className="bbay__price-total" aria-live="polite" aria-atomic="true">
-              {formatINR(estimate.total)}
-            </span>
-          </div>
-          <button type="button" className="bbay__reset" onClick={resetBuild}>
-            RESET
-          </button>
-          <GarageButton variant="ignite" size="sm" onClick={() => setStage('review')}>
-            REVIEW BUILD
-          </GarageButton>
-        </footer>
-      </section>
-    </BuildEnvironment>
+        <aside className="vz__panel" aria-label="Build controls">
+          <BuildNav bikes={bikes} bundle={bundle} active={zone?.id ?? null} modified={modified} onBike={(id) => pickBike(id)} onZone={openZone} />
+          {interactive && zone ? (
+            <section className="vz-zone" aria-labelledby="vz-zone-title">
+              <header className="vz-zone__head">
+                <h2 id="vz-zone-title" className="vz-zone__title">
+                  {zone.label}
+                </h2>
+                <p className="vz-zone__desc">{zone.descriptor}</p>
+              </header>
+              {zone.paint && <ColourPicker colours={bundle.colours} value={config.colourId} onChange={selectColour} />}
+              <OptionTray bundle={bundle} config={config} zone={zone} blocked={state.blocked} images={optionImages} onSelect={choose} />
+              {zoneSlots(zone, bundle).length === 0 && (
+                <p className="vz-zone__note">
+                  Paint only — no {zone.label.toLowerCase()} parts for the {bundle.bike.name} in the catalogue yet.
+                </p>
+              )}
+            </section>
+          ) : (
+            <section className="vz-zone" aria-label="Colour">
+              <ColourPicker colours={bundle.colours} value={config.colourId} onChange={selectColour} />
+            </section>
+          )}
+          <BuildSummary bundle={bundle} config={config} />
+        </aside>
+      </div>
+    </div>
   )
 }

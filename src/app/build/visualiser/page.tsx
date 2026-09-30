@@ -1,34 +1,33 @@
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
-import { BikePickerShell } from '@/features/build/BikePicker'
-import { CatalogueNote } from '@/components/garage-ui/CatalogueNote'
-import { BuildBay } from '@/features/build/BuildBay'
+import { BuildBay, BuildBayShell } from '@/features/build/BuildBay'
 import { getCatalogue } from '@/lib/catalogue/repository'
+import { assetExists } from '@/lib/server/assets'
 import { pageMetadata } from '@/lib/seo/metadata'
 
 export const revalidate = 300
 
 export const metadata: Metadata = pageMetadata({
   title: 'Build Your Bike — 3D Motorcycle Customiser',
-  description: 'Choose your bike, pick a colour and customise lighting, cockpit, body, seat, detail, luggage and rear wheel in the Garage 27 3D build bay. Live estimate, custom quote.',
+  description: 'Customise your motorcycle part by part in the Garage 27 3D build bay: tank, front, cockpit, seat, rear, wheels, details and finish. Review your add-ons and request the build.',
   path: '/build/visualiser',
 })
 
-/** The 3D build bay (visualiser). The Build landing at /build chooses the bike and colour. */
+/** The 3D build bay (visualizer). The Build landing at /build chooses the bike and colour. */
 export default async function BuildVisualiserPage() {
-  const { bikes, colours, options, showcase, source } = await getCatalogue()
+  const { bikes, colours, options, parts, showcase } = await getCatalogue()
   // Only what the bay needs crosses to the client. 3D assets load per bike, on demand.
   const presets = showcase.filter((s) => s.preset).map((s) => ({ id: s.id, name: s.name, preset: s.preset }))
+  // Each option's real product photograph: its own preview, else its shop part's first image — only files that exist.
+  const optionImages: Record<string, string> = {}
+  for (const o of options) {
+    const part = o.partId ? parts.find((p) => p.id === o.partId) : undefined
+    const src = [o.previewAsset, part?.images[0]?.src].find((s) => assetExists(s))
+    if (src) optionImages[o.id] = src
+  }
   return (
-    <>
-      <Suspense fallback={<BikePickerShell bikes={bikes} />}>
-        <BuildBay bikes={bikes} colours={colours} options={options} presets={presets} />
-      </Suspense>
-      {source === 'local' && (
-        <div className="wrap">
-          <CatalogueNote />
-        </div>
-      )}
-    </>
+    <Suspense fallback={<BuildBayShell />}>
+      <BuildBay bikes={bikes} colours={colours} options={options} presets={presets} optionImages={optionImages} />
+    </Suspense>
   )
 }

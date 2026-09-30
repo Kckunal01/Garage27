@@ -30,3 +30,8 @@ export function firstZone(bundle: BikeBundle): string | null {
 export function unzonedSlots(bundle: BikeBundle) {
   return bundle.bike.slots.filter((s) => !zoneForSlot(s.id)).map((s) => s.id)
 }
+
+/** Where a slot sits on the bike, e.g. FRONT · HEADLIGHT (just FRONT when they match). */
+export function slotWhere(slotId: string, slotLabel: string): string {
+  return [zoneForSlot(slotId)?.label ?? slotLabel, slotLabel].filter((x, i, all) => all.indexOf(x) === i).join(' · ')
+}

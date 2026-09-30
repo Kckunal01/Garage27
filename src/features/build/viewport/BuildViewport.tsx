@@ -115,7 +115,7 @@ export function BuildViewport(props: Props) {
                 }}
               >
                 <button type="button" className={`hotspot hotspot--${state} hotspot--${side}`} onClick={() => onHotspot(h.slot)} aria-label={`Customise ${label.toLowerCase()}`} aria-pressed={on}>
-                  <span className="hotspot__ring" aria-hidden="true" />
+                  <span className="hotspot__mark" aria-hidden="true" />
                   <span className="hotspot__label">{label}</span>
                   <span className="hotspot__line" aria-hidden="true" />
                 </button>
@@ -123,11 +123,6 @@ export function BuildViewport(props: Props) {
             )
           })}
         </div>
-      )}
-      {status === 'ready' && (
-        <button type="button" className="bay-reset" onClick={() => sceneRef.current?.resetCamera()} aria-label="Reset camera">
-          RESET VIEW
-        </button>
       )}
     </div>
   )

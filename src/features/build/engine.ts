@@ -250,6 +250,36 @@ export function estimateBuild(config: BuildConfiguration, bundle: BikeBundle): B
   }
 }
 
+export interface CustomisationLine {
+  /** Slot id, or 'paint'. */
+  key: string
+  /** Where it goes, e.g. FRONT · HEADLIGHT, or PAINT. */
+  where: string
+  name: string
+  price: Paise
+}
+
+/**
+ * What the visitor has actually added to the bike: every slot that differs
+ * from its factory part, and a paint that differs from the factory colour.
+ * The bike itself is never part of this value (no base price, no labour).
+ */
+export function customisations(config: BuildConfiguration, bundle: BikeBundle, whereOf: (slotId: string, slotLabel: string) => string = (_, l) => l): { lines: CustomisationLine[]; total: Paise } {
+  const lines: CustomisationLine[] = []
+  const factory = createDefaultConfiguration(bundle)
+  if (config.colourId && config.colourId !== factory.colourId) {
+    const colour = bundle.colours.find((c) => c.id === config.colourId)
+    if (colour) lines.push({ key: 'paint', where: 'PAINT', name: colour.name, price: colour.priceDelta })
+  }
+  for (const slot of bundle.bike.slots) {
+    const chosen = config.components[slot.id] ?? null
+    if (!chosen || chosen === slot.defaultOptionId) continue
+    const option = bundle.options.find((o) => o.id === chosen)
+    if (option) lines.push({ key: slot.id, where: whereOf(slot.id, slot.label), name: option.name, price: option.priceDelta })
+  }
+  return { lines, total: lines.reduce((sum, l) => sum + l.price, 0) }
+}
+
 /** Compact, URL-safe share code for a configuration (no PII). */
 export function encodeConfiguration(config: BuildConfiguration): string {
   const json = JSON.stringify(config)

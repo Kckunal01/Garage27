@@ -147,3 +147,20 @@ describe('multi-vehicle compatibility (derived from catalogue data)', () => {
     expect(estimateBuild(cfg, jawa).total).toBe(jawa.bike.basePrice! + 1_250_000 + PRICING_RULES.bayChargePerModifiedSlot)
   })
 })
+
+describe('customisations (add-ons only)', () => {
+  it('is empty and zero for a factory bike, and never includes the bike price', async () => {
+    const { localCatalogue } = await import('@/data/catalogue')
+    const { customisations, createDefaultConfiguration, getBikeBundle, applyOption } = await import('./engine')
+    const bundle = getBikeBundle(localCatalogue, 'bike-re-classic-350')!
+    const factory = createDefaultConfiguration(bundle)
+    expect(customisations(factory, bundle)).toEqual({ lines: [], total: 0 })
+    const upgrade = bundle.options.find((o) => o.slot === 'headlight' && o.id !== bundle.bike.slots.find((s) => s.id === 'headlight')!.defaultOptionId && o.status === 'active')!
+    const next = applyOption(factory, upgrade, bundle)
+    expect(next.result.ok).toBe(true)
+    const result = customisations(next.config, bundle)
+    expect(result.lines.map((l) => l.name)).toEqual([upgrade.name])
+    expect(result.total).toBe(upgrade.priceDelta)
+  })
+})
+
