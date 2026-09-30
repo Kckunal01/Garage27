@@ -154,13 +154,33 @@ describe('customisations (add-ons only)', () => {
     const { customisations, createDefaultConfiguration, getBikeBundle, applyOption } = await import('./engine')
     const bundle = getBikeBundle(localCatalogue, 'bike-re-classic-350')!
     const factory = createDefaultConfiguration(bundle)
-    expect(customisations(factory, bundle)).toEqual({ lines: [], total: 0 })
+    expect(customisations(factory, bundle)).toEqual({ lines: [], total: 0, unpriced: 0 })
     const upgrade = bundle.options.find((o) => o.slot === 'headlight' && o.id !== bundle.bike.slots.find((s) => s.id === 'headlight')!.defaultOptionId && o.status === 'active')!
     const next = applyOption(factory, upgrade, bundle)
     expect(next.result.ok).toBe(true)
     const result = customisations(next.config, bundle)
     expect(result.lines.map((l) => l.name)).toEqual([upgrade.name])
     expect(result.total).toBe(upgrade.priceDelta)
+  })
+})
+
+describe('unpriced products', () => {
+  it('show no price (not ₹0) and stay out of the total', async () => {
+    const { localCatalogue } = await import('@/data/catalogue')
+    const { customisations, createDefaultConfiguration, getBikeBundle } = await import('./engine')
+    const { formatPrice } = await import('@/lib/pricing/money')
+    const bundle = getBikeBundle(localCatalogue, 'bike-re-classic-350')!
+    const slot = bundle.bike.slots.find((s) => s.id === 'headlight')!
+    const priced = bundle.options.find((o) => o.slot === 'headlight' && o.id !== slot.defaultOptionId)!
+    const unpriced = { ...priced, id: 'opt-test-unpriced', priceDelta: undefined }
+    const withUnpriced = { ...bundle, options: [...bundle.options, unpriced] }
+    const config = { ...createDefaultConfiguration(bundle), components: { ...createDefaultConfiguration(bundle).components, headlight: unpriced.id } }
+    const r = customisations(config, withUnpriced)
+    expect(r.lines[0]!.price).toBeNull()
+    expect(r.total).toBe(0)
+    expect(r.unpriced).toBe(1)
+    expect(formatPrice(undefined)).toBe('PRICE ON REQUEST')
+    expect(formatPrice(0)).not.toBe('PRICE ON REQUEST')
   })
 })
 

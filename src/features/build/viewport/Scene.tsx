@@ -23,8 +23,6 @@ interface SceneProps {
   activeSlots: string[]
   litSlot: string | null
   pulse: number
-  /** DOM hotspot markers by slot; the scene keeps them on their parts. */
-  markers: React.RefObject<Map<string, HTMLElement>>
   onReady(): void
   handle?: Ref<SceneHandle>
 }
@@ -91,26 +89,6 @@ function FocusRig({ controls, target }: { controls: React.RefObject<OrbitControl
   return null
 }
 
-/**
- * Projects each catalogue hotspot (model space) to canvas pixels every frame
- * and moves its DOM marker there. The markers are ordinary buttons rendered
- * by BuildViewport, so they are real, focusable UI generated from data.
- */
-function HotspotProjector({ bike, markers }: { bike: Bike; markers: React.RefObject<Map<string, HTMLElement>> }) {
-  const v = useMemo(() => new Vector3(), [])
-  useFrame(({ camera, size }) => {
-    for (const h of bike.hotspots) {
-      const el = markers.current.get(h.slot)
-      if (!el) continue
-      v.set(h.position[0], h.position[1], h.position[2]).project(camera)
-      const x = ((v.x + 1) / 2) * size.width
-      const y = ((1 - v.y) / 2) * size.height
-      el.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0)`
-      el.style.visibility = v.z < 1 ? 'visible' : 'hidden'
-    }
-  })
-  return null
-}
 
 function ReadySignal({ onReady }: { onReady(): void }) {
   const fired = useRef(false)
@@ -124,7 +102,7 @@ function ReadySignal({ onReady }: { onReady(): void }) {
 }
 
 export function BuildScene(props: SceneProps) {
-  const { bike, config, options, paint, quality, activeSlots, litSlot, pulse, markers, onReady, handle } = props
+  const { bike, config, options, paint, quality, activeSlots, litSlot, pulse, onReady, handle } = props
   const controls = useRef<OrbitControlsImpl | null>(null)
   const fitRef = useRef<(() => void) | null>(null)
   const baseTarget = useMemo(() => new Vector3(...bike.camera.target), [bike.camera.target])
@@ -178,7 +156,6 @@ export function BuildScene(props: SceneProps) {
       <ContactShadows position={[0, 0.002, 0]} opacity={0.75} scale={4} blur={2.4} far={1.4} resolution={quality.tier === 'high' ? 512 : 256} frames={1} color="#000" />
 
       <SlotLamp position={lampAt} pulse={pulse} />
-      <HotspotProjector bike={bike} markers={markers} />
 
       <OrbitControls
         ref={controls}

@@ -30,12 +30,8 @@ interface Props {
   options: ComponentOption[]
   paint: MaterialConfig
   activeSlots: string[]
-  hotspotLabels: Record<string, string>
   litSlot: string | null
   pulse: number
-  conflictSlots: string[]
-  showHotspots: boolean
-  onHotspot(slot: string): void
   /** Rendered over the static fallback (e.g. quote CTA). */
   fallbackAction?: ReactNode
 }
@@ -46,8 +42,7 @@ interface Props {
  * context loss, asset error) drops to a strong static preview + quote path.
  */
 export function BuildViewport(props: Props) {
-  const { bike, paint, fallbackAction, activeSlots, hotspotLabels, conflictSlots, showHotspots, onHotspot, ...sceneProps } = props
-  const markers = useRef(new Map<string, HTMLElement>())
+  const { bike, paint, fallbackAction, activeSlots, ...sceneProps } = props
   const [quality, setQuality] = useState<QualityProfile | null>(null)
   const [status, setStatus] = useState<'loading' | 'ready' | 'failed'>('loading')
   const sceneRef = useRef<SceneHandle>(null)
@@ -87,41 +82,13 @@ export function BuildViewport(props: Props) {
             track('build_3d_failed', { bike: bike.id, reason: e instanceof Error ? e.message.slice(0, 80) : 'unknown' })
           }}
         >
-          <BuildScene {...sceneProps} bike={bike} paint={paint} activeSlots={activeSlots} markers={markers} handle={sceneRef} quality={quality} onReady={() => setStatus('ready')} />
+          <BuildScene {...sceneProps} bike={bike} paint={paint} activeSlots={activeSlots} handle={sceneRef} quality={quality} onReady={() => setStatus('ready')} />
         </SceneBoundary>
       )}
       {status === 'loading' && (
         <div className="bay-loading" role="status">
           <BikeSilhouette className="bay-loading__ghost" silhouette={bike.silhouette} paint={paint.color} reflection={false} />
           <p className="label label--amber">BUILDING YOUR BIKE…</p>
-        </div>
-      )}
-      {status === 'ready' && showHotspots && (
-        <div className="hotspots">
-          {bike.hotspots.map((h) => {
-            const label = hotspotLabels[h.slot]
-            if (!label) return null
-            const on = activeSlots.includes(h.slot)
-            const state = conflictSlots.includes(h.slot) ? 'conflict' : on ? 'active' : 'idle'
-            // Forward parts label to the left so they never run off the stage.
-            const side = h.position[0] > 0.45 ? 'left' : 'right'
-            return (
-              <div
-                key={h.slot}
-                className="hotspot-anchor"
-                ref={(el) => {
-                  if (el) markers.current.set(h.slot, el)
-                  else markers.current.delete(h.slot)
-                }}
-              >
-                <button type="button" className={`hotspot hotspot--${state} hotspot--${side}`} onClick={() => onHotspot(h.slot)} aria-label={`Customise ${label.toLowerCase()}`} aria-pressed={on}>
-                  <span className="hotspot__mark" aria-hidden="true" />
-                  <span className="hotspot__label">{label}</span>
-                  <span className="hotspot__line" aria-hidden="true" />
-                </button>
-              </div>
-            )
-          })}
         </div>
       )}
     </div>

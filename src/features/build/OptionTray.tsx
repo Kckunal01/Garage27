@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { formatINR } from '@/lib/pricing/money'
+import { formatINR, formatPrice } from '@/lib/pricing/money'
 import type { BuildConfiguration, BuildZone, ComponentOption } from '@/types/catalogue'
 import { checkOption, INVALID_OPTION_MESSAGE, type BikeBundle } from './engine'
 import { zoneSlots } from './zones'
@@ -67,7 +67,7 @@ export function OptionTray({ bundle, config, zone, blocked, images, onSelect }: 
                       {image && <Image src={image} alt="" fill sizes="(width < 768px) 44vw, 160px" />}
                     </span>
                     <span className="prod__name">{o.name}</span>
-                    <span className="prod__price">{soon ? 'COMING SOON' : formatINR(o.priceDelta)}</span>
+                    <span className="prod__price">{soon ? 'COMING SOON' : formatPrice(o.priceDelta)}</span>
                     {!check.ok && !soon && (
                       <span className="sr-only" id={`${o.id}-why`}>
                         {check.reason}

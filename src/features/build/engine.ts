@@ -256,7 +256,8 @@ export interface CustomisationLine {
   /** Where it goes, e.g. FRONT · HEADLIGHT, or PAINT. */
   where: string
   name: string
-  price: Paise
+  /** null: no stored price (PRICE ON REQUEST); not counted in the total. */
+  price: Paise | null
 }
 
 /**
@@ -264,7 +265,7 @@ export interface CustomisationLine {
  * from its factory part, and a paint that differs from the factory colour.
  * The bike itself is never part of this value (no base price, no labour).
  */
-export function customisations(config: BuildConfiguration, bundle: BikeBundle, whereOf: (slotId: string, slotLabel: string) => string = (_, l) => l): { lines: CustomisationLine[]; total: Paise } {
+export function customisations(config: BuildConfiguration, bundle: BikeBundle, whereOf: (slotId: string, slotLabel: string) => string = (_, l) => l): { lines: CustomisationLine[]; total: Paise; unpriced: number } {
   const lines: CustomisationLine[] = []
   const factory = createDefaultConfiguration(bundle)
   if (config.colourId && config.colourId !== factory.colourId) {
@@ -275,9 +276,9 @@ export function customisations(config: BuildConfiguration, bundle: BikeBundle, w
     const chosen = config.components[slot.id] ?? null
     if (!chosen || chosen === slot.defaultOptionId) continue
     const option = bundle.options.find((o) => o.id === chosen)
-    if (option) lines.push({ key: slot.id, where: whereOf(slot.id, slot.label), name: option.name, price: option.priceDelta })
+    if (option) lines.push({ key: slot.id, where: whereOf(slot.id, slot.label), name: option.name, price: option.priceDelta ?? null })
   }
-  return { lines, total: lines.reduce((sum, l) => sum + l.price, 0) }
+  return { lines, total: lines.reduce((sum, l) => sum + (l.price ?? 0), 0), unpriced: lines.filter((l) => l.price === null).length }
 }
 
 /** Compact, URL-safe share code for a configuration (no PII). */

@@ -140,11 +140,6 @@ export function BuildBay({ bikes, colours, options, presets, optionImages }: Pro
     }
   }
   if (config.colourId !== factory.colourId) BUILD_ZONES.filter((z) => z.paint).forEach((z) => modified.add(z.id))
-  const hotspotLabels: Record<string, string> = {}
-  for (const h of bundle.bike.hotspots) {
-    const z = zoneForSlot(h.slot)
-    if (z) hotspotLabels[h.slot] = z.label
-  }
   const activeSlots = zone ? zoneSlots(zone, bundle).map((s) => s.id) : []
   const colour = bundle.colours.find((c) => c.id === config.colourId)
   const paint = colour?.material ?? { color: '#333', metalness: 0.4, roughness: 0.4 }
@@ -167,12 +162,8 @@ export function BuildBay({ bikes, colours, options, presets, optionImages }: Pro
                 options={bundle.options}
                 paint={paint}
                 activeSlots={activeSlots}
-                hotspotLabels={hotspotLabels}
                 litSlot={state.litSlot}
                 pulse={state.pulse}
-                conflictSlots={state.blocked?.conflicts ?? []}
-                showHotspots
-                onHotspot={(slot) => openZone(zoneForSlot(slot)?.id ?? null)}
                 fallbackAction={
                   <a className="vz-link" href="#bsum-title">
                     REVIEW &amp; REQUEST

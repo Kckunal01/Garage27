@@ -71,7 +71,7 @@ const mapOption = (r: any): ComponentOption => ({
   slot: r.slot_id,
   name: r.name,
   descriptor: r.descriptor,
-  priceDelta: r.price_delta,
+  priceDelta: r.price_delta ?? undefined,
   status: r.status,
   modelAsset: r.model_asset,
   materialConfig: r.material_config ?? undefined,

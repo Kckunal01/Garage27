@@ -5,7 +5,7 @@ import { customisations, decodeConfiguration, getBikeBundle, sanitizeConfigurati
 import { slotWhere } from '@/features/build/zones'
 import { ContactForm } from '@/features/service/ContactForm'
 import { getCatalogue } from '@/lib/catalogue/repository'
-import { formatINR } from '@/lib/pricing/money'
+import { formatINR, formatPrice } from '@/lib/pricing/money'
 import { pageMetadata } from '@/lib/seo/metadata'
 
 export const metadata: Metadata = pageMetadata({
@@ -29,7 +29,7 @@ export default async function ServiceRequestPage({ searchParams }: PageProps<'/s
   if (bundle && decoded) {
     const config = sanitizeConfiguration(decoded, bundle)
     const colour = bundle.colours.find((c) => c.id === config.colourId)
-    const { lines, total } = customisations(config, bundle, slotWhere)
+    const { lines, total, unpriced } = customisations(config, bundle, slotWhere)
     return (
       <div className="sreq">
         <div className="sreq__inner">
@@ -46,7 +46,7 @@ export default async function ServiceRequestPage({ searchParams }: PageProps<'/s
                   <li key={l.key}>
                     <span className="sreq__where">{l.where}</span>
                     <span className="sreq__name">{l.name}</span>
-                    <span className="sreq__price">{formatINR(l.price)}</span>
+                    <span className="sreq__price">{formatPrice(l.price)}</span>
                   </li>
                 ))}
               </ul>
@@ -57,6 +57,7 @@ export default async function ServiceRequestPage({ searchParams }: PageProps<'/s
               <span>CUSTOMISATION VALUE</span>
               <strong>{formatINR(total)}</strong>
             </p>
+            {unpriced > 0 && <p className="sreq__colour">+ {unpriced === 1 ? 'ONE ITEM' : `${unpriced} ITEMS`} PRICE ON REQUEST</p>}
             <Link className="sreq__edit" href={`/build/visualiser?c=${code}`}>
               EDIT BUILD
             </Link>

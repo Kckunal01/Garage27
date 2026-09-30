@@ -22,3 +22,8 @@ export function valueBand(paise: Paise): string {
   if (rupees < 2_50_000) return '1L-2.5L'
   return '2.5L+'
 }
+
+/** A product price, or PRICE ON REQUEST when none is stored (never ₹0). */
+export function formatPrice(paise: Paise | null | undefined): string {
+  return paise === null || paise === undefined ? 'PRICE ON REQUEST' : formatINR(paise)
+}

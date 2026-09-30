@@ -181,7 +181,8 @@ export interface ComponentOption {
   slot: string
   name: string
   descriptor: string
-  priceDelta: Paise
+  /** Absent when no price is stored: shown as PRICE ON REQUEST, never ₹0. */
+  priceDelta?: Paise
   status: AvailabilityStatus
   modelAsset: ModelAsset
   /** Stable model node ids this option replaces/updates, e.g. ['bike.seat']. */

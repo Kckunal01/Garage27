@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useToast } from '@/components/garage-ui/Toast'
 import { track } from '@/lib/analytics'
-import { formatINR } from '@/lib/pricing/money'
+import { formatINR, formatPrice } from '@/lib/pricing/money'
 import type { BuildConfiguration } from '@/types/catalogue'
 import { customisations, encodeConfiguration, type BikeBundle } from './engine'
 import { slotWhere } from './zones'
@@ -15,7 +15,7 @@ import { slotWhere } from './zones'
  */
 export function BuildSummary({ bundle, config }: { bundle: BikeBundle; config: BuildConfiguration }) {
   const toast = useToast()
-  const { lines, total } = customisations(config, bundle, slotWhere)
+  const { lines, total, unpriced } = customisations(config, bundle, slotWhere)
   const code = encodeConfiguration(config)
 
   const share = async () => {
@@ -43,7 +43,7 @@ export function BuildSummary({ bundle, config }: { bundle: BikeBundle; config: B
             <li key={l.key}>
               <span className="bsum__where">{l.where}</span>
               <span className="bsum__name">{l.name}</span>
-              <span className="bsum__price">{formatINR(l.price)}</span>
+              <span className="bsum__price">{formatPrice(l.price)}</span>
             </li>
           ))}
         </ul>
@@ -56,6 +56,7 @@ export function BuildSummary({ bundle, config }: { bundle: BikeBundle; config: B
           {formatINR(total)}
         </strong>
       </p>
+      {unpriced > 0 && <p className="bsum__unpriced">+ {unpriced === 1 ? 'ONE ITEM' : `${unpriced} ITEMS`} PRICE ON REQUEST</p>}
       <div className="bsum__actions">
         <Link className="bsum__request" href={`/service/request?c=${code}`}>
           REQUEST BUILD
