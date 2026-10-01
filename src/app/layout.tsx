@@ -35,6 +35,12 @@ export const metadata: Metadata = {
   title: { default: 'Garage 27 — Custom Motorcycles, Built Different', template: '%s · Garage 27' },
   description: 'Garage 27 is a custom motorcycle workshop. Build your bike in our 3D build bay, shop custom parts, or book customisation and restoration services.',
   applicationName: 'Garage 27',
+  // Garage 27's favicon, as supplied (public/assets/favicon.png): tab, bookmarks and home-screen icon.
+  icons: {
+    icon: [{ url: '/assets/favicon.png', type: 'image/png' }],
+    shortcut: '/assets/favicon.png',
+    apple: '/assets/favicon.png',
+  },
   formatDetection: { telephone: false },
 }
 

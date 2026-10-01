@@ -464,3 +464,76 @@
     font-size: 15px;
   }
 }
+
+/* ── One legal-page frame (all four documents) ─────────────────────────────
+   The topic text sits in a standard, viewport-relative content area that
+   scrolls internally, so a long section never makes one legal page longer
+   than another. Clear of the header above and the floating nav below. */
+.legal {
+  --legal-h: max(360px, calc(100svh - var(--header-h) - var(--nav-h) - var(--nav-bottom) - 96px));
+}
+.ldoc__panel {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  height: var(--legal-h);
+  min-width: 0;
+}
+.ldoc__body {
+  align-content: start;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 10px;
+  padding-bottom: 20px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(239, 230, 210, 0.28) transparent;
+}
+.ldoc__body:focus-visible {
+  outline: 1px solid rgba(239, 230, 210, 0.4);
+  outline-offset: 4px;
+}
+
+/* MONEYBACK: the programme name — red in headings and the topic list, bold
+   with a thin red rule in the text. */
+.ldoc__em {
+  font-weight: 700;
+  color: #fff;
+  text-decoration: underline;
+  text-decoration-color: var(--g-red);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+.ldoc__panel-title .ldoc__em,
+.ldoc__topic .ldoc__em {
+  color: var(--g-red);
+  text-decoration: none;
+}
+.ldoc__topic.is-active .ldoc__em {
+  color: #fff;
+}
+
+@media (--desktop) {
+  .legal {
+    --legal-h: max(440px, calc(100svh - var(--header-h) - var(--nav-h) - var(--nav-bottom) - 72px));
+  }
+  /* Both columns share the frame: the topic list scrolls in its own column. */
+  .ldoc {
+    height: var(--legal-h);
+    align-items: stretch;
+  }
+  .ldoc__nav {
+    position: static;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    min-height: 0;
+  }
+  .ldoc__topics {
+    min-height: 0;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(239, 230, 210, 0.2) transparent;
+  }
+  .ldoc__panel {
+    height: auto;
+    min-height: 0;
+  }
+}

@@ -34,8 +34,8 @@ export const SHIPPING_RULES = {
  * basis points of the product price. Pending CA / tax review before launch.
  */
 export const CHARGE_RULES = {
-  /** Platform fee on the product subtotal: 4%. */
-  platformFeeBp: 400,
+  /** Platform fee on the product subtotal: 2.5%. */
+  platformFeeBp: 250,
   /** Universal parts, and bike-specific parts for bikes up to 350cc: 18%. */
   standardBp: 1_800,
   /** Bike-specific parts for a bike above 350cc: 40%. */

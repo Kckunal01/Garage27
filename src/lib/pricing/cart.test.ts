@@ -16,12 +16,12 @@ describe('priceCart', () => {
     expect(r.shipping).toBe(0)
   })
 
-  it('total = products + 4% platform fee + charge + shipping', () => {
+  it('total = products + 2.5% platform fee + charge + shipping', () => {
     const r = priceCart([{ partId: 'part-tail-light-frenched', quantity: 1 }], parts)
-    expect(r.platformFee).toBe(11_600) // 4% of ₹2,900
+    expect(r.platformFee).toBe(7_250) // 2.5% of ₹2,900 = ₹72.50
     expect(r.charge).toBe(52_200) // 18% of ₹2,900
     expect(r.shipping).toBe(0) // ₹2,900 ≥ ₹1,999
-    expect(r.total).toBe(290_000 + 11_600 + 52_200)
+    expect(r.total).toBe(290_000 + 7_250 + 52_200)
   })
 
   // Terms & Conditions 08–10
@@ -30,13 +30,14 @@ describe('priceCart', () => {
     expect(breakdown([{ price: 199_900, quantity: 1, chargeBp: 1_800 }]).shipping).toBe(0)
     expect(breakdown([{ price: 199_800, quantity: 1, chargeBp: 1_800 }]).shipping).toBe(49_900)
   })
-  it('platform fee is 4% of the products, in paise (₹1,999 → ₹79.96)', () => {
-    expect(breakdown([{ price: 199_900, quantity: 1, chargeBp: 1_800 }]).platformFee).toBe(7_996)
+  it('platform fee is 2.5% of the products, rounded to the paisa (₹1,999 → ₹49.98)', () => {
+    expect(CHARGE_RULES.platformFeeBp).toBe(250)
+    expect(breakdown([{ price: 199_900, quantity: 1, chargeBp: 1_800 }]).platformFee).toBe(4_998)
   })
   it('charge is on the product price only, per line', () => {
     const b = breakdown([{ price: 100_000, quantity: 2, chargeBp: 1_800 }, { price: 100_000, quantity: 1, chargeBp: 4_000 }], 'cod')
     expect(b.charge).toBe(36_000 + 40_000)
-    expect(b.total).toBe(300_000 + 12_000 + 76_000 + 0 + PAYMENT_RULES.codFee)
+    expect(b.total).toBe(300_000 + 7_500 + 76_000 + 0 + PAYMENT_RULES.codFee)
   })
   it('40% only for bike-specific parts that fit a bike above 350cc; universal and ≤350cc parts are 18%', () => {
     expect(chargeRateFor({ compatibleBikeIds: [] }, bikes)).toBe(CHARGE_RULES.standardBp)

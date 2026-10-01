@@ -31,6 +31,8 @@ export interface LegalDoc {
   summary: string
   intro?: string[]
   topics?: LegalTopic[]
+  /** A programme name set in bold red wherever it appears (wording unchanged). */
+  emphasis?: string
 }
 
 export const LEGAL: LegalDoc[] = [
@@ -305,6 +307,7 @@ export const LEGAL: LegalDoc[] = [
     legacySlug: 'refunds',
     title: 'Returns & Cancellation',
     summary: 'Returns, refunds and cancelling an order or a build.',
+    emphasis: 'MONEYBACK',
     intro: [
       'Garage 27 wants you to be confident in every purchase and service you make through our platform.',
       'This Returns & Cancellation Policy explains when an order may be cancelled, when a product may be returned, how eligible returns are assessed, and how refunds or Moneyback / Buyback amounts may be determined.',
@@ -867,7 +870,7 @@ export const LEGAL: LegalDoc[] = [
         id: 'platform-fee',
         title: 'PLATFORM FEE',
         blocks: [
-          'Garage 27 may apply a 4% platform fee to eligible product purchases.',
+          'Garage 27 may apply a 2.5% platform fee to eligible product purchases.',
           'Where applicable, the platform fee will be disclosed during the purchase or checkout process.',
           'The platform fee may cover platform-related services and transaction infrastructure associated with the purchase.',
           'The applicable platform fee will be calculated based on the relevant product price or order value as configured by Garage 27.',

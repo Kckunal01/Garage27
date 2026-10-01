@@ -36,7 +36,7 @@ export default async function LegalPage({ params }: PageProps<'/[legal]'>) {
       </header>
       <SubNav label="Legal pages" items={LEGAL.map((d) => ({ href: legalHref(d), label: d.title }))} current={legalHref(doc)} />
       {doc.topics?.length ? (
-        <LegalDocument title={doc.title} topics={doc.topics} />
+        <LegalDocument title={doc.title} topics={doc.topics} emphasis={doc.emphasis} />
       ) : (
         <p className="legal__notice">
           This policy is being finalised by Garage 27 and will be published here. For anything you need in the meantime, write to{' '}

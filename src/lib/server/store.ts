@@ -65,7 +65,7 @@ export interface OrderRecord {
   reference: string
   status: OrderStatus
   subtotal: Paise
-  /** 4% platform fee on the products. */
+  /** 2.5% platform fee on the products. */
   platformFee: Paise
   /** Tax / applicable charge on the products. */
   charge: Paise
