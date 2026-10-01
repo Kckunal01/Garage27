@@ -18,7 +18,7 @@ function Block({ block }: { block: LegalBlock }) {
     )
   return (
     <address className="ldoc__contact">
-      <strong>Garage 27</strong>
+      {block.name !== false && <strong>Garage 27</strong>}
       <span>
         Email: <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
       </span>
