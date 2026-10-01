@@ -28,6 +28,11 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
   images: { formats: ['image/avif', 'image/webp'], qualities: [75, 90] },
+  async redirects() {
+    // Browsers and crawlers still ask for /favicon.ico by convention: send them
+    // to the one favicon, public/assets/favicon.png (also set in the root metadata).
+    return [{ source: '/favicon.ico', destination: '/assets/favicon.png', permanent: false }]
+  },
   async headers() {
     return [
       {
