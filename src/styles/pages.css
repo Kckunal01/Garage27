@@ -2279,3 +2279,590 @@ html[data-adding] body {
     margin-left: 64px;
   }
 }
+
+/* ── Track Order result: where an order stands ────────────────────────────
+   Near-black concrete, the neon garage behind a cream serif headline, then
+   a thin-ruled order panel, the five-step timeline, the items, support and
+   a few real parts. Square geometry, hairlines, restrained red. */
+.tro {
+  --tro-ink: #0a0807;
+  --tro-line: rgba(239, 227, 200, 0.14);
+  --tro-soft: rgba(239, 227, 200, 0.62);
+  position: relative;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 .9 0 0 0 0 .8 0 0 0 .05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    radial-gradient(120% 60% at 80% 0%, rgba(120, 52, 22, 0.16), transparent 60%),
+    var(--tro-ink);
+  color: #efe3c8;
+}
+.tro-hero {
+  position: relative;
+  isolation: isolate;
+  margin-top: calc(-1 * var(--header-h));
+  padding: calc(var(--header-h) + 18px) 16px 28px;
+  overflow: hidden;
+}
+.tro-hero__media {
+  position: absolute;
+  inset: -2px;
+  z-index: -1;
+}
+.tro-hero__img {
+  object-fit: cover;
+  object-position: 58% 8%;
+  filter: saturate(0.95) brightness(0.8);
+}
+.tro-hero__shade {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(10, 8, 7, 0.9) 0%, rgba(10, 8, 7, 0.55) 50%, rgba(10, 8, 7, 0.1) 100%),
+    linear-gradient(180deg, rgba(10, 8, 7, 0.55) 0%, rgba(10, 8, 7, 0) 30%, rgba(10, 8, 7, 0.35) 70%, var(--tro-ink) 100%);
+}
+.tro-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: rgba(239, 227, 200, 0.85);
+  cursor: pointer;
+}
+.tro-back:hover {
+  color: #fff;
+}
+.tro-back:focus-visible {
+  outline: 1px solid #fff;
+  outline-offset: 4px;
+}
+.tro-hero__title {
+  margin: 14px 0 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(40px, 11.5vw, 52px);
+  line-height: 0.92;
+  letter-spacing: 0.005em;
+  color: #f3e9d2;
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.7);
+}
+.tro-hero__title:focus {
+  outline: none;
+}
+.tro-hero__sub {
+  margin: 12px 0 0;
+  font-family: var(--font-display);
+  font-size: 19px;
+  line-height: 1.2;
+  color: rgba(243, 233, 210, 0.9);
+}
+
+.tro__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 30px;
+  padding: 4px 16px 56px;
+}
+.tro-label {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-size: 10.5px;
+  letter-spacing: 0.26em;
+  color: rgba(239, 227, 200, 0.82);
+}
+.tro-label--red {
+  color: var(--g-red);
+}
+
+/* Order panel */
+.tro-info {
+  display: grid;
+  border: 1px solid var(--tro-line);
+  background: rgba(14, 11, 9, 0.82);
+}
+.tro-info__cell {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  min-width: 0;
+  padding: 18px 16px;
+}
+.tro-info__cell + .tro-info__cell {
+  border-top: 1px solid var(--tro-line);
+}
+.tro-info__label {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  color: rgba(239, 227, 200, 0.7);
+}
+.tro-info__value {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 26px;
+  line-height: 1.05;
+  color: #f3e9d2;
+}
+.tro-info__value--none {
+  color: var(--tro-soft);
+}
+.tro-info__cal {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  color: rgba(239, 227, 200, 0.8);
+}
+.tro-info__meta {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  color: var(--tro-soft);
+}
+.tro-info__link {
+  color: rgba(239, 227, 200, 0.85);
+  text-decoration: underline;
+  text-decoration-color: var(--g-red);
+  text-underline-offset: 3px;
+}
+/* The order code, large in the serif, with the shared COPY action. */
+.ccode--display {
+  gap: 8px;
+}
+.ccode--display .ccode__label {
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  color: rgba(239, 227, 200, 0.7);
+}
+.ccode--display .ccode__row {
+  align-items: center;
+  gap: 12px;
+  border: 0;
+  background: none;
+}
+.ccode--display .ccode__code {
+  flex: 0 1 auto;
+  padding: 0;
+  font-family: var(--font-display);
+  font-size: 26px;
+  line-height: 1.05;
+  letter-spacing: 0.01em;
+  color: #f3e9d2;
+}
+.ccode--display .ccode__copy {
+  min-width: 0;
+  min-height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--tro-line);
+  font-size: 9.5px;
+}
+
+/* Timeline: five equal columns at every width; the rule runs dot to dot. */
+.tro-steps {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.tro-step {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  gap: 6px;
+  min-width: 0;
+  text-align: center;
+}
+.tro-step::before {
+  content: '';
+  position: absolute;
+  top: 11px;
+  left: -50%;
+  width: 100%;
+  height: 2px;
+  background: rgba(239, 227, 200, 0.16);
+}
+.tro-step:first-child::before {
+  display: none;
+}
+.tro-step.is-done::before,
+.tro-step.is-current::before {
+  background: var(--g-red);
+  box-shadow: 0 0 6px rgba(224, 38, 45, 0.45);
+}
+.tro-step__dot {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: 1.5px solid rgba(239, 227, 200, 0.32);
+  border-radius: 50%;
+  background: var(--tro-ink);
+  color: #fff;
+}
+.tro-step__dot svg {
+  width: 13px;
+  height: 13px;
+}
+.tro-step.is-done .tro-step__dot {
+  border-color: var(--g-red);
+  background: var(--g-red);
+}
+.tro-step.is-current .tro-step__dot {
+  border-color: var(--g-red);
+  background: radial-gradient(circle, var(--g-red) 0 52%, var(--tro-ink) 56%);
+  box-shadow: 0 0 12px rgba(224, 38, 45, 0.55);
+}
+.tro-step__label {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 11.5px;
+  line-height: 1.2;
+  color: rgba(239, 227, 200, 0.55);
+  overflow-wrap: anywhere;
+}
+.tro-step.is-done .tro-step__label,
+.tro-step.is-current .tro-step__label {
+  color: #f3e9d2;
+}
+.tro-step.is-current .tro-step__label {
+  color: #fff;
+}
+.tro-step__time {
+  font-family: var(--font-body);
+  font-size: 10.5px;
+  line-height: 1.3;
+  color: var(--tro-soft);
+}
+
+/* Items */
+.tro-items {
+  display: grid;
+  gap: 12px;
+}
+.tro-items__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+.tro-items__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--tro-line);
+  background: rgba(14, 11, 9, 0.82);
+}
+.tro-item {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) auto;
+  grid-template-areas:
+    'img text price'
+    'img qty price';
+  align-items: center;
+  column-gap: 12px;
+  row-gap: 2px;
+  padding: 12px;
+}
+.tro-item + .tro-item {
+  border-top: 1px solid var(--tro-line);
+}
+.tro-item__img {
+  grid-area: img;
+  position: relative;
+  width: 56px;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 2px;
+  background: #15110e;
+}
+.tro-item__img img,
+.tro-card__img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.tro-item__text {
+  grid-area: text;
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  align-self: end;
+}
+.tro-item__name {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 1.2;
+  color: #f6eedc;
+}
+.tro-item__fit {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--tro-soft);
+}
+.tro-item__qty {
+  grid-area: qty;
+  align-self: start;
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--tro-soft);
+}
+.tro-item__price {
+  grid-area: price;
+  display: grid;
+  justify-items: end;
+  gap: 2px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 15px;
+  color: #f6eedc;
+  white-space: nowrap;
+}
+.tro-item__was {
+  position: relative;
+  font-weight: 400;
+  font-size: 13px;
+  color: rgba(239, 227, 200, 0.5);
+  text-decoration-color: rgba(239, 227, 200, 0.6);
+}
+
+/* Support */
+.tro-help {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  gap: 14px;
+  padding: 20px 16px;
+  border: 1px solid var(--tro-line);
+  background: rgba(14, 11, 9, 0.82);
+}
+.tro-help__icon {
+  width: 30px;
+  height: 30px;
+  color: var(--g-red);
+}
+.tro-help__copy {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+.tro-help__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 28px;
+  line-height: 1.05;
+  color: #f3e9d2;
+}
+.tro-help__text {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--tro-soft);
+}
+.tro-help__cta {
+  grid-column: 1 / -1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 0 22px;
+  border: 1px solid var(--g-red);
+  border-radius: 2px;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 15px;
+  color: #f6eedc;
+  transition:
+    background var(--dur),
+    color var(--dur);
+}
+.tro-help__cta span {
+  color: var(--g-red);
+}
+.tro-help__cta:hover {
+  background: rgba(224, 38, 45, 0.1);
+}
+.tro-help__cta:focus-visible {
+  outline: 1px solid #fff;
+  outline-offset: 2px;
+}
+
+/* Still not satisfied? */
+.tro-more {
+  display: grid;
+  gap: 16px;
+}
+.tro-more__head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: end;
+  gap: 8px 16px;
+}
+.tro-more__sub {
+  margin: 6px 0 0;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--tro-soft);
+}
+.tro-more__all {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 15px;
+  color: var(--g-red);
+}
+.tro-more__all:hover {
+  color: #ff5a5f;
+}
+.tro-more__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.tro-card {
+  display: grid;
+  gap: 4px;
+  height: 100%;
+  padding-bottom: 12px;
+  border: 1px solid var(--tro-line);
+  background: rgba(14, 11, 9, 0.82);
+  color: inherit;
+  transition: border-color var(--dur);
+}
+.tro-card:hover,
+.tro-card:focus-visible {
+  border-color: rgba(224, 38, 45, 0.7);
+}
+.tro-card__img {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  margin-bottom: 6px;
+  background: #15110e;
+}
+.tro-card__name,
+.tro-card__price {
+  padding-inline: 12px;
+}
+.tro-card__name {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.25;
+  color: #f6eedc;
+}
+.tro-card__price {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--tro-soft);
+}
+
+@media (--desktop) {
+  .tro-hero {
+    padding: calc(var(--header-h) + 36px) max(var(--gutter), calc((100% - var(--max)) / 2 + var(--gutter))) 48px;
+  }
+  .tro-hero__img {
+    object-position: 60% 12%;
+  }
+  .tro-hero__title {
+    font-size: clamp(58px, 6.4vw, 92px);
+  }
+  .tro-hero__sub {
+    font-size: clamp(22px, 2.2vw, 30px);
+  }
+  .tro__body {
+    width: min(100%, var(--max));
+    margin-inline: auto;
+    gap: 44px;
+    padding: 8px var(--gutter) 80px;
+  }
+  .tro-info {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr);
+  }
+  .tro-info__cell {
+    padding: 24px 28px;
+  }
+  .tro-info__cell + .tro-info__cell {
+    border-top: 0;
+    border-left: 1px solid var(--tro-line);
+  }
+  .tro-info__value,
+  .ccode--display .ccode__code {
+    font-size: 34px;
+  }
+  .tro-step__label {
+    font-size: 14px;
+  }
+  .tro-step__time {
+    font-size: 13px;
+  }
+  .tro-step::before {
+    top: 15px;
+  }
+  .tro-step__dot {
+    width: 32px;
+    height: 32px;
+  }
+  .tro-item {
+    grid-template-columns: 72px minmax(0, 1fr) auto auto;
+    grid-template-areas: 'img text qty price';
+    column-gap: 24px;
+    padding: 16px 28px 16px 16px;
+  }
+  .tro-item__img {
+    width: 72px;
+  }
+  .tro-item__text {
+    align-self: center;
+  }
+  .tro-item__qty {
+    align-self: center;
+    font-size: 14px;
+  }
+  .tro-item__name,
+  .tro-item__price {
+    font-size: 17px;
+  }
+  .tro-help {
+    grid-template-columns: 40px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 22px;
+    padding: 30px 32px;
+  }
+  .tro-help__icon {
+    width: 38px;
+    height: 38px;
+    align-self: start;
+  }
+  .tro-help__title {
+    font-size: 36px;
+  }
+  .tro-help__cta {
+    grid-column: auto;
+  }
+  .tro-more__grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+  }
+}

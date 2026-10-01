@@ -6,9 +6,10 @@ import { useEffect, useRef, useState } from 'react'
  * An order / tracking code with a COPY action. The code is plain selectable
  * mono text (so it can always be copied by hand); COPY writes the exact code
  * to the clipboard and reads COPIED for a moment. Without a clipboard API it
- * selects the code instead, ready for the system copy.
+ * selects the code instead, ready for the system copy. `display` sets the
+ * code large in the serif (Track Order's order panel); behaviour is identical.
  */
-export function CopyCode({ code, label = 'ORDER CODE' }: { code: string; label?: string }) {
+export function CopyCode({ code, label = 'ORDER CODE', variant }: { code: string; label?: string; variant?: 'display' }) {
   const [state, setState] = useState<'idle' | 'copied' | 'selected'>('idle')
   const text = useRef<HTMLElement>(null)
   const timer = useRef<number | undefined>(undefined)
@@ -41,7 +42,7 @@ export function CopyCode({ code, label = 'ORDER CODE' }: { code: string; label?:
   }
 
   return (
-    <div className="ccode">
+    <div className={`ccode${variant ? ` ccode--${variant}` : ''}`}>
       <span className="ccode__label">{label}</span>
       <div className="ccode__row">
         <code className="ccode__code" ref={text}>

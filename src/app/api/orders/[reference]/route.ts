@@ -4,8 +4,8 @@ import { getStore } from '@/lib/server/store'
 export const dynamic = 'force-dynamic'
 
 /**
- * Order status for the confirmation page. The reference is an unguessable
- * token; the response carries no contact details or address.
+ * Order status for the confirmation and Track Order pages. The reference is an
+ * unguessable token; the response carries no contact details or address.
  */
 export async function GET(_req: Request, ctx: { params: Promise<{ reference: string }> }) {
   const { reference } = await ctx.params
@@ -22,7 +22,8 @@ export async function GET(_req: Request, ctx: { params: Promise<{ reference: str
       shipping: order.shipping,
       codFee: order.codFee,
       total: order.total,
-      items: order.items.map((i) => ({ name: i.name, quantity: i.quantity, unitPrice: i.unitPrice })),
+      placedAt: order.createdAt ?? null,
+      items: order.items.map((i) => ({ partId: i.partId, name: i.name, quantity: i.quantity, unitPrice: i.unitPrice })),
     })
   } catch (err) {
     return misfire('order.status', err)

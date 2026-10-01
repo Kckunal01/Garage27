@@ -45,7 +45,6 @@ function ServiceRequest({ services, bikes, initial }: { services: ServiceOfferin
           current={requestHref(selected)}
         />
         {service && <ServiceCard service={service} eager />}
-        <p className="svc-request__lede">Three short steps. A builder calls you back — no bots, no ticket queue.</p>
       </div>
       <ServiceRequestForm services={services} bikes={bikes} selected={selected} onSelect={setSelected} />
     </div>

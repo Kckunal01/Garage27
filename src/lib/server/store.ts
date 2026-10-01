@@ -78,6 +78,8 @@ export interface OrderRecord {
   paymentProvider: string
   providerOrderId?: string
   items: OrderItemRecord[]
+  /** When the order was placed (ISO). Set by the store on insert. */
+  createdAt?: string
 }
 
 export interface PaymentEvent {
@@ -143,7 +145,7 @@ const memoryStore: Store = {
     memory.enquiries.push(e)
   },
   async insertOrder(o) {
-    memory.orders.set(o.reference, structuredClone(o))
+    memory.orders.set(o.reference, { ...structuredClone(o), createdAt: o.createdAt ?? new Date().toISOString() })
   },
   async setOrderProviderId(reference, providerOrderId, status) {
     const o = memory.orders.get(reference)
@@ -188,6 +190,7 @@ function supabaseStore(): Store | null {
     shippingAddress: row.shipping_address as Record<string, string>,
     paymentProvider: row.payment_provider as string,
     providerOrderId: (row.provider_order_id as string) ?? undefined,
+    createdAt: (row.created_at as string) ?? undefined,
     items: items.map((i) => ({
       partId: i.part_id as string,
       name: i.name as string,
