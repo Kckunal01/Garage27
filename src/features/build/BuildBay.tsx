@@ -145,6 +145,12 @@ export function BuildBay({ bikes, colours, options, presets, optionImages }: Pro
   }
   if (config.colourId !== factory.colourId) BUILD_ZONES.filter((z) => z.paint).forEach((z) => modified.add(z.id))
   const activeSlots = zone ? zoneSlots(zone, bundle).map((s) => s.id) : []
+  // Each "+" on the bike belongs to a part of the BUILD panel; only live parts get one.
+  const hotspotLabels: Record<string, string> = {}
+  for (const h of bundle.bike.hotspots) {
+    const z = zoneForSlot(h.slot)
+    if (z && isZoneAvailable(z, bundle)) hotspotLabels[h.slot] = z.label
+  }
   const colour = bundle.colours.find((c) => c.id === config.colourId)
   const paint = colour?.material ?? { color: '#333', metalness: 0.4, roughness: 0.4 }
 
@@ -162,6 +168,11 @@ export function BuildBay({ bikes, colours, options, presets, optionImages }: Pro
           options={bundle.options}
           paint={paint}
           activeSlots={activeSlots}
+          hotspotLabels={hotspotLabels}
+          onHotspot={(slot) => {
+            setPreview(null)
+            openZone(zoneForSlot(slot)?.id ?? null)
+          }}
           litSlot={state.litSlot}
           pulse={state.pulse}
           fallbackAction={

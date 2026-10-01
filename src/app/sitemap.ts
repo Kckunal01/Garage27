@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next'
 import { getGarageMachines, machineHref } from '@/lib/catalogue/garage'
+import { LEGAL, legalHref } from '@/lib/legal'
 import { getCatalogue } from '@/lib/catalogue/repository'
 import { publicEnv } from '@/lib/env'
 
@@ -13,5 +14,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }))
   const products = parts.filter((p) => p.status === 'active').map((p) => ({ url: `${base}/parts/${p.slug}`, changeFrequency: 'weekly' as const, priority: 0.6 }))
   const machines = getGarageMachines().map((m) => ({ url: `${base}${machineHref(m)}`, changeFrequency: 'monthly' as const, priority: 0.7 }))
-  return [...pages, ...machines, ...products]
+  const legal = LEGAL.filter((d) => d.topics?.length).map((d) => ({ url: `${base}${legalHref(d)}`, changeFrequency: 'yearly' as const, priority: 0.3 }))
+  return [...pages, ...machines, ...products, ...legal]
 }

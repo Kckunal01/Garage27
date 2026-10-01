@@ -6,14 +6,13 @@ import { postForm } from '@/lib/http-client'
 import { ENQUIRY_ACCEPT, enquirySchema, fieldErrors, UPLOAD_LIMITS } from '@/lib/validation/schemas'
 
 /**
- * LET'S TALK: a reference (images / PDF, or a link), what's on your mind, a
+ * LET'S TALK: a reference (images / PDF), what's on your mind, a
  * name and one way to reach you. Posts to /api/enquiries; the server
  * re-validates everything and answers with a reference.
  */
 export function EnquiryForm({ initialMessage = '' }: { initialMessage?: string } = {}) {
   const [v, setV] = useState({ name: '', reach: '', message: initialMessage, link: '' })
   const [files, setFiles] = useState<File[]>([])
-  const [showLink, setShowLink] = useState(false)
   const [hp, setHp] = useState('')
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [formError, setFormError] = useState<string>()
@@ -93,18 +92,10 @@ export function EnquiryForm({ initialMessage = '' }: { initialMessage?: string }
             <circle cx="12" cy="13" r="3.4" />
           </svg>
           <span className="abt-upload__title">Upload Reference</span>
-          <span className="abt-upload__hint">{files.length ? files.map((f) => f.name).join(', ') : '(Image, PDF or Link)'}</span>
+          <span className="abt-upload__hint">{files.length ? files.map((f) => f.name).join(', ') : '(Image or PDF)'}</span>
         </button>
         <input ref={fileInput} className="abt-upload__input" type="file" multiple accept={ENQUIRY_ACCEPT.join(',')} onChange={pick} tabIndex={-1} aria-hidden="true" />
-        {showLink ? (
-          <input className="abt-field abt-upload__link" type="url" inputMode="url" placeholder="Paste a link" aria-label="Reference link" value={v.link} onChange={set('link')} {...err('link')} />
-        ) : (
-          <button type="button" className="abt-upload__add-link" onClick={() => setShowLink(true)}>
-            + add a link
-          </button>
-        )}
         {msg('files')}
-        {msg('link')}
       </div>
 
       <div className="abt-form__message">

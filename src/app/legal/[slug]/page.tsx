@@ -1,44 +1,14 @@
-import type { Metadata } from 'next'
-import { CONTACT } from '@/components/navigation/nav-config'
-import { notFound } from 'next/navigation'
-import { LEGAL } from '@/lib/legal'
-import { pageMetadata } from '@/lib/seo/metadata'
+import { notFound, permanentRedirect } from 'next/navigation'
+import { LEGAL, legalHref } from '@/lib/legal'
 
+/** The legal pages moved to /privacy-policy, /shipping, /returns-cancellation and /terms-and-conditions. */
 export function generateStaticParams() {
-  return LEGAL.map((d) => ({ slug: d.slug }))
+  return LEGAL.map((d) => ({ slug: d.legacySlug }))
 }
 
-export async function generateMetadata({ params }: PageProps<'/legal/[slug]'>): Promise<Metadata> {
+export default async function LegacyLegalPage({ params }: PageProps<'/legal/[slug]'>) {
   const { slug } = await params
-  const doc = LEGAL.find((d) => d.slug === slug)
-  if (!doc) return { title: 'Not found', robots: { index: false } }
-  return { ...pageMetadata({ title: doc.title, description: doc.summary, path: `/legal/${doc.slug}` }), robots: doc.body ? undefined : { index: false } }
-}
-
-export default async function LegalPage({ params }: PageProps<'/legal/[slug]'>) {
-  const { slug } = await params
-  const doc = LEGAL.find((d) => d.slug === slug)
+  const doc = LEGAL.find((d) => d.legacySlug === slug)
   if (!doc) notFound()
-  return (
-    <div className="wrap section--tight doc-page">
-      <p className="doc-page__kicker">LEGAL</p>
-      <h1 className="doc-page__title">{doc.title}</h1>
-      <p className="lede">{doc.summary}</p>
-      {doc.body ? (
-        <div className="doc-page__body">
-          {doc.body.map((p, i) => (
-            <p key={i}>{p}</p>
-          ))}
-        </div>
-      ) : (
-        <p className="doc-page__notice">
-          This policy is being finalised by Garage 27 and will be published here. For anything you need in the meantime, write to{' '}
-          <a className="neon-link" href={`mailto:${CONTACT.email}`}>
-            {CONTACT.email}
-          </a>
-          .
-        </p>
-      )}
-    </div>
-  )
+  permanentRedirect(legalHref(doc))
 }

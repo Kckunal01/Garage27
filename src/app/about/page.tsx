@@ -20,12 +20,6 @@ const VALUES = [
   { icon: 'peaks', title: 'GOOD TIMES', line: ['RIDES THAT', 'TURN INTO FAMILY.'] },
 ] as const
 
-const WAY = [
-  { word: 'IDEATE', photo: '07-idea-sketch', alt: 'A hand sketching a motorcycle on the workbench', title: 'YOUR VISION', text: ['Ideas, inspirations or just a vibe.', 'We start with you.'] },
-  { word: 'BUILD', photo: '06-craft-welding', alt: 'Sparks flying as a tank is ground in the workshop', title: 'OUR CRAFT', text: ['From concept to components,', 'we build with purpose.'] },
-  { word: 'RIDE', photo: '08-result-ride', alt: 'A rider on a finished Garage 27 machine at sunset', title: 'THE RESULT', text: ['A machine that feels like you.', 'And a story that keeps going.'] },
-]
-
 const Arrow = ({ className }: { className: string }) => (
   <svg className={className} viewBox="0 0 30 12" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
     <path d="M1 6h27M23 1l5 5-5 5" />
@@ -34,14 +28,14 @@ const Arrow = ({ className }: { className: string }) => (
 
 /**
  * About — after the About Us reference: garage hero, mission beside a taped
- * sunset print, four values, the Garage 27 way as one IDEATE → BUILD → RIDE
- * line, and LET'S TALK inside the workshop. Only the supplied About assets.
+ * sunset print, four values, and LET'S TALK inside the workshop. Only the supplied About assets.
  */
 export default function AboutPage() {
   return (
     <div className="abt">
       <section className="abt-hero" aria-labelledby="abt-title">
-        <Image className="abt-hero__img" src={A('01-hero-garage')} alt="" fill sizes="100vw" quality={90} preload />
+        {/* The supplied 1328px photograph, served as delivered: re-encoding it would only soften it. */}
+        <Image className="abt-hero__img" src={A('01-hero-garage')} alt="" fill sizes="100vw" unoptimized preload />
         <div className="abt-hero__shade" aria-hidden="true" />
         <div className="abt-hero__copy">
           <h1 id="abt-title" className="abt-hero__title">
@@ -102,35 +96,6 @@ export default function AboutPage() {
             </li>
           ))}
         </ul>
-      </section>
-
-      <section className="abt-way" aria-labelledby="abt-way-title">
-        <Image className="abt-bg abt-bg--faint" src={A('09-garage-workshop')} alt="" fill sizes="100vw" />
-        <h2 id="abt-way-title" className="abt-label abt-way__label">
-          THE GARAGE 27 WAY
-        </h2>
-        <ol className="abt-way__steps">
-          {WAY.map((s, i) => (
-            <li key={s.word} className="abt-step">
-              <p className="abt-step__word">
-                {s.word}
-                {i < WAY.length - 1 && <Arrow className="abt-step__arrow" />}
-              </p>
-              <div className="abt-step__frame">
-                <span className="abt-step__photo">
-                  <Image src={A(s.photo)} alt={s.alt} fill sizes="(width < 768px) 30vw, 320px" />
-                </span>
-                {i < WAY.length - 1 && <Arrow className="abt-step__arrow" />}
-              </div>
-              <h3 className="abt-step__title">{s.title}</h3>
-              <p className="abt-step__text">
-                {s.text[0]}
-                <br />
-                {s.text[1]}
-              </p>
-            </li>
-          ))}
-        </ol>
       </section>
 
       <section id="contact" className="abt-talk" aria-labelledby="abt-talk-title">

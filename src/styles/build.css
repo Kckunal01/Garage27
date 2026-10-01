@@ -279,18 +279,22 @@
   content: '';
   position: absolute;
   left: 0;
-  top: 9px;
-  bottom: 9px;
-  width: 2px;
+  top: 0;
+  bottom: 0;
+  width: 3px;
   background: var(--g-red);
   transform: scaleY(0);
   transition: transform 0.15s;
 }
-.bnav__part.is-active,
 .bnav__part.is-preview,
 .bnav__part:not([aria-disabled='true']):hover {
   color: var(--g-red);
   background: rgba(224, 38, 45, 0.06);
+}
+.bnav__part.is-active {
+  color: #fff;
+  font-weight: 500;
+  background: linear-gradient(90deg, rgba(224, 38, 45, 0.22), rgba(224, 38, 45, 0.04));
 }
 .bnav__part.is-active::before,
 .bnav__part.is-preview::before,
@@ -335,6 +339,9 @@
   padding: 14px 12px 16px;
 }
 .vz-options__head {
+  position: relative;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--vz-line);
   display: flex;
   align-items: baseline;
   flex-wrap: wrap;
@@ -346,6 +353,15 @@
   font-weight: 400;
   font-size: 26px;
   line-height: 0.95;
+}
+.vz-options__head::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 28px;
+  height: 2px;
+  background: var(--g-red);
 }
 .vz-options__desc {
   margin: 0;
@@ -444,6 +460,11 @@
 }
 .prod.is-selected {
   border-color: var(--g-red);
+  background: #160c0b;
+  box-shadow: inset 0 -3px 0 var(--g-red);
+}
+.prod.is-selected .prod__price {
+  color: #fff;
 }
 .prod.is-selected .prod__name::before {
   content: '';
@@ -569,10 +590,17 @@
   letter-spacing: 0.2em;
   color: var(--vz-soft);
 }
+.bsum__total {
+  padding-top: 10px;
+  border-top: 1px solid var(--vz-line-strong);
+}
+.bsum__total span {
+  color: var(--vz-cream);
+}
 .bsum__total strong {
   font-family: var(--font-display);
   font-weight: 400;
-  font-size: 28px;
+  font-size: 40px;
   letter-spacing: 0.01em;
   color: #fff;
 }
@@ -682,6 +710,59 @@
   background: rgba(6, 5, 4, 0.82);
   text-align: center;
 }
+/* "+" on the bike's parts: a small square plus, white; red when its part is open */
+.hotspots {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+.hotspot-anchor {
+  position: absolute;
+  left: 0;
+  top: 0;
+  visibility: hidden; /* until the scene projects it onto its part */
+  will-change: transform;
+}
+.hotspot {
+  position: absolute;
+  left: -9px;
+  top: -9px;
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  border-radius: 0;
+  background: rgba(6, 5, 4, 0.55);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1;
+  color: #fff;
+  pointer-events: auto;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.hotspot::before {
+  /* a larger, invisible tap target */
+  content: '';
+  position: absolute;
+  inset: -10px;
+}
+.hotspot:hover,
+.hotspot.is-active {
+  border-color: var(--g-red);
+  background: var(--g-red);
+}
+.hotspot:focus-visible {
+  outline: 1px solid #fff;
+  outline-offset: 2px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .bay-loading__ghost {
     animation: none;
@@ -890,6 +971,13 @@
     top: 11px;
     bottom: 11px;
   }
+  .hotspot {
+    left: -11px;
+    top: -11px;
+    width: 22px;
+    height: 22px;
+    font-size: 14px;
+  }
   .vz-bottom {
     grid-template-columns: minmax(0, 1fr) 320px;
   }
@@ -917,12 +1005,17 @@
     grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
     grid-template-areas:
       'head form'
+      'nav form'
       'build form';
     align-items: start;
     column-gap: 56px;
   }
   .sreq__head {
     grid-area: head;
+  }
+  .sreq .subnav {
+    grid-area: nav;
+    margin: 0;
   }
   .sreq__build {
     grid-area: build;

@@ -1,6 +1,6 @@
 'use client'
 
-import Link from 'next/link'
+import { SubNav } from '@/components/navigation/SubNav'
 import { useEffect, useState } from 'react'
 import { track } from '@/lib/analytics'
 import type { ServiceOffering } from '@/types/catalogue'
@@ -38,9 +38,11 @@ function ServiceRequest({ services, initial }: { services: ServiceOffering[]; in
   return (
     <div className="svc-request">
       <div className="svc-request__intro">
-        <Link href="/service" className="neon-link svc-request__back">
-          ← ALL SERVICES
-        </Link>
+        <SubNav
+          label="Service pages"
+          items={[{ href: '/service', label: 'All services' }, ...services.map((s) => ({ href: requestHref(s.id), label: s.name.toLowerCase().replace(/(^|\s)\S/g, (c) => c.toUpperCase()) }))]}
+          current={requestHref(selected)}
+        />
         {service && <ServiceCard service={service} eager />}
         <p className="svc-request__lede">Three short steps. A builder calls you back — no bots, no ticket queue.</p>
       </div>

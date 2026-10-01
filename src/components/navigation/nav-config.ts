@@ -38,11 +38,11 @@ export const FOOTER = {
   trackOrder: TRACK_ORDER,
   pages: PRIMARY_NAV.map((n) => ({ href: n.href, label: n.label[0] + n.label.slice(1).toLowerCase() })),
   quickLinks: [
-    { href: '/legal/privacy', label: 'Privacy Policy' },
-    { href: '/legal/shipping', label: 'Shipping' },
-    { href: '/legal/refunds', label: 'Returns & Cancellation' },
-    { href: '/legal/terms', label: 'Terms & Conditions' },
     TRACK_ORDER,
+    { href: '/privacy-policy', label: 'Privacy Policy' },
+    { href: '/shipping', label: 'Shipping' },
+    { href: '/returns-cancellation', label: 'Returns & Cancellation' },
+    { href: '/terms-and-conditions', label: 'Terms & Conditions' },
   ],
 }
 

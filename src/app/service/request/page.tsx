@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { SubNav } from '@/components/navigation/SubNav'
 import { EnquiryForm } from '@/features/about/EnquiryForm'
 import { customisations, decodeConfiguration, getBikeBundle, sanitizeConfiguration } from '@/features/build/engine'
 import { getCatalogue } from '@/lib/catalogue/repository'
@@ -53,6 +54,14 @@ export default async function ServiceRequestPage({ searchParams }: PageProps<'/s
             or upload a reference.
           </p>
         </header>
+        <SubNav
+          label="Service pages"
+          items={[
+            { href: '/service', label: 'Services' },
+            { href: '/service/request', label: 'Let’s talk' },
+          ]}
+          current="/service/request"
+        />
 
         {bundle && build && (
           <section className="sreq__build" aria-labelledby="sreq-build">
