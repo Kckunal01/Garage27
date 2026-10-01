@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { SubNav } from '@/components/navigation/SubNav'
 import { EnquiryForm } from '@/features/about/EnquiryForm'
+import { WorkStandardNote } from '@/components/garage-ui/WorkStandardNote'
 import { customisations, decodeConfiguration, getBikeBundle, sanitizeConfiguration } from '@/features/build/engine'
 import { getCatalogue } from '@/lib/catalogue/repository'
 import { formatINR, formatPrice } from '@/lib/pricing/money'
@@ -95,6 +96,7 @@ export default async function ServiceRequestPage({ searchParams }: PageProps<'/s
         {code && !bundle && <p className="sreq__copy">That build link didn’t load. Tell us about it below, or start again from Build.</p>}
 
         <section className="sf sreq__form" aria-label="Your request">
+          <WorkStandardNote kind={bundle ? 'build' : 'service'} />
           <EnquiryForm initialMessage={message} />
         </section>
       </div>

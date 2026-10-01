@@ -1,9 +1,11 @@
 import { describe, expect, it } from 'vitest'
 import { localCatalogue } from '@/data/catalogue'
-import { PAYMENT_RULES, priceCart, SHIPPING_RULES } from './cart'
+import { breakdown, CHARGE_RULES, chargeRateFor, PAYMENT_RULES, priceCart as price, SHIPPING_RULES, type CartLineInput, type PaymentMethod } from './cart'
 import { checkoutSchema, contactSchema } from '@/lib/validation/schemas'
 
 const parts = localCatalogue.parts
+const bikes = localCatalogue.bikes
+const priceCart = (items: CartLineInput[], p = parts, method?: PaymentMethod) => price(items, p, bikes, method)
 
 describe('priceCart', () => {
   it('prices lines from the catalogue, merging duplicates', () => {
@@ -14,10 +16,37 @@ describe('priceCart', () => {
     expect(r.shipping).toBe(0)
   })
 
-  it('charges flat shipping under the threshold', () => {
+  it('total = products + 4% platform fee + charge + shipping', () => {
     const r = priceCart([{ partId: 'part-tail-light-frenched', quantity: 1 }], parts)
-    expect(r.shipping).toBe(SHIPPING_RULES.flat)
-    expect(r.total).toBe(290_000 + SHIPPING_RULES.flat)
+    expect(r.platformFee).toBe(11_600) // 4% of ₹2,900
+    expect(r.charge).toBe(52_200) // 18% of ₹2,900
+    expect(r.shipping).toBe(0) // ₹2,900 ≥ ₹1,999
+    expect(r.total).toBe(290_000 + 11_600 + 52_200)
+  })
+
+  // Terms & Conditions 08–10
+  it('ships free from ₹1,999 and charges ₹499 below it', () => {
+    expect(SHIPPING_RULES.flat).toBe(49_900)
+    expect(breakdown([{ price: 199_900, quantity: 1, chargeBp: 1_800 }]).shipping).toBe(0)
+    expect(breakdown([{ price: 199_800, quantity: 1, chargeBp: 1_800 }]).shipping).toBe(49_900)
+  })
+  it('platform fee is 4% of the products, in paise (₹1,999 → ₹79.96)', () => {
+    expect(breakdown([{ price: 199_900, quantity: 1, chargeBp: 1_800 }]).platformFee).toBe(7_996)
+  })
+  it('charge is on the product price only, per line', () => {
+    const b = breakdown([{ price: 100_000, quantity: 2, chargeBp: 1_800 }, { price: 100_000, quantity: 1, chargeBp: 4_000 }], 'cod')
+    expect(b.charge).toBe(36_000 + 40_000)
+    expect(b.total).toBe(300_000 + 12_000 + 76_000 + 0 + PAYMENT_RULES.codFee)
+  })
+  it('40% only for bike-specific parts that fit a bike above 350cc; universal and ≤350cc parts are 18%', () => {
+    expect(chargeRateFor({ compatibleBikeIds: [] }, bikes)).toBe(CHARGE_RULES.standardBp)
+    expect(chargeRateFor({ compatibleBikeIds: ['bike-re-classic-350'] }, bikes)).toBe(1_800)
+    expect(chargeRateFor({ compatibleBikeIds: ['bike-re-interceptor-650'] }, bikes)).toBe(4_000)
+    expect(chargeRateFor({ compatibleBikeIds: ['bike-triumph-speed-400'] }, bikes)).toBe(4_000)
+    expect(chargeRateFor({ compatibleBikeIds: ['bike-jawa-42'] }, bikes)).toBe(1_800)
+  })
+  it('every catalogue bike records its displacement', () => {
+    expect(bikes.filter((b) => !b.engineCc).map((b) => b.id)).toEqual([])
   })
 
   it('flags unknown and out-of-stock parts instead of pricing them', () => {
@@ -29,12 +58,12 @@ describe('priceCart', () => {
 
 describe('payment method pricing (server-side)', () => {
   const items = [{ partId: 'part-headlight-7-chrome', quantity: 1 }, { partId: 'part-knee-pads', quantity: 1 }]
-  it('online: total = items + shipping, no COD fee', () => {
+  it('online: total = items + fee + charge + shipping, no COD fee', () => {
     const r = priceCart(items, parts, 'online')
     expect(r.codFee).toBe(0)
-    expect(r.total).toBe(r.subtotal + r.shipping)
+    expect(r.total).toBe(r.subtotal + r.platformFee + r.charge + r.shipping)
   })
-  it('cod: total = items + shipping + ₹500', () => {
+  it('cod: total = online total + ₹500', () => {
     const online = priceCart(items, parts, 'online')
     const cod = priceCart(items, parts, 'cod')
     expect(PAYMENT_RULES.codFee).toBe(50_000)

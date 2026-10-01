@@ -8,8 +8,8 @@ import { getStore, makeReference } from '@/lib/server/store'
 export const dynamic = 'force-dynamic'
 
 /**
- * Checkout → server prices the cart from the catalogue (plus the COD fee for
- * cash on delivery) → creates the order. Online: asks the gateway for a
+ * Checkout → server prices the cart from the catalogue (products, platform
+ * fee, tax/charge, shipping, plus the COD fee for cash on delivery) → creates the order. Online: asks the gateway for a
  * payment order; the order is marked paid later, server-side. COD: no
  * gateway; the order is `placed` and paid on delivery. The browser only ever
  * sends part ids, quantities and the method — never an amount.
@@ -23,9 +23,9 @@ export async function POST(req: Request) {
   if (!parsed.success) return invalid(parsed.error)
 
   try {
-    const { parts } = await getCatalogue()
+    const { parts, bikes } = await getCatalogue()
     const method = parsed.data.paymentMethod
-    const cart = priceCart(parsed.data.items, parts, method)
+    const cart = priceCart(parsed.data.items, parts, bikes, method)
     if (cart.problems.length) return json({ error: 'Some parts are no longer on the shelf.', problems: cart.problems }, 409)
 
     const store = getStore()
@@ -34,6 +34,8 @@ export async function POST(req: Request) {
     const order = {
       reference,
       subtotal: cart.subtotal,
+      platformFee: cart.platformFee,
+      charge: cart.charge,
       shipping: cart.shipping,
       codFee: cart.codFee,
       total: cart.total,

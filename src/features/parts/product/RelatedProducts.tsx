@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { PART_CATEGORY_META } from '@/data/catalogue'
-import { formatINR } from '@/lib/pricing/money'
+import { PartPrice } from '../PartPrice'
 import type { Part } from '@/types/catalogue'
 import { CategoryPhoto } from '../CategoryPhoto'
 
@@ -29,7 +29,7 @@ export function RelatedProducts({ parts, images }: { parts: Part[]; images: Reco
                 <span className="prel__cat">{meta.label}</span>
                 <span className="prel__name">{p.name}</span>
                 <span className="prel__foot">
-                  <span className="prel__price">{formatINR(p.price)}</span>
+                  <PartPrice part={p} className="prel__price" />
                   <span className="prel__arrow" aria-hidden="true">
                     →
                   </span>

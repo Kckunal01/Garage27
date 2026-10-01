@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Honeypot, SelectField, TextArea, TextField } from '@/components/forms/FormField'
 import { UploadReference, type ReferenceImage } from '@/components/forms/UploadReference'
 import { GarageButton } from '@/components/garage-ui/GarageButton'
+import { WorkStandardNote } from '@/components/garage-ui/WorkStandardNote'
 import { track } from '@/lib/analytics'
 import { postForm } from '@/lib/http-client'
 import { fieldErrors, serviceRequestSchema } from '@/lib/validation/schemas'
@@ -192,6 +193,7 @@ export function ServiceRequestForm({ services, bikes, selected, onSelect, compac
       {step === 3 && (
         <div className="form-grid">
           <TextArea label="Notes (optional)" placeholder="Timelines, budget, anything we should know." value={v.notes} onChange={set('notes')} error={errors.notes} rows={4} />
+          <WorkStandardNote kind="service" />
         </div>
       )}
 

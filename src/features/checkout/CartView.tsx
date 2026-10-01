@@ -7,9 +7,10 @@ import { EmptyState, LoadingState } from '@/components/garage-ui/States'
 import { PartVisual } from '@/components/media/PartVisual'
 import { track } from '@/lib/analytics'
 import { formatINR, valueBand } from '@/lib/pricing/money'
-import { SHIPPING_RULES } from '@/lib/pricing/cart'
+import { breakdown, CHARGE_RULES, SHIPPING_RULES } from '@/lib/pricing/cart'
 
-export function CartView() {
+/** `rates`: each part's charge rate (basis points), from the server. Display only — checkout re-prices on the server. */
+export function CartView({ rates }: { rates: Record<string, number> }) {
   const { lines, ready, subtotal, setQuantity, remove, count } = useCart()
 
   useEffect(() => {
@@ -29,7 +30,9 @@ export function CartView() {
       </EmptyState>
     )
 
-  const shipping = subtotal >= SHIPPING_RULES.freeOver ? 0 : SHIPPING_RULES.flat
+  const { platformFee, charge, shipping, total } = breakdown(
+    lines.map((l) => ({ price: l.price, quantity: l.quantity, chargeBp: rates[l.partId] ?? CHARGE_RULES.standardBp })),
+  )
   return (
     <div className="cart">
       <ul className="cart__lines">
@@ -61,8 +64,16 @@ export function CartView() {
       <aside className="summary plate" aria-label="Order summary">
         <dl>
           <div>
-            <dt>Subtotal</dt>
+            <dt>Products</dt>
             <dd>{formatINR(subtotal)}</dd>
+          </div>
+          <div>
+            <dt>Platform fee {CHARGE_RULES.platformFeeBp / 100}%</dt>
+            <dd>{formatINR(platformFee)}</dd>
+          </div>
+          <div>
+            <dt>Tax / applicable charge</dt>
+            <dd>{formatINR(charge)}</dd>
           </div>
           <div>
             <dt>Shipping</dt>
@@ -70,14 +81,14 @@ export function CartView() {
           </div>
           <div className="summary__total">
             <dt>Total</dt>
-            <dd>{formatINR(subtotal + shipping)}</dd>
+            <dd>{formatINR(total)}</dd>
           </div>
         </dl>
-        {shipping > 0 && <p className="muted summary__note">Free shipping over {formatINR(SHIPPING_RULES.freeOver)}.</p>}
+        {shipping > 0 && <p className="muted summary__note">Free shipping from {formatINR(SHIPPING_RULES.freeFrom)}.</p>}
         <Link href="/checkout" className="btn btn--ignite btn--block">
           CHECKOUT
         </Link>
-        <p className="muted summary__note">Prices are confirmed at checkout. Taxes included where applicable.</p>
+        <p className="muted summary__note">The final amount, including any COD charge, is shown at checkout before you pay.</p>
       </aside>
     </div>
   )

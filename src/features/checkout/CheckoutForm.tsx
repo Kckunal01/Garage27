@@ -13,7 +13,7 @@ import { GarageButton } from '@/components/garage-ui/GarageButton'
 import { track } from '@/lib/analytics'
 import { postJson } from '@/lib/http-client'
 import { formatINR, valueBand } from '@/lib/pricing/money'
-import { codFeeFor, PAYMENT_RULES, SHIPPING_RULES, type PaymentMethod } from '@/lib/pricing/cart'
+import { breakdown, CHARGE_RULES, PAYMENT_RULES, SHIPPING_RULES, type PaymentMethod } from '@/lib/pricing/cart'
 import { consumeAdding, mergeLine, readSelection, removeLine, setLineQuantity, startAdding, writeSelection } from './selection'
 import { checkoutSchema, fieldErrors } from '@/lib/validation/schemas'
 import type { ClientPaymentSession } from '@/lib/payments/types'
@@ -58,7 +58,8 @@ const empty = { name: '', email: '', phone: '', line1: '', line2: '', city: '', 
  * "Want to add something?" — and never touches the cart. Mode cart checks
  * out the saved cart exactly as before. `direct` is the part BUY NOW sent.
  */
-export function CheckoutForm({ mode, direct = null }: { mode: CheckoutMode; direct?: CartLine | null }) {
+/** `rates`: each part's charge rate (basis points), from the server. */
+export function CheckoutForm({ mode, direct = null, rates }: { mode: CheckoutMode; direct?: CartLine | null; rates: Record<string, number> }) {
   const cart = useCart()
   const router = useRouter()
   const fromCart = mode === 'cart'
@@ -113,16 +114,18 @@ export function CheckoutForm({ mode, direct = null }: { mode: CheckoutMode; dire
       </EmptyState>
     )
 
-  const shipping = subtotal >= SHIPPING_RULES.freeOver ? 0 : SHIPPING_RULES.flat
-  // Display only: the server prices the order (including this fee) itself.
-  const codFee = codFeeFor(method)
+  // Display only: the server prices the order (every line below) itself.
+  const { platformFee, charge, shipping, codFee, total } = breakdown(
+    lines.map((l) => ({ price: l.price, quantity: l.quantity, chargeBp: rates[l.partId] ?? CHARGE_RULES.standardBp })),
+    method,
+  )
   const set = (k: keyof typeof empty) => (e: React.ChangeEvent<HTMLInputElement>) => setValues((v) => ({ ...v, [k]: e.target.value }))
 
   const verify = async (reference: string, providerOrderId: string, providerPaymentId: string, signature: string) => {
     setStage('verifying')
     const r = await postJson<{ status: string }>('/api/payments/verify', { orderReference: reference, providerOrderId, providerPaymentId, signature })
     if (r.ok && r.data.status === 'paid') {
-      track('payment_success', { value_band: valueBand(subtotal + shipping) })
+      track('payment_success', { value_band: valueBand(total) })
     } else {
       track('payment_failed', { stage: 'verify' })
     }
@@ -211,7 +214,6 @@ export function CheckoutForm({ mode, direct = null }: { mode: CheckoutMode; dire
   }
 
   const busy = stage !== 'form'
-  const total = subtotal + shipping + codFee
   const items = lines.reduce((n, l) => n + l.quantity, 0)
   return (
     <div className="co">
@@ -259,8 +261,18 @@ export function CheckoutForm({ mode, direct = null }: { mode: CheckoutMode; dire
           </ul>
           <dl className="co-sum__totals">
             <div>
-              <dt>Subtotal</dt>
+              <dt>Products</dt>
               <dd>{formatINR(subtotal)}</dd>
+            </div>
+            <div>
+              <dt>
+                Platform fee <span className="co-sum__rate">{CHARGE_RULES.platformFeeBp / 100}%</span>
+              </dt>
+              <dd>{formatINR(platformFee)}</dd>
+            </div>
+            <div>
+              <dt>Tax / applicable charge</dt>
+              <dd>{formatINR(charge)}</dd>
             </div>
             <div>
               <dt>Shipping</dt>
@@ -273,10 +285,11 @@ export function CheckoutForm({ mode, direct = null }: { mode: CheckoutMode; dire
               </div>
             )}
             <div className="co-sum__total">
-              <dt>Total</dt>
+              <dt>Total payable</dt>
               <dd>{formatINR(total)}</dd>
             </div>
           </dl>
+          {shipping > 0 && <p className="co-sum__note">Free shipping from {formatINR(SHIPPING_RULES.freeFrom)}.</p>}
         </div>
         {!fromCart && (
           <p className="co-more">

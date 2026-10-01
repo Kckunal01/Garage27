@@ -248,3 +248,43 @@
     font-size: 10.5px;
   }
 }
+
+/* Garage 27 work standard: what Garage 27 will not take on, before a request
+   is sent. A quiet ruled note, not a warning box. */
+.wstd {
+  display: grid;
+  gap: 6px;
+  margin: 0 0 18px;
+  padding: 12px 0 12px 14px;
+  border-left: 2px solid var(--g-red);
+}
+.sf .form-grid .wstd {
+  margin: 4px 0 0;
+}
+.wstd__label {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  color: var(--g-red);
+}
+.wstd__text {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: rgba(239, 230, 210, 0.72);
+}
+.wstd__link {
+  justify-self: start;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.18em;
+  color: #f4ecdc;
+  text-decoration: underline;
+  text-decoration-color: var(--g-red);
+  text-underline-offset: 3px;
+}
+.wstd__link:hover {
+  color: var(--g-red);
+}

@@ -65,6 +65,10 @@ export interface OrderRecord {
   reference: string
   status: OrderStatus
   subtotal: Paise
+  /** 4% platform fee on the products. */
+  platformFee: Paise
+  /** Tax / applicable charge on the products. */
+  charge: Paise
   shipping: Paise
   /** Cash-on-delivery surcharge; 0 for online payment. */
   codFee: Paise
@@ -176,6 +180,8 @@ function supabaseStore(): Store | null {
     reference: row.reference as string,
     status: row.status as OrderStatus,
     subtotal: row.subtotal as number,
+    platformFee: (row.platform_fee as number) ?? 0,
+    charge: (row.charge as number) ?? 0,
     shipping: row.shipping as number,
     codFee: (row.cod_fee as number) ?? 0,
     total: row.total as number,
@@ -261,6 +267,8 @@ function supabaseStore(): Store | null {
             reference: o.reference,
             status: o.status,
             subtotal: o.subtotal,
+            platform_fee: o.platformFee,
+            charge: o.charge,
             shipping: o.shipping,
             cod_fee: o.codFee,
             total: o.total,

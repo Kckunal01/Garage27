@@ -1,4 +1,4 @@
-import { formatINR } from '@/lib/pricing/money'
+import { PartPrice } from '../PartPrice'
 import type { CategoryMeta, Part } from '@/types/catalogue'
 import { BuyNow } from '../BuyNow'
 import { ProductGallery, type GalleryImage } from './ProductGallery'
@@ -26,7 +26,7 @@ export function ProductHero({ part, meta, number, images }: { part: Part; meta: 
         )}
         <p className="phero__desc">{part.description}</p>
         <div className="phero__price">
-          <p className="phero__amount">{formatINR(part.price)}</p>
+          <PartPrice part={part} className="phero__amount" />
           <p className={`phero__stock${inStock ? '' : ' is-out'}`}>{availability}</p>
         </div>
         <BuyNow part={part} />

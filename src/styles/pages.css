@@ -1859,6 +1859,23 @@
   font-family: var(--font-ui);
   color: #f1e6cc;
 }
+.co-sum__totals dt {
+  min-width: 0;
+}
+.co-sum__rate {
+  margin-left: 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: rgba(239, 227, 200, 0.5);
+}
+.co-sum__note {
+  margin: 10px 0 0;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  color: rgba(239, 227, 200, 0.55);
+}
 .co-sum__total {
   margin-top: 6px;
   padding-top: 12px;
@@ -2171,4 +2188,28 @@
 }
 html[data-adding] body {
   padding-bottom: calc(var(--bottom-clearance) + 48px);
+}
+
+/* Part price: an original / reference price, when set, sits above the
+   selling price, crossed out in a thin red rule. */
+.pprice {
+  display: inline-grid;
+  justify-items: start;
+  gap: 1px;
+}
+.pprice__was {
+  font-family: var(--font-mono);
+  font-size: 0.62em;
+  letter-spacing: 0.04em;
+  color: rgba(239, 227, 200, 0.5);
+  text-decoration-line: line-through;
+  text-decoration-color: var(--g-red);
+  text-decoration-thickness: 1px;
+}
+.pcat__body .subnav {
+  margin: 14px 0 0;
+}
+/* The category row scrolls inside the column; it must never widen the grid. */
+.pcat__body {
+  grid-template-columns: minmax(0, 1fr);
 }

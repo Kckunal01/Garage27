@@ -2,15 +2,14 @@
 
 import Link from 'next/link'
 import { track } from '@/lib/analytics'
-import { formatINR } from '@/lib/pricing/money'
 import { PART_CATEGORY_META } from '@/data/catalogue'
-import type { Bike, Part } from '@/types/catalogue'
+import type { Part } from '@/types/catalogue'
 import { buyNowHref } from './buy-now'
 import { CategoryPhoto } from './CategoryPhoto'
-import { fitmentLine } from './fitment'
+import { PartPrice } from './PartPrice'
 
 /** A part on its category shelf. The one purchase action is BUY NOW (straight to checkout, quantity 1). */
-export function PartCard({ part, bikes, image, eager }: { part: Part; bikes: Bike[]; image?: string; eager?: boolean }) {
+export function PartCard({ part, image, eager }: { part: Part; image?: string; eager?: boolean }) {
   const inStock = part.status === 'active' && part.stock > 0
   return (
     <article className="pcard">
@@ -25,11 +24,10 @@ export function PartCard({ part, bikes, image, eager }: { part: Part; bikes: Bik
         </div>
         <div className="pcard__body">
           <h3 className="pcard__name">{part.name}</h3>
-          <p className="pcard__fit">{fitmentLine(part, bikes)}</p>
         </div>
       </Link>
       <div className="pcard__foot">
-        <p className="pcard__price">{formatINR(part.price)}</p>
+        <PartPrice part={part} className="pcard__price" />
         {inStock ? (
           <Link
             href={buyNowHref(part.slug)}

@@ -130,7 +130,7 @@ const paletteColourId = (bikeId: string, i: number) => `col-${bikeId.replace(/^b
  * quote (never the interactive editor). Ready to receive `previewImage`,
  * `thumbnail`, a `model3d` rig + slots, and verified colours.
  */
-function previewModel(b: Pick<Bike, 'id' | 'slug' | 'brand' | 'model' | 'name' | 'silhouette'> & Partial<Pick<Bike, 'tagline' | 'basePrice'>>): Bike {
+function previewModel(b: Pick<Bike, 'id' | 'slug' | 'brand' | 'model' | 'name' | 'silhouette'> & Partial<Pick<Bike, 'tagline' | 'basePrice' | 'engineCc'>>): Bike {
   const defaultColourId = FACTORY_PALETTES[b.id]?.length ? paletteColourId(b.id, 0) : undefined
   return { ...b, status: 'active', summary: '', defaultColourId, slots: [], hotspots: [], camera: ROADSTER_CAMERA }
 }
@@ -142,6 +142,7 @@ export const bikes: Bike[] = [
     brand: 'Royal Enfield',
     model: 'Classic 350',
     name: 'CLASSIC 350',
+    engineCc: 349,
     tagline: 'Timeless. Iconic. Yours.',
     status: 'active',
     basePrice: 19_300_000,
@@ -169,18 +170,19 @@ export const bikes: Bike[] = [
     ],
     camera: ROADSTER_CAMERA,
   },
-  previewModel({ id: 'bike-re-bullet-350', slug: 'royal-enfield-bullet-350', brand: 'Royal Enfield', model: 'Bullet 350', name: 'BULLET 350', silhouette: 'roadster' }),
-  previewModel({ id: 'bike-re-hunter-350', slug: 'royal-enfield-hunter-350', brand: 'Royal Enfield', model: 'Hunter 350', name: 'HUNTER 350', silhouette: 'roadster' }),
-  previewModel({ id: 'bike-re-meteor-350', slug: 'royal-enfield-meteor-350', brand: 'Royal Enfield', model: 'Meteor 350', name: 'METEOR 350', silhouette: 'roadster' }),
-  previewModel({ id: 'bike-re-goan-classic-350', slug: 'royal-enfield-goan-classic-350', brand: 'Royal Enfield', model: 'Goan Classic 350', name: 'GOAN CLASSIC 350', silhouette: 'bobber' }),
-  previewModel({ id: 'bike-re-interceptor-650', slug: 'royal-enfield-interceptor-650', brand: 'Royal Enfield', model: 'Interceptor 650', name: 'INTERCEPTOR 650', silhouette: 'roadster' }),
-  previewModel({ id: 'bike-re-super-meteor-650', slug: 'royal-enfield-super-meteor-650', brand: 'Royal Enfield', model: 'Super Meteor 650', name: 'SUPER METEOR 650', silhouette: 'roadster' }),
+  previewModel({ id: 'bike-re-bullet-350', slug: 'royal-enfield-bullet-350', brand: 'Royal Enfield', model: 'Bullet 350', name: 'BULLET 350', silhouette: 'roadster', engineCc: 349 }),
+  previewModel({ id: 'bike-re-hunter-350', slug: 'royal-enfield-hunter-350', brand: 'Royal Enfield', model: 'Hunter 350', name: 'HUNTER 350', silhouette: 'roadster', engineCc: 349 }),
+  previewModel({ id: 'bike-re-meteor-350', slug: 'royal-enfield-meteor-350', brand: 'Royal Enfield', model: 'Meteor 350', name: 'METEOR 350', silhouette: 'roadster', engineCc: 349 }),
+  previewModel({ id: 'bike-re-goan-classic-350', slug: 'royal-enfield-goan-classic-350', brand: 'Royal Enfield', model: 'Goan Classic 350', name: 'GOAN CLASSIC 350', silhouette: 'bobber', engineCc: 349 }),
+  previewModel({ id: 'bike-re-interceptor-650', slug: 'royal-enfield-interceptor-650', brand: 'Royal Enfield', model: 'Interceptor 650', name: 'INTERCEPTOR 650', silhouette: 'roadster', engineCc: 648 }),
+  previewModel({ id: 'bike-re-super-meteor-650', slug: 'royal-enfield-super-meteor-650', brand: 'Royal Enfield', model: 'Super Meteor 650', name: 'SUPER METEOR 650', silhouette: 'roadster', engineCc: 648 }),
   {
     id: 'bike-jawa-42',
     slug: 'jawa-42',
     brand: 'Jawa',
     model: '42',
     name: 'JAWA 42',
+    engineCc: 294,
     status: 'active',
     basePrice: 19_800_000,
     summary: 'Second vehicle on the same engine: its own slots, stock parts and compatible upgrades.',
@@ -205,15 +207,15 @@ export const bikes: Bike[] = [
     ],
     camera: ROADSTER_CAMERA,
   },
-  previewModel({ id: 'bike-jawa-350', slug: 'jawa-350', brand: 'Jawa', model: '350', name: 'JAWA 350', silhouette: 'roadster' }),
-  previewModel({ id: 'bike-jawa-42-bobber', slug: 'jawa-42-bobber', brand: 'Jawa', model: '42 Bobber', name: '42 BOBBER', silhouette: 'bobber' }),
-  previewModel({ id: 'bike-jawa-perak', slug: 'jawa-perak', brand: 'Jawa', model: 'Perak', name: 'PERAK', silhouette: 'bobber' }),
+  previewModel({ id: 'bike-jawa-350', slug: 'jawa-350', brand: 'Jawa', model: '350', name: 'JAWA 350', silhouette: 'roadster', engineCc: 334 }),
+  previewModel({ id: 'bike-jawa-42-bobber', slug: 'jawa-42-bobber', brand: 'Jawa', model: '42 Bobber', name: '42 BOBBER', silhouette: 'bobber', engineCc: 334 }),
+  previewModel({ id: 'bike-jawa-perak', slug: 'jawa-perak', brand: 'Jawa', model: 'Perak', name: 'PERAK', silhouette: 'bobber', engineCc: 334 }),
   // Indicative placeholder price carried over from the original seed.
-  previewModel({ id: 'bike-yezdi-roadster', slug: 'yezdi-roadster', brand: 'Yezdi', model: 'Roadster', name: 'ROADSTER', silhouette: 'scrambler', basePrice: 20_900_000 }),
-  previewModel({ id: 'bike-yezdi-classic', slug: 'yezdi-classic', brand: 'Yezdi', model: 'Classic', name: 'CLASSIC', silhouette: 'roadster' }),
-  previewModel({ id: 'bike-yezdi-scrambler', slug: 'yezdi-scrambler', brand: 'Yezdi', model: 'Scrambler', name: 'SCRAMBLER', silhouette: 'scrambler' }),
-  previewModel({ id: 'bike-triumph-speed-400', slug: 'triumph-speed-400', brand: 'Triumph', model: 'Speed 400', name: 'SPEED 400', silhouette: 'roadster' }),
-  previewModel({ id: 'bike-triumph-scrambler-400x', slug: 'triumph-scrambler-400-x', brand: 'Triumph', model: 'Scrambler 400 X', name: 'SCRAMBLER 400 X', silhouette: 'scrambler' }),
+  previewModel({ id: 'bike-yezdi-roadster', slug: 'yezdi-roadster', brand: 'Yezdi', model: 'Roadster', name: 'ROADSTER', silhouette: 'scrambler', basePrice: 20_900_000, engineCc: 334 }),
+  previewModel({ id: 'bike-yezdi-classic', slug: 'yezdi-classic', brand: 'Yezdi', model: 'Classic', name: 'CLASSIC', silhouette: 'roadster', engineCc: 334 }),
+  previewModel({ id: 'bike-yezdi-scrambler', slug: 'yezdi-scrambler', brand: 'Yezdi', model: 'Scrambler', name: 'SCRAMBLER', silhouette: 'scrambler', engineCc: 334 }),
+  previewModel({ id: 'bike-triumph-speed-400', slug: 'triumph-speed-400', brand: 'Triumph', model: 'Speed 400', name: 'SPEED 400', silhouette: 'roadster', engineCc: 398 }),
+  previewModel({ id: 'bike-triumph-scrambler-400x', slug: 'triumph-scrambler-400-x', brand: 'Triumph', model: 'Scrambler 400 X', name: 'SCRAMBLER 400 X', silhouette: 'scrambler', engineCc: 398 }),
 ]
 
 export const colours: BikeColour[] = [

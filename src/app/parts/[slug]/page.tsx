@@ -68,7 +68,7 @@ async function CategoryPage({ category }: { category: PartCategory }) {
         </div>
       </section>
       <div className="prt__body pcat__body">
-        <CategoryShelf parts={own} bikes={bikes} images={images} />
+        <CategoryShelf category={category} parts={own} bikes={bikes} images={images} />
       </div>
     </div>
   )

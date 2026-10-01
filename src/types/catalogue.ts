@@ -129,6 +129,8 @@ export interface Bike {
   year?: number
   /** Trim / variant where the catalogue needs it, e.g. "Signals". */
   variant?: string
+  /** Engine displacement in cc. Bike-specific parts for a bike above 350cc carry the 40% charge. */
+  engineCc?: number
   /** Vehicle-picker thumbnail (optimised still). Falls back to the silhouette. */
   thumbnail?: string
   /** Short line under the name on the Build landing, where Garage 27 has one. */
@@ -207,6 +209,8 @@ export interface Part {
   summary: string
   description: string
   price: Paise
+  /** Original / reference price, shown crossed out above `price` — only when Garage 27 sets one higher than it. */
+  compareAtPrice?: Paise
   currency: 'INR'
   /** Bike ids this part fits. Empty array = universal. */
   compatibleBikeIds: string[]

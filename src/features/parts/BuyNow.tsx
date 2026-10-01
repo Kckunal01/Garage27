@@ -18,7 +18,7 @@ export function BuyNow({ part }: { part: Part }) {
     track('product_viewed', { part: part.id, category: part.category, in_stock: available })
   }, [part.id, part.category, available])
 
-  const trust = ['SECURE CHECKOUT', `FREE SHIPPING OVER ${formatINR(SHIPPING_RULES.freeOver)}`, ...(part.brand === 'Garage 27' ? ['GENUINE GARAGE 27'] : [])]
+  const trust = ['SECURE CHECKOUT', `FREE SHIPPING FROM ${formatINR(SHIPPING_RULES.freeFrom)}`, ...(part.brand === 'Garage 27' ? ['GENUINE GARAGE 27'] : [])]
 
   if (!available) {
     return (
