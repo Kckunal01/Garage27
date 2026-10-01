@@ -7,6 +7,7 @@ import { PART_CATEGORY_META } from '@/data/catalogue'
 import { PART_CATEGORIES, type Bike, type Part, type PartCategory } from '@/types/catalogue'
 import { BikeSelector } from './BikeSelector'
 import { PartsCategoryTile } from './PartsCategoryTile'
+import { PartsTicker } from './PartsTicker'
 import { fitsBike } from './fitment'
 import { useBikeFilter } from './use-bike-filter'
 
@@ -49,6 +50,7 @@ function LandingView({ parts, bikes, bike, setBike }: Data & { bike: string; set
   return (
     <>
       <BikeSelector bikes={bikes} value={bike} onChange={setBike} />
+      <PartsTicker />
       <h2 className="sr-only">Categories</h2>
       <nav className="ptile-grid" aria-label="Parts categories">
         {PART_CATEGORIES.map((c, i) => (

@@ -103,6 +103,14 @@ export const enquirySchema = z.object({
 })
 export type EnquiryInput = z.infer<typeof enquirySchema>
 
+/** Service → LET'S TALK asks for a phone number only; it travels in `reach`, which the server already accepts. */
+export const enquiryPhoneSchema = enquirySchema.extend({
+  reach: z
+    .string()
+    .trim()
+    .refine((v) => INDIAN_MOBILE.test(v.replace(/[\s-]/g, '')), 'Use a 10-digit Indian mobile number.'),
+})
+
 /** Enquiry references may also be PDFs. */
 export const ENQUIRY_ACCEPT = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'] as const
 

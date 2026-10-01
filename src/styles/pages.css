@@ -1848,6 +1848,20 @@
   letter-spacing: 0.12em;
   color: rgba(239, 227, 200, 0.55);
 }
+.co-sum__orig dt,
+.co-sum__orig dd {
+  color: rgba(239, 227, 200, 0.55);
+}
+.co-sum__discount dt,
+.co-sum__discount dd {
+  font-family: var(--font-ui);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--g-red);
+}
+.co-sum__discount dt {
+  text-transform: uppercase;
+}
 .co-sum__total {
   margin-top: 6px;
   padding-top: 12px;
@@ -2200,12 +2214,11 @@ html[data-adding] body {
   grid-template-columns: minmax(0, 1fr);
 }
 
-/* Parts promises: one thin rolling line pinned just below the header, over
-   the top of the hero. Mono caps, red separators, hairlines. */
+/* Parts promises: one thin rolling line below CHOOSE YOUR BIKE, above the
+   categories. Mono caps, red separators, hairlines. */
 .prt-ticker {
-  position: absolute;
-  inset: var(--header-h) 0 auto;
-  z-index: 2;
+  position: relative;
+  min-width: 0;
   overflow: hidden;
   border-block: 1px solid rgba(255, 228, 196, 0.14);
   background: rgba(11, 9, 8, 0.72);

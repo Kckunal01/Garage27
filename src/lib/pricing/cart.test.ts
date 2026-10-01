@@ -38,6 +38,25 @@ describe('priceCart', () => {
     const b = breakdown([{ price: 100_000, quantity: 3 }], 'cod')
     expect(b.total).toBe(300_000 + 12_000 + 49_900 + PAYMENT_RULES.codFee)
   })
+  it('discount = Σ (reference − current) × qty; shown only, never taken off the total again', () => {
+    const b = breakdown(
+      [
+        { price: 850_000, quantity: 2, was: 999_900 }, // 2 × ₹1,499
+        { price: 290_000, quantity: 1 }, // no reference price
+        { price: 100_000, quantity: 1, was: 100_000 }, // not higher: no discount
+      ],
+      'cod',
+    )
+    expect(b.discount).toBe(2 * 149_900)
+    expect(b.subtotal).toBe(1_700_000 + 290_000 + 100_000)
+    expect(b.total).toBe(b.subtotal + b.platformFee + b.shipping + PAYMENT_RULES.codFee)
+  })
+  it('server pricing reports the discount from the catalogue reference price', () => {
+    const r = priceCart([{ partId: 'part-headlight-7-chrome', quantity: 1 }], parts)
+    expect(r.discount).toBe(149_900) // ₹9,999 − ₹8,500
+    expect(r.subtotal).toBe(850_000)
+    expect(priceCart([{ partId: 'part-tail-light-frenched', quantity: 1 }], parts).discount).toBe(0)
+  })
   it('charges the current price, never the crossed-out reference price', () => {
     const part = parts.find((p) => p.compareAtPrice)!
     const r = priceCart([{ partId: part.id, quantity: 1 }], parts)

@@ -58,7 +58,8 @@ const empty = { name: '', email: '', phone: '', line1: '', line2: '', city: '', 
  * "Want to add something?" — and never touches the cart. Mode cart checks
  * out the saved cart exactly as before. `direct` is the part BUY NOW sent.
  */
-export function CheckoutForm({ mode, direct = null }: { mode: CheckoutMode; direct?: CartLine | null }) {
+/** `references`: reference prices of discounted parts, from the server — for showing the saving only. */
+export function CheckoutForm({ mode, direct = null, references = {} }: { mode: CheckoutMode; direct?: CartLine | null; references?: Record<string, number> }) {
   const cart = useCart()
   const router = useRouter()
   const fromCart = mode === 'cart'
@@ -114,8 +115,8 @@ export function CheckoutForm({ mode, direct = null }: { mode: CheckoutMode; dire
     )
 
   // Display only: the server prices the order (every line below) itself.
-  const { platformFee, shipping, codFee, total } = breakdown(
-    lines.map((l) => ({ price: l.price, quantity: l.quantity })),
+  const { discount, platformFee, shipping, codFee, total } = breakdown(
+    lines.map((l) => ({ price: l.price, quantity: l.quantity, was: references[l.partId] })),
     method,
   )
   const set = (k: keyof typeof empty) => (e: React.ChangeEvent<HTMLInputElement>) => setValues((v) => ({ ...v, [k]: e.target.value }))
@@ -259,6 +260,18 @@ export function CheckoutForm({ mode, direct = null }: { mode: CheckoutMode; dire
             })}
           </ul>
           <dl className="co-sum__totals">
+            {discount > 0 && (
+              <>
+                <div className="co-sum__orig">
+                  <dt>Original price</dt>
+                  <dd>{formatINR(subtotal + discount)}</dd>
+                </div>
+                <div className="co-sum__discount">
+                  <dt>Discount</dt>
+                  <dd>−{formatINR(discount)}</dd>
+                </div>
+              </>
+            )}
             <div>
               <dt>Products</dt>
               <dd>{formatINR(subtotal)}</dd>

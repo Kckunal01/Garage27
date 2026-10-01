@@ -1,7 +1,8 @@
 import type { Metadata } from 'next'
 import { CheckoutForm } from '@/features/checkout/CheckoutForm'
 import type { CartLine } from '@/features/checkout/cart-store'
-import { getPartBySlug } from '@/lib/catalogue/repository'
+import { getCatalogue, getPartBySlug } from '@/lib/catalogue/repository'
+import { referencePrices } from '@/lib/pricing/discount'
 import { SHIPPING_RULES } from '@/lib/pricing/cart'
 
 export const metadata: Metadata = { title: 'Checkout', robots: { index: false } }
@@ -24,13 +25,14 @@ export default async function CheckoutPage({ searchParams }: PageProps<'/checkou
       direct = { partId: part.id, name: part.name, slug: part.slug, price: part.price, category: part.category, quantity }
     }
   }
+  const { parts } = await getCatalogue()
   return (
     <div className="co-page">
       <header className="co-page__head">
         <p className="co-page__eyebrow">CHECKOUT</p>
         <h1 className="co-page__title">Almost on the road.</h1>
       </header>
-      <CheckoutForm mode={direct ? 'buy' : params.selection ? 'selection' : 'cart'} direct={direct} />
+      <CheckoutForm mode={direct ? 'buy' : params.selection ? 'selection' : 'cart'} direct={direct} references={referencePrices(parts)} />
     </div>
   )
 }

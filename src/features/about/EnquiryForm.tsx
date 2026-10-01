@@ -3,14 +3,17 @@
 import { useRef, useState, type ChangeEvent, type FormEvent } from 'react'
 import { Honeypot } from '@/components/forms/FormField'
 import { postForm } from '@/lib/http-client'
-import { ENQUIRY_ACCEPT, enquirySchema, fieldErrors, UPLOAD_LIMITS } from '@/lib/validation/schemas'
+import { ENQUIRY_ACCEPT, enquiryPhoneSchema, enquirySchema, fieldErrors, UPLOAD_LIMITS } from '@/lib/validation/schemas'
 
 /**
  * LET'S TALK: a reference (images / PDF), what's on your mind, a
  * name and one way to reach you. Posts to /api/enquiries; the server
  * re-validates everything and answers with a reference.
+ * `contact="phone"` (Service → LET'S TALK) asks for a phone number instead of
+ * "WhatsApp / Email".
  */
-export function EnquiryForm({ initialMessage = '' }: { initialMessage?: string } = {}) {
+export function EnquiryForm({ initialMessage = '', contact = 'reach' }: { initialMessage?: string; contact?: 'reach' | 'phone' } = {}) {
+  const phoneOnly = contact === 'phone'
   const [v, setV] = useState({ name: '', reach: '', message: initialMessage, link: '' })
   const [files, setFiles] = useState<File[]>([])
   const [hp, setHp] = useState('')
@@ -49,7 +52,7 @@ export function EnquiryForm({ initialMessage = '' }: { initialMessage?: string }
     e.preventDefault()
     setFormError(undefined)
     const payload = { name: v.name, reach: v.reach, message: v.message, link: v.link, website: hp || undefined }
-    const r = enquirySchema.safeParse(payload)
+    const r = (phoneOnly ? enquiryPhoneSchema : enquirySchema).safeParse(payload)
     const errs = r.success ? {} : fieldErrors(r.error)
     if (errors.files) errs.files = errors.files
     setErrors(errs)
@@ -108,7 +111,11 @@ export function EnquiryForm({ initialMessage = '' }: { initialMessage?: string }
         {msg('name')}
       </div>
       <div className="abt-form__reach">
-        <input className="abt-field" aria-label="Your WhatsApp or email" placeholder="Your WhatsApp / Email" autoComplete="email" value={v.reach} onChange={set('reach')} {...err('reach')} />
+        {phoneOnly ? (
+          <input className="abt-field" type="tel" inputMode="tel" aria-label="Phone number" placeholder="Phone Number" autoComplete="tel-national" value={v.reach} onChange={set('reach')} {...err('reach')} />
+        ) : (
+          <input className="abt-field" aria-label="Your WhatsApp or email" placeholder="Your WhatsApp / Email" autoComplete="email" value={v.reach} onChange={set('reach')} {...err('reach')} />
+        )}
         {msg('reach')}
       </div>
       <button type="submit" className="abt-send" disabled={busy}>

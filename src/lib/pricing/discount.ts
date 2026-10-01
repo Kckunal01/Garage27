@@ -1,5 +1,9 @@
 import type { Paise, Part } from '@/types/catalogue'
 
+/** Each discounted part's reference price, for the browser's checkout summary (display only). */
+export const referencePrices = (parts: Pick<Part, 'id' | 'price' | 'compareAtPrice'>[]): Record<string, Paise> =>
+  Object.fromEntries(parts.flatMap((p) => (p.compareAtPrice && p.compareAtPrice > p.price ? [[p.id, p.compareAtPrice]] : [])))
+
 export interface Discount {
   /** Original / reference price (shown crossed out; never charged). */
   was: Paise

@@ -38,10 +38,15 @@ export interface ChargeLine {
   /** Current selling price — never the crossed-out reference price. */
   price: Paise
   quantity: number
+  /** Original / reference price, when the part has one. Only ever used to show the saving. */
+  was?: Paise
 }
 
 export interface Breakdown {
+  /** Products at their current selling price. */
   subtotal: Paise
+  /** Σ (reference − current) × quantity over discounted lines. Shown, never subtracted again: `subtotal` is already at current prices. */
+  discount: Paise
   platformFee: Paise
   shipping: Paise
   /** Cash-on-delivery surcharge (0 for online payment). */
@@ -51,15 +56,17 @@ export interface Breakdown {
 
 /**
  * The price composition, one function for server and browser:
- * total = products + 4% platform fee + shipping (+ COD fee).
+ * total = products (current prices) + 4% platform fee + shipping (+ COD fee).
+ * The discount is reported for display; it is already inside `subtotal`.
  */
 export function breakdown(lines: ChargeLine[], method: PaymentMethod = 'online'): Breakdown {
   const subtotal = lines.reduce((s, l) => s + l.price * l.quantity, 0)
-  if (subtotal === 0) return { subtotal: 0, platformFee: 0, shipping: 0, codFee: 0, total: 0 }
+  if (subtotal === 0) return { subtotal: 0, discount: 0, platformFee: 0, shipping: 0, codFee: 0, total: 0 }
+  const discount = lines.reduce((s, l) => s + (l.was && l.was > l.price ? (l.was - l.price) * l.quantity : 0), 0)
   const platformFee = ofBp(subtotal, PLATFORM_FEE_BP)
   const shipping = subtotal > SHIPPING_RULES.freeAbove ? 0 : SHIPPING_RULES.flat
   const codFee = codFeeFor(method)
-  return { subtotal, platformFee, shipping, codFee, total: subtotal + platformFee + shipping + codFee }
+  return { subtotal, discount, platformFee, shipping, codFee, total: subtotal + platformFee + shipping + codFee }
 }
 
 export type CartProblem = { partId: string; problem: 'unknown' | 'unavailable' | 'insufficient-stock'; available?: number }
@@ -96,5 +103,5 @@ export function priceCart(items: CartLineInput[], parts: Part[], method: Payment
     }
     lines.push({ part, quantity, lineTotal: part.price * quantity })
   }
-  return { lines, problems, ...breakdown(lines.map((l) => ({ price: l.part.price, quantity: l.quantity })), method) }
+  return { lines, problems, ...breakdown(lines.map((l) => ({ price: l.part.price, quantity: l.quantity, was: l.part.compareAtPrice })), method) }
 }

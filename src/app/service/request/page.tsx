@@ -97,7 +97,7 @@ export default async function ServiceRequestPage({ searchParams }: PageProps<'/s
 
         <section className="sf sreq__form" aria-label="Your request">
           <WorkStandardNote kind={bundle ? 'build' : 'service'} />
-          <EnquiryForm initialMessage={message} />
+          <EnquiryForm initialMessage={message} contact="phone" />
         </section>
       </div>
     </div>

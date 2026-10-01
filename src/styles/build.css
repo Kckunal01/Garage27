@@ -1039,3 +1039,11 @@
     grid-column: 1 / -1;
   }
 }
+
+/* LET'S TALK: the section's headings are white; red stays on accents
+   (the current tab's rule, the note's rule, the button, focus). */
+.sreq .sreq__label,
+.sreq .wstd__label,
+.sreq .subnav__link.is-current {
+  color: #fff;
+}
