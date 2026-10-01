@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { ServiceBay } from '@/features/service/ServiceBay'
 import { ServiceHero } from '@/features/service/ServiceHero'
+import { bikeChoices } from '@/features/service/bikeChoices'
 import { getCatalogue } from '@/lib/catalogue/repository'
 import { pageMetadata } from '@/lib/seo/metadata'
 
@@ -13,7 +14,7 @@ export const metadata: Metadata = pageMetadata({
 })
 
 export default async function ServicePage({ searchParams }: PageProps<'/service'>) {
-  const [{ services }, params] = await Promise.all([getCatalogue(), searchParams])
+  const [{ services, bikes }, params] = await Promise.all([getCatalogue(), searchParams])
   const wanted = typeof params.request === 'string' ? params.request : null
   // Only a real catalogue service opens the request flow.
   const requested = wanted && services.some((s) => s.id === wanted) ? wanted : null
@@ -21,7 +22,7 @@ export default async function ServicePage({ searchParams }: PageProps<'/service'
     <div className="svc">
       <ServiceHero compact={!!requested} />
       <div className="svc__body">
-        <ServiceBay services={services} requested={requested} />
+        <ServiceBay services={services} bikes={bikeChoices(bikes)} requested={requested} />
       </div>
     </div>
   )

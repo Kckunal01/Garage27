@@ -314,3 +314,153 @@
 .svc-request__intro {
   grid-template-columns: minmax(0, 1fr);
 }
+
+/* Moneyback / Buyback quality tiers: an editorial comparison, not cards.
+   The percentage is the focal point; colour runs red → amber → neutral →
+   charcoal so Tier 4 reads as a valuation tier, never as an error. */
+.ldoc__tiers {
+  display: grid;
+  margin: 4px 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid rgba(239, 230, 210, 0.14);
+}
+.ldoc__tier {
+  --tier: var(--g-red);
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr) auto;
+  grid-template-areas:
+    'num name pct'
+    'num text tag';
+  align-items: baseline;
+  column-gap: 12px;
+  row-gap: 4px;
+  padding: 14px 0 14px 12px;
+  border-bottom: 1px solid rgba(239, 230, 210, 0.14);
+  box-shadow: inset 2px 0 0 var(--tier);
+}
+.ldoc__tier--2 {
+  --tier: #c8915a;
+}
+.ldoc__tier--3 {
+  --tier: #a49d8c;
+}
+.ldoc__tier--4 {
+  --tier: #5e5a55;
+}
+.ldoc__tier-num {
+  grid-area: num;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: rgba(239, 230, 210, 0.4);
+}
+.ldoc__tier-name {
+  grid-area: name;
+  font-family: var(--font-ui);
+  font-weight: 500;
+  font-size: 12.5px;
+  letter-spacing: 0.18em;
+  color: #fff;
+}
+.ldoc__tier-pct {
+  grid-area: pct;
+  justify-self: end;
+  font-family: var(--font-display);
+  font-size: 40px;
+  line-height: 0.9;
+  color: var(--tier);
+}
+.ldoc__tier--4 .ldoc__tier-pct {
+  color: rgba(239, 230, 210, 0.5);
+}
+.ldoc__tier-tag {
+  grid-area: tag;
+  justify-self: end;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  color: rgba(239, 230, 210, 0.45);
+}
+.ldoc__tier-text {
+  grid-area: text;
+  font-size: 14px;
+  line-height: 1.5;
+  color: rgba(239, 230, 210, 0.78);
+}
+
+/* Order / tracking code with COPY (Track Order, order confirmation) */
+.ccode {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+.ccode__label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  color: rgba(239, 230, 210, 0.55);
+}
+.ccode__row {
+  display: flex;
+  align-items: stretch;
+  min-width: 0;
+  border: 1px solid rgba(239, 230, 210, 0.22);
+  background: #080706;
+}
+.ccode__code {
+  flex: 1;
+  min-width: 0;
+  padding: 12px 12px;
+  overflow-wrap: anywhere;
+  font-family: var(--font-mono);
+  font-size: 15px;
+  letter-spacing: 0.08em;
+  color: #fff;
+  background: none;
+  user-select: all;
+  -webkit-user-select: all;
+}
+.ccode__copy {
+  flex: none;
+  min-width: 78px;
+  padding: 0 14px;
+  border: 0;
+  border-left: 1px solid rgba(239, 230, 210, 0.22);
+  border-radius: 0;
+  background: none;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.22em;
+  color: var(--g-red);
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+.ccode__copy:hover {
+  background: rgba(224, 38, 45, 0.08);
+}
+.ccode__copy.is-done {
+  background: var(--g-red);
+  color: #fff;
+}
+.ccode__copy:focus-visible {
+  outline: 1px solid #fff;
+  outline-offset: -2px;
+}
+
+@media (--desktop) {
+  .ldoc__tier {
+    grid-template-columns: 40px 180px minmax(0, 1fr) auto;
+    grid-template-areas: 'num name text pct' 'num name text tag';
+    padding: 18px 0 18px 16px;
+    column-gap: 20px;
+  }
+  .ldoc__tier-pct {
+    font-size: 56px;
+  }
+  .ldoc__tier-text {
+    font-size: 15px;
+  }
+}

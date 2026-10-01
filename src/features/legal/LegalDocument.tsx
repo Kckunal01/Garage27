@@ -8,6 +8,20 @@ const num = (i: number) => String(i + 1).padStart(2, '0')
 
 function Block({ block }: { block: LegalBlock }) {
   if (typeof block === 'string') return <p>{block}</p>
+  if ('tiers' in block)
+    return (
+      <ol className="ldoc__tiers" aria-label="Moneyback quality tiers">
+        {block.tiers.map((t) => (
+          <li key={t.tier} className={`ldoc__tier ldoc__tier--${t.tier}`}>
+            <span className="ldoc__tier-num">{String(t.tier).padStart(2, '0')}</span>
+            <span className="ldoc__tier-name">TIER {t.tier}</span>
+            <span className="ldoc__tier-pct">{t.percent}</span>
+            <span className="ldoc__tier-tag">VALUATION</span>
+            <span className="ldoc__tier-text">{t.text}</span>
+          </li>
+        ))}
+      </ol>
+    )
   if ('list' in block)
     return (
       <ul className="ldoc__bullets">

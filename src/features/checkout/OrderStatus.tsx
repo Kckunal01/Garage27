@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 import { useCart } from './cart-store'
 import { cancelAdding, clearSelection } from './selection'
+import { CopyCode } from '@/components/garage-ui/CopyCode'
 import { ErrorState, LoadingState } from '@/components/garage-ui/States'
 import { formatINR } from '@/lib/pricing/money'
 
@@ -83,9 +84,7 @@ export function OrderStatus() {
               ? 'You have not been charged. Your cart is still saved.'
               : 'Your bank is still confirming. This page updates by itself — no need to pay again.'}
       </p>
-      <p className="confirm__ref">
-        <span className="label">REFERENCE</span> <strong>{order.reference}</strong>
-      </p>
+      <CopyCode code={order.reference} label="ORDER CODE" />
       <ul className="summary__items">
         {order.items.map((i) => (
           <li key={i.name}>

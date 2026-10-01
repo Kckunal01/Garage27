@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { TextField } from '@/components/forms/FormField'
+import { CopyCode } from '@/components/garage-ui/CopyCode'
 import { GarageButton } from '@/components/garage-ui/GarageButton'
 import { formatINR } from '@/lib/pricing/money'
 
@@ -62,7 +63,7 @@ export function TrackOrder() {
       </form>
       {order && (
         <div className="confirm plate" role="status">
-          <p className="label label--amber">{order.reference}</p>
+          <CopyCode code={order.reference} label="TRACKING / ORDER CODE" />
           <p className="title">{STATUS[order.status] ?? order.status}</p>
           <ul className="summary__items">
             {order.items.map((i) => (

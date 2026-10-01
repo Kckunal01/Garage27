@@ -8,6 +8,7 @@ import { track } from '@/lib/analytics'
 import { postForm } from '@/lib/http-client'
 import { fieldErrors, serviceRequestSchema } from '@/lib/validation/schemas'
 import type { ServiceOffering } from '@/types/catalogue'
+import type { BikeChoiceGroup } from './bikeChoices'
 
 const STEP_FIELDS: Record<number, string[]> = {
   1: ['serviceId', 'bike', 'requirement'],
@@ -19,7 +20,7 @@ const STEP_FIELDS: Record<number, string[]> = {
  * Progressive request: (1) service + bike + need, (2) references + location +
  * contact, (3) optional notes → submit → confirmation with a reference.
  */
-export function ServiceRequestForm({ services, selected, onSelect, compact }: { services: ServiceOffering[]; selected: string; onSelect: (id: string) => void; compact?: boolean }) {
+export function ServiceRequestForm({ services, bikes, selected, onSelect, compact }: { services: ServiceOffering[]; bikes: BikeChoiceGroup[]; selected: string; onSelect: (id: string) => void; compact?: boolean }) {
   const [step, setStep] = useState(1)
   const [v, setV] = useState({ bike: '', requirement: '', location: '', name: '', email: '', phone: '', notes: '' })
   const [files, setFiles] = useState<ReferenceImage[]>([])
@@ -41,7 +42,7 @@ export function ServiceRequestForm({ services, selected, onSelect, compact }: { 
     headingRef.current?.focus({ preventScroll: false })
   }, [step, done])
 
-  const set = (k: keyof typeof v) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const set = (k: keyof typeof v) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     if (!started.current) {
       started.current = true
       track('service_form_started', { service: selected || 'none' })
@@ -160,7 +161,18 @@ export function ServiceRequestForm({ services, selected, onSelect, compact }: { 
               </option>
             ))}
           </SelectField>
-          <TextField label="Your bike" placeholder="e.g. Royal Enfield Classic 350, 2021" value={v.bike} onChange={set('bike')} error={errors.bike} autoComplete="off" />
+          <SelectField label="Your bike" value={v.bike} onChange={set('bike')} error={errors.bike} className="sf-bike">
+            <option value="">Choose your motorcycle</option>
+            {bikes.map((g) => (
+              <optgroup key={g.brand} label={g.brand}>
+                {g.options.map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {o.label}
+                  </option>
+                ))}
+              </optgroup>
+            ))}
+          </SelectField>
           <TextArea label="What do you need?" placeholder="A line or two is plenty." value={v.requirement} onChange={set('requirement')} error={errors.requirement} rows={3} />
         </div>
       )}
