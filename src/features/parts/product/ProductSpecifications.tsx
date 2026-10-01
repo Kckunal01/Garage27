@@ -19,7 +19,7 @@ export function ProductSpecifications({ part, bikes, meta, image }: { part: Part
   return (
     <section className="pspec" aria-labelledby="specs-title">
       <div className="pspec__media" aria-hidden="true">
-        <ProductGallery images={image ? [image] : []} fallback={meta} />
+        <ProductGallery images={image ? [image] : []} fallback={meta} single />
       </div>
       <div className="pspec__body">
         <h2 id="specs-title" className="psec__title">

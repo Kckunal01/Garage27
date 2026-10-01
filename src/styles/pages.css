@@ -669,17 +669,28 @@
   gap: 8px;
 }
 .pgal__thumb {
+  position: relative;
   aspect-ratio: 1;
   overflow: hidden;
   padding: 0;
+  background: #110e0c;
+  cursor: pointer;
+  transition:
+    opacity var(--dur),
+    border-color var(--dur);
   border: 1px solid var(--pline);
   border-radius: 2px;
   opacity: 0.7;
 }
 .pgal__thumb img {
-  width: 100%;
-  height: 100%;
   object-fit: cover;
+}
+.pgal__thumb:hover {
+  opacity: 1;
+}
+.pgal__thumb:focus-visible {
+  outline: 1px solid #fff;
+  outline-offset: 2px;
 }
 .pgal__thumb.is-active {
   opacity: 1;
@@ -860,12 +871,6 @@
 .pben__item + .pben__item {
   padding-left: 16px;
   border-left: 1px solid rgba(255, 228, 196, 0.07);
-}
-.pben__n {
-  font-family: var(--font-ui);
-  font-size: 9.5px;
-  letter-spacing: 0.14em;
-  color: #ff4b52;
 }
 .pben__title {
   margin: 0;

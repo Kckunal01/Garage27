@@ -112,7 +112,7 @@ async function ProductPage({ part }: { part: Part }) {
         <span aria-hidden="true">/</span>
         <span aria-current="page">{part.name}</span>
       </nav>
-      <ProductHero part={part} meta={meta} number={PART_CATEGORIES.indexOf(part.category) + 1} images={images} />
+      <ProductHero part={part} meta={meta} images={images} />
       <ProductBenefits part={part} />
       <ProductSpecifications part={part} bikes={bikes} meta={meta} image={images[1] ?? images[0]} />
       <ProductInstallation part={part} />

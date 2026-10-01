@@ -4,7 +4,7 @@ import { BuyNow } from '../BuyNow'
 import { ProductGallery, type GalleryImage } from './ProductGallery'
 
 /** Image, then (or beside it on desktop) eyebrow, name, headline, description, price and BUY NOW. */
-export function ProductHero({ part, meta, number, images }: { part: Part; meta: CategoryMeta; number: number; images: GalleryImage[] }) {
+export function ProductHero({ part, meta, images }: { part: Part; meta: CategoryMeta; images: GalleryImage[] }) {
   const inStock = part.status === 'active' && part.stock > 0
   const availability = !inStock ? 'SOLD OUT' : part.stock <= 3 ? `ONLY ${part.stock} LEFT` : 'IN STOCK'
   return (
@@ -12,7 +12,7 @@ export function ProductHero({ part, meta, number, images }: { part: Part; meta: 
       <ProductGallery images={images} fallback={meta} />
       <div className="phero__copy">
         <p className="phero__eyebrow">
-          {String(number).padStart(2, '0')} / {meta.label}
+          {meta.label}
         </p>
         <h1 id="product-name" className="phero__name">
           {part.name}
