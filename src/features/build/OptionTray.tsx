@@ -35,10 +35,10 @@ export function OptionTray({ bundle, config, zone, blocked, images, onSelect }: 
           <div key={slot.id} className="tray__slot" role="radiogroup" aria-label={slot.label}>
             <p className="tray__slot-label">{slot.label}</p>
             <div className="tray__grid">
-              <button type="button" role="radio" aria-checked={none} className={`prod prod--none${none ? ' is-selected' : ''}`} onClick={() => !none && stock && onSelect(stock)}>
-                <span className="prod__name">NONE</span>
-                <span className="prod__desc">No additional component</span>
-                <span className="prod__price">{formatINR(0)}</span>
+              <button type="button" role="radio" aria-checked={none} className={`vzp vzp--none${none ? ' is-selected' : ''}`} onClick={() => !none && stock && onSelect(stock)}>
+                <span className="vzp__name">NONE</span>
+                <span className="vzp__desc">No additional component</span>
+                <span className="vzp__price">{formatINR(0)}</span>
               </button>
               {products.map((o) => {
                 const selected = current === o.id
@@ -53,7 +53,7 @@ export function OptionTray({ bundle, config, zone, blocked, images, onSelect }: 
                     role="radio"
                     aria-checked={selected}
                     aria-disabled={soon || undefined}
-                    className={`prod${selected ? ' is-selected' : ''}${!check.ok ? ' is-unfit' : ''}${isBlocked ? ' is-blocked' : ''}`}
+                    className={`vzp${selected ? ' is-selected' : ''}${!check.ok ? ' is-unfit' : ''}${isBlocked ? ' is-blocked' : ''}`}
                     onClick={() => {
                       if (soon) return
                       if (selected) {
@@ -63,11 +63,11 @@ export function OptionTray({ bundle, config, zone, blocked, images, onSelect }: 
                     title={!check.ok && !soon ? check.reason : o.descriptor}
                     aria-describedby={!check.ok ? `${o.id}-why` : undefined}
                   >
-                    <span className={`prod__img${image ? '' : ' prod__img--pending'}`} aria-hidden="true">
+                    <span className={`vzp__img${image ? '' : ' vzp__img--pending'}`} aria-hidden="true">
                       {image && <Image src={image} alt="" fill sizes="(width < 768px) 44vw, 160px" />}
                     </span>
-                    <span className="prod__name">{o.name}</span>
-                    <span className="prod__price">{soon ? 'COMING SOON' : formatPrice(o.priceDelta)}</span>
+                    <span className="vzp__name">{o.name}</span>
+                    <span className="vzp__price">{soon ? 'COMING SOON' : formatPrice(o.priceDelta)}</span>
                     {!check.ok && !soon && (
                       <span className="sr-only" id={`${o.id}-why`}>
                         {check.reason}

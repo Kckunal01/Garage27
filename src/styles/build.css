@@ -436,7 +436,7 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
 }
-.prod {
+.vzp {
   display: grid;
   grid-template-rows: auto auto 1fr;
   align-content: start;
@@ -450,23 +450,23 @@
   cursor: pointer;
   transition: border-color 0.15s;
 }
-.prod > .prod__name,
-.prod > .prod__desc,
-.prod > .prod__price {
+.vzp > .vzp__name,
+.vzp > .vzp__desc,
+.vzp > .vzp__price {
   padding: 0 9px;
 }
-.prod:hover {
+.vzp:hover {
   border-color: var(--vz-line-strong);
 }
-.prod.is-selected {
+.vzp.is-selected {
   border-color: var(--g-red);
   background: #160c0b;
   box-shadow: inset 0 -3px 0 var(--g-red);
 }
-.prod.is-selected .prod__price {
+.vzp.is-selected .vzp__price {
   color: #fff;
 }
-.prod.is-selected .prod__name::before {
+.vzp.is-selected .vzp__name::before {
   content: '';
   display: inline-block;
   width: 6px;
@@ -474,7 +474,7 @@
   margin: 0 6px 1px 0;
   background: var(--g-red);
 }
-.prod__img {
+.vzp__img {
   position: relative;
   display: block;
   aspect-ratio: 4 / 3;
@@ -483,44 +483,44 @@
   border-bottom: 1px solid var(--vz-line);
   background: #151210;
 }
-.prod__img img {
+.vzp__img img {
   object-fit: cover;
 }
 /* No photograph yet: an honest empty plate, ready for the real image */
-.prod__img--pending {
+.vzp__img--pending {
   background:
     repeating-linear-gradient(135deg, rgba(239, 230, 210, 0.05) 0 1px, transparent 1px 9px),
     #110f0d;
 }
-.prod__name {
+.vzp__name {
   font-family: var(--font-ui);
   font-weight: 500;
   font-size: 12px;
   line-height: 1.2;
   letter-spacing: 0.06em;
 }
-.prod__desc {
+.vzp__desc {
   font-family: var(--font-body);
   font-size: 11px;
   color: var(--vz-soft);
 }
-.prod__price {
+.vzp__price {
   align-self: end;
   font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.04em;
   color: var(--vz-cream);
 }
-.prod--none {
+.vzp--none {
   padding-top: 10px;
 }
-.prod.is-unfit {
+.vzp.is-unfit {
   opacity: 0.45;
 }
-.prod.is-blocked {
+.vzp.is-blocked {
   border-color: var(--g-red);
 }
-.prod[aria-disabled='true'] {
+.vzp[aria-disabled='true'] {
   cursor: not-allowed;
   opacity: 0.5;
 }
@@ -643,7 +643,7 @@
 }
 .bnav__part:focus-visible,
 .paint__swatch:focus-visible,
-.prod:focus-visible,
+.vzp:focus-visible,
 .bsum__request:focus-visible,
 .bsum__share:focus-visible,
 .vz-link:focus-visible {

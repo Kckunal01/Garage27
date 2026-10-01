@@ -613,11 +613,35 @@
   --pink: #ff4b52;
   --pline: rgba(255, 228, 196, 0.12);
   display: grid;
+  /* One column that never grows past the screen: an auto track would size to
+     its widest child (the swipeable benefit rail), pushing the whole page
+     wider than the phone and eating the side padding. */
+  grid-template-columns: minmax(0, 1fr);
   gap: 34px;
   padding: 2px 16px 40px;
   background:
     radial-gradient(90% 50% at 70% 0%, rgba(231, 150, 70, 0.08), transparent 70%),
     #0b0908;
+}
+/* Every single-column grid inside the page keeps the same constraint. */
+.prod > *,
+.pgal,
+.phero,
+.phero__copy,
+.pbuy,
+.pspec,
+.pinst,
+.prel {
+  min-width: 0;
+}
+.pgal,
+.phero,
+.phero__copy,
+.pbuy,
+.pspec,
+.pinst,
+.prel {
+  grid-template-columns: minmax(0, 1fr);
 }
 .prod__crumbs {
   display: flex;
@@ -656,7 +680,7 @@
 }
 .pgal__main {
   position: relative;
-  aspect-ratio: 5 / 6;
+  aspect-ratio: 5 / 4; /* phones: the part in view without filling the screen */
   overflow: hidden;
   border: 1px solid var(--pline);
   border-radius: 2px;
@@ -768,8 +792,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-height: 58px;
-  padding: 0 22px;
+  min-height: 52px;
+  padding: 0 20px;
   border: 1px solid var(--g-red);
   border-radius: 2px;
   background: linear-gradient(180deg, rgba(224, 38, 45, 0.16), rgba(224, 38, 45, 0.06));
