@@ -38,6 +38,13 @@ function BikeVisual({ model, src, paint, sizes, eager }: { model: LandingModel; 
   return <BikeSilhouette className="blnd-visual" silhouette={model.silhouette} paint={paint} tone="amber" reflection={!!paint} />
 }
 
+/** Models grouped by manufacturer, in catalogue order. */
+function byBrand(models: LandingModel[]): [string, LandingModel[]][] {
+  const groups = new Map<string, LandingModel[]>()
+  for (const m of models) groups.set(m.brand, [...(groups.get(m.brand) ?? []), m])
+  return [...groups]
+}
+
 /**
  * BUILD — Choose your bike. The featured machine stands in the workshop with
  * its factory colours and BUILD NOW; below it, every model Garage 27 builds.
@@ -121,26 +128,28 @@ export function BuildLanding({ models }: { models: LandingModel[] }) {
         </div>
       </section>
 
-      <section className="blnd__models" aria-labelledby="blnd-all">
-        <h2 id="blnd-all" className="blnd__all">
-          ALL MODELS ({models.length})
-        </h2>
-        <ul className="blnd__grid">
-          {models.map((m) => {
-            const active = m.id === selected.id
-            return (
-              <li key={m.id}>
-                <button type="button" className={`bmodel${active ? ' is-active' : ''}`} aria-pressed={active} onClick={() => choose(m)}>
-                  <span className="bmodel__art" aria-hidden="true">
-                    <BikeVisual model={m} src={m.thumbnail} sizes="(width < 768px) 25vw, 12vw" />
-                  </span>
-                  <span className="bmodel__brand">{m.brand}</span>
-                  <span className="bmodel__name">{m.name}</span>
-                </button>
-              </li>
-            )
-          })}
-        </ul>
+      <section className="blnd__models" aria-label="Models by manufacturer">
+        {byBrand(models).map(([brand, list]) => (
+          <div key={brand} className="blnd__brand">
+            <h2 className="blnd__all">{brand.toUpperCase()}</h2>
+            <ul className="blnd__grid">
+              {list.map((m) => {
+                const active = m.id === selected.id
+                return (
+                  <li key={m.id}>
+                    <button type="button" className={`bmodel${active ? ' is-active' : ''}`} aria-pressed={active} onClick={() => choose(m)}>
+                      <span className="bmodel__art" aria-hidden="true">
+                        <BikeVisual model={m} src={m.thumbnail} sizes="(width < 768px) 25vw, 12vw" />
+                      </span>
+                      <span className="bmodel__brand">{m.brand}</span>
+                      <span className="bmodel__name">{m.name}</span>
+                    </button>
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
+        ))}
       </section>
     </div>
   )

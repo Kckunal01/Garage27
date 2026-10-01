@@ -2538,12 +2538,6 @@ html[data-adding] body {
 .tro-step.is-current .tro-step__label {
   color: #fff;
 }
-.tro-step__time {
-  font-family: var(--font-body);
-  font-size: 10.5px;
-  line-height: 1.3;
-  color: var(--tro-soft);
-}
 
 /* Items */
 .tro-items {
@@ -2813,9 +2807,6 @@ html[data-adding] body {
   }
   .tro-step__label {
     font-size: 14px;
-  }
-  .tro-step__time {
-    font-size: 13px;
   }
   .tro-step::before {
     top: 15px;

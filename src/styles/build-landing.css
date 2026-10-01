@@ -214,6 +214,9 @@
   letter-spacing: 0.18em;
   color: var(--blnd-cream);
 }
+.blnd__brand + .blnd__brand {
+  margin-top: 22px;
+}
 .blnd__grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));

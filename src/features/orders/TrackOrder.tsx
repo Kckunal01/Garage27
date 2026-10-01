@@ -12,7 +12,7 @@ import { CategoryPhoto } from '@/features/parts/CategoryPhoto'
 import { PartPrice } from '@/features/parts/PartPrice'
 import { formatINR } from '@/lib/pricing/money'
 import type { Paise, PartCategory } from '@/types/catalogue'
-import { estimatedDelivery, formatPlaced, formatStamp, formatWindow, headlineFor, TIMELINE, timelineFor } from './tracking'
+import { estimatedDelivery, formatPlaced, formatWindow, headlineFor, TIMELINE, timelineFor } from './tracking'
 
 interface OrderView {
   reference: string
@@ -164,7 +164,6 @@ function TrackResult({ order, catalogue, onBack }: { order: OrderView; catalogue
                 )}
               </span>
               <span className="tro-step__label">{label}</span>
-              <span className="tro-step__time">{i === 0 && order.placedAt ? formatStamp(order.placedAt) : '—'}</span>
               <span className="sr-only">{steps[i] === 'done' ? ' (complete)' : steps[i] === 'current' ? ' (current)' : ''}</span>
             </li>
           ))}
@@ -225,7 +224,7 @@ function TrackResult({ order, catalogue, onBack }: { order: OrderView; catalogue
             </h2>
             <p className="tro-help__text">Have a question about your order? Our team usually replies within a few hours.</p>
           </div>
-          <a className="tro-help__cta" href={`mailto:${CONTACT.email}?subject=${encodeURIComponent(`Order ${order.reference}`)}`}>
+          <a className="tro-help__cta" href={`${CONTACT.whatsapp}?text=${encodeURIComponent(`Hi Garage 27, I have a question about my order ${order.reference}.`)}`} target="_blank" rel="noopener noreferrer">
             Contact Support <span aria-hidden="true">→</span>
           </a>
         </section>
