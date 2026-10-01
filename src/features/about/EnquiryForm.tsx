@@ -8,7 +8,7 @@ import { ENQUIRY_ACCEPT, enquiryPhoneSchema, enquirySchema, fieldErrors, UPLOAD_
 /**
  * LET'S TALK: a reference (images / PDF), what's on your mind, a
  * name and one way to reach you. Posts to /api/enquiries; the server
- * re-validates everything and answers with a reference.
+ * re-validates everything. The confirmation shows no reference code.
  * `contact="phone"` (Service → LET'S TALK) asks for a phone number instead of
  * "WhatsApp / Email".
  */
@@ -20,7 +20,7 @@ export function EnquiryForm({ initialMessage = '', contact = 'reach' }: { initia
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [formError, setFormError] = useState<string>()
   const [busy, setBusy] = useState(false)
-  const [done, setDone] = useState<string | null>(null)
+  const [done, setDone] = useState(false)
   const fileInput = useRef<HTMLInputElement>(null)
 
   const set = (k: keyof typeof v) => (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -58,9 +58,9 @@ export function EnquiryForm({ initialMessage = '', contact = 'reach' }: { initia
     setErrors(errs)
     if (Object.keys(errs).length) return
     setBusy(true)
-    const res = await postForm<{ reference: string }>('/api/enquiries', payload, files)
+    const res = await postForm('/api/enquiries', payload, files)
     setBusy(false)
-    if (res.ok) setDone(res.data.reference)
+    if (res.ok) setDone(true)
     else {
       setFormError(res.error)
       if (res.fields) setErrors(res.fields)
@@ -71,9 +71,7 @@ export function EnquiryForm({ initialMessage = '', contact = 'reach' }: { initia
     return (
       <div className="abt-form abt-form--done" role="status">
         <p className="abt-form__done-title">REQUEST SENT.</p>
-        <p className="abt-form__done-text">
-          Your reference is <strong>{done}</strong>. We’ll get back with ideas, possibilities and next steps.
-        </p>
+        <p className="abt-form__done-text">We’ll get back with ideas, possibilities and next steps.</p>
       </div>
     )
   }

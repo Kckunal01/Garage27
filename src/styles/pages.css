@@ -1470,7 +1470,7 @@
   line-height: 1;
   letter-spacing: 0.01em;
   text-transform: uppercase;
-  color: var(--g-red);
+  color: #fff;
   text-shadow: 0 1px 10px rgba(0, 0, 0, 0.8);
 }
 .svc-card__copy {
