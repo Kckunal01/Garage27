@@ -19,7 +19,7 @@ const STEP_FIELDS: Record<number, string[]> = {
 
 /**
  * Progressive request: (1) service + bike + need, (2) references + location +
- * contact, (3) optional notes → submit → confirmation with a reference.
+ * contact, (3) optional notes → submit → confirmation (no reference code shown).
  */
 export function ServiceRequestForm({ services, bikes, selected, onSelect, compact }: { services: ServiceOffering[]; bikes: BikeChoiceGroup[]; selected: string; onSelect: (id: string) => void; compact?: boolean }) {
   const [step, setStep] = useState(1)
@@ -113,9 +113,6 @@ export function ServiceRequestForm({ services, bikes, selected, onSelect, compac
           We’ll call you back.
         </h3>
         <p className="lede">A Garage 27 builder will reach out within one working day to talk it through.</p>
-        <p className="confirm__ref">
-          <span className="label">REFERENCE</span> <strong>{done}</strong>
-        </p>
         <GarageButton
           onClick={() => {
             setDone(null)

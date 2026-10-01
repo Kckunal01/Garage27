@@ -8,7 +8,6 @@ import { cancelAdding, clearSelection } from './selection'
 import { CopyCode } from '@/components/garage-ui/CopyCode'
 import { ErrorState, LoadingState } from '@/components/garage-ui/States'
 import { formatINR } from '@/lib/pricing/money'
-import { PLATFORM_FEE_LABEL } from '@/lib/pricing/cart'
 
 interface OrderView {
   reference: string
@@ -70,17 +69,16 @@ export function OrderStatus() {
   if (error && !order) return <ErrorState onRetry={() => setAttempt((a) => a + 1)} />
   if (!order) return <LoadingState message="CONFIRMING WITH THE GATEWAY…" />
 
-  const cod = order.paymentMethod === 'cod'
   const placed = order.status === 'placed'
   const paid = order.status === 'paid' || order.status === 'fulfilled'
   const failed = order.status === 'failed' || order.status === 'cancelled'
   return (
     <div className="confirm plate">
       <p className={`label ${paid || placed ? 'label--amber' : failed ? 'label--red' : ''}`}>{placed ? 'ORDER PLACED · CASH ON DELIVERY' : paid ? 'PAYMENT CONFIRMED' : failed ? 'PAYMENT FAILED' : 'AWAITING CONFIRMATION'}</p>
-      <h1 className="headline">{paid || placed ? 'It’s on the bench.' : failed ? 'That didn’t go through.' : 'Hang tight.'}</h1>
+      <h1 className="headline">{paid || placed ? 'Thank you for your order.' : failed ? 'That didn’t go through.' : 'Hang tight.'}</h1>
       <p className="lede">
         {placed
-          ? `We’re packing your parts. Pay ${formatINR(order.total)} in cash when they arrive — tracking details follow by email.`
+          ? 'We’re packing your parts. Pay in cash when they arrive — tracking details follow by email.'
           : paid
             ? 'We’re packing your parts. You’ll get tracking details by email.'
             : failed
@@ -98,24 +96,6 @@ export function OrderStatus() {
           </li>
         ))}
       </ul>
-      {!!order.platformFee && (
-        <p className="confirm__total">
-          <span className="label">PLATFORM FEE · {PLATFORM_FEE_LABEL}</span> {formatINR(order.platformFee)}
-        </p>
-      )}
-      {order.shipping !== undefined && (
-        <p className="confirm__total">
-          <span className="label">SHIPPING</span> {order.shipping ? formatINR(order.shipping) : 'FREE'}
-        </p>
-      )}
-      {cod && !!order.codFee && (
-        <p className="confirm__total">
-          <span className="label">COD FEE</span> {formatINR(order.codFee)}
-        </p>
-      )}
-      <p className="confirm__total">
-        <span className="label">{cod ? 'PAY ON DELIVERY' : 'TOTAL'}</span> {formatINR(order.total)}
-      </p>
       <div className="confirm__ctas">
         {failed ? (
           <Link href="/checkout" className="btn btn--ignite">
