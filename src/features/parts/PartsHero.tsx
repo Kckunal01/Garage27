@@ -1,8 +1,9 @@
 import Image from 'next/image'
+import { PartsTicker } from './PartsTicker'
 
 export const PARTS_HERO = '/assets/parts/parts-hero.png'
 
-/** The Parts reference hero: the parts wall full-bleed under the header, the headline set low-left. */
+/** The Parts reference hero: the parts wall full-bleed under the header, the promises ticker just below it, the headline set low-left. */
 export function PartsHero() {
   return (
     <section className="prt-hero">
@@ -10,6 +11,7 @@ export function PartsHero() {
         <Image className="prt-hero__img" src={PARTS_HERO} alt="" fill sizes="100vw" quality={75} preload />
         <div className="prt-hero__shade" />
       </div>
+      <PartsTicker />
       <div className="prt-hero__copy">
         <h1 className="prt-hero__title">
           THE DETAILS

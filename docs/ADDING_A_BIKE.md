@@ -2,7 +2,7 @@
 
 No Build-page code changes. Data, a model, and QA. The bay only ever reads the catalogue.
 
-1. **Vehicle** — `bikes`: id, slug, brand (manufacturer), model, name, optional `year` / `variant` / `thumbnail`, `base_price` (paise), `engine_cc` (displacement — bike-specific parts for a bike above 350cc carry the 40% charge at checkout, all other parts 18%), silhouette, `camera`. Start as `status = 'coming-soon'`.
+1. **Vehicle** — `bikes`: id, slug, brand (manufacturer), model, name, optional `year` / `variant` / `thumbnail`, `base_price` (paise), `engine_cc` (displacement), silhouette, `camera`. Start as `status = 'coming-soon'`.
 2. **3D model** — one GLB per vehicle, Draco/Meshopt-compressed, textures ≤ 2K, at `public/assets/3d/bikes/<slug>/<slug>.glb`. Set
    `model3d = { kind: 'glb', ref: '<url>', paintNodes: ['bike.tank', 'bike.frontFender', …] }`.
    **Stable node names** (never mesh indexes): `bike.frame`, `bike.engine`, `bike.wheelFront`, `bike.wheelRear`, `bike.tank`, `bike.seat`, `bike.headlight`, `bike.handlebar`, `bike.mirrors`, `bike.exhaust`, `bike.luggage`, `bike.rearFender`, …

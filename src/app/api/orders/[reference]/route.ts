@@ -19,7 +19,6 @@ export async function GET(_req: Request, ctx: { params: Promise<{ reference: str
       paymentMethod: order.paymentMethod,
       subtotal: order.subtotal,
       platformFee: order.platformFee,
-      charge: order.charge,
       shipping: order.shipping,
       codFee: order.codFee,
       total: order.total,

@@ -13,7 +13,7 @@ import { GarageButton } from '@/components/garage-ui/GarageButton'
 import { track } from '@/lib/analytics'
 import { postJson } from '@/lib/http-client'
 import { formatINR, valueBand } from '@/lib/pricing/money'
-import { breakdown, CHARGE_RULES, PAYMENT_RULES, SHIPPING_RULES, type PaymentMethod } from '@/lib/pricing/cart'
+import { breakdown, PAYMENT_RULES, PLATFORM_FEE_LABEL, SHIPPING_RULES, type PaymentMethod } from '@/lib/pricing/cart'
 import { consumeAdding, mergeLine, readSelection, removeLine, setLineQuantity, startAdding, writeSelection } from './selection'
 import { checkoutSchema, fieldErrors } from '@/lib/validation/schemas'
 import type { ClientPaymentSession } from '@/lib/payments/types'
@@ -58,8 +58,7 @@ const empty = { name: '', email: '', phone: '', line1: '', line2: '', city: '', 
  * "Want to add something?" — and never touches the cart. Mode cart checks
  * out the saved cart exactly as before. `direct` is the part BUY NOW sent.
  */
-/** `rates`: each part's charge rate (basis points), from the server. */
-export function CheckoutForm({ mode, direct = null, rates }: { mode: CheckoutMode; direct?: CartLine | null; rates: Record<string, number> }) {
+export function CheckoutForm({ mode, direct = null }: { mode: CheckoutMode; direct?: CartLine | null }) {
   const cart = useCart()
   const router = useRouter()
   const fromCart = mode === 'cart'
@@ -115,8 +114,8 @@ export function CheckoutForm({ mode, direct = null, rates }: { mode: CheckoutMod
     )
 
   // Display only: the server prices the order (every line below) itself.
-  const { platformFee, charge, shipping, codFee, total } = breakdown(
-    lines.map((l) => ({ price: l.price, quantity: l.quantity, chargeBp: rates[l.partId] ?? CHARGE_RULES.standardBp })),
+  const { platformFee, shipping, codFee, total } = breakdown(
+    lines.map((l) => ({ price: l.price, quantity: l.quantity })),
     method,
   )
   const set = (k: keyof typeof empty) => (e: React.ChangeEvent<HTMLInputElement>) => setValues((v) => ({ ...v, [k]: e.target.value }))
@@ -266,13 +265,9 @@ export function CheckoutForm({ mode, direct = null, rates }: { mode: CheckoutMod
             </div>
             <div>
               <dt>
-                Platform fee <span className="co-sum__rate">{CHARGE_RULES.platformFeeBp / 100}%</span>
+                Platform fee <span className="co-sum__rate">{PLATFORM_FEE_LABEL}</span>
               </dt>
               <dd>{formatINR(platformFee)}</dd>
-            </div>
-            <div>
-              <dt>Tax / applicable charge</dt>
-              <dd>{formatINR(charge)}</dd>
             </div>
             <div>
               <dt>Shipping</dt>
@@ -289,7 +284,7 @@ export function CheckoutForm({ mode, direct = null, rates }: { mode: CheckoutMod
               <dd>{formatINR(total)}</dd>
             </div>
           </dl>
-          {shipping > 0 && <p className="co-sum__note">Free shipping from {formatINR(SHIPPING_RULES.freeFrom)}.</p>}
+          {shipping > 0 && <p className="co-sum__note">Free shipping above {formatINR(SHIPPING_RULES.freeAbove)}.</p>}
         </div>
         {!fromCart && (
           <p className="co-more">

@@ -3,7 +3,7 @@ import type { Paise } from '@/types/catalogue'
 const inr = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 })
 const inrPaise = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
-/** Format integer paise as ₹ with Indian digit grouping; paise show only when there are any (₹79.96, ₹1,999). */
+/** Format integer paise as ₹ with Indian digit grouping; paise show only when there are any (₹79.96, ₹4,999). */
 export function formatINR(paise: Paise): string {
   const p = Math.round(paise)
   return p % 100 === 0 ? inr.format(p / 100) : inrPaise.format(p / 100)

@@ -7,10 +7,10 @@ import { EmptyState, LoadingState } from '@/components/garage-ui/States'
 import { PartVisual } from '@/components/media/PartVisual'
 import { track } from '@/lib/analytics'
 import { formatINR, valueBand } from '@/lib/pricing/money'
-import { breakdown, CHARGE_RULES, SHIPPING_RULES } from '@/lib/pricing/cart'
+import { breakdown, PLATFORM_FEE_LABEL, SHIPPING_RULES } from '@/lib/pricing/cart'
 
-/** `rates`: each part's charge rate (basis points), from the server. Display only — checkout re-prices on the server. */
-export function CartView({ rates }: { rates: Record<string, number> }) {
+/** Display only — checkout re-prices on the server. */
+export function CartView() {
   const { lines, ready, subtotal, setQuantity, remove, count } = useCart()
 
   useEffect(() => {
@@ -30,9 +30,7 @@ export function CartView({ rates }: { rates: Record<string, number> }) {
       </EmptyState>
     )
 
-  const { platformFee, charge, shipping, total } = breakdown(
-    lines.map((l) => ({ price: l.price, quantity: l.quantity, chargeBp: rates[l.partId] ?? CHARGE_RULES.standardBp })),
-  )
+  const { platformFee, shipping, total } = breakdown(lines.map((l) => ({ price: l.price, quantity: l.quantity })))
   return (
     <div className="cart">
       <ul className="cart__lines">
@@ -68,12 +66,8 @@ export function CartView({ rates }: { rates: Record<string, number> }) {
             <dd>{formatINR(subtotal)}</dd>
           </div>
           <div>
-            <dt>Platform fee {CHARGE_RULES.platformFeeBp / 100}%</dt>
+            <dt>Platform fee {PLATFORM_FEE_LABEL}</dt>
             <dd>{formatINR(platformFee)}</dd>
-          </div>
-          <div>
-            <dt>Tax / applicable charge</dt>
-            <dd>{formatINR(charge)}</dd>
           </div>
           <div>
             <dt>Shipping</dt>
@@ -84,7 +78,7 @@ export function CartView({ rates }: { rates: Record<string, number> }) {
             <dd>{formatINR(total)}</dd>
           </div>
         </dl>
-        {shipping > 0 && <p className="muted summary__note">Free shipping from {formatINR(SHIPPING_RULES.freeFrom)}.</p>}
+        {shipping > 0 && <p className="muted summary__note">Free shipping above {formatINR(SHIPPING_RULES.freeAbove)}.</p>}
         <Link href="/checkout" className="btn btn--ignite btn--block">
           CHECKOUT
         </Link>

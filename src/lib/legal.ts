@@ -870,7 +870,7 @@ export const LEGAL: LegalDoc[] = [
         id: 'platform-fee',
         title: 'PLATFORM FEE',
         blocks: [
-          'Garage 27 may apply a 2.5% platform fee to eligible product purchases.',
+          'Garage 27 may apply a 4% platform fee to eligible product purchases.',
           'Where applicable, the platform fee will be disclosed during the purchase or checkout process.',
           'The platform fee may cover platform-related services and transaction infrastructure associated with the purchase.',
           'The applicable platform fee will be calculated based on the relevant product price or order value as configured by Garage 27.',
@@ -882,11 +882,6 @@ export const LEGAL: LegalDoc[] = [
         title: 'TAXES & PRODUCT CHARGES',
         blocks: [
           'Applicable taxes and statutory charges may apply to products and services purchased through Garage 27.',
-          "Garage 27's current catalogue pricing structure may apply the following product charge schedule:",
-          'Universal / Catalogue Parts — Bikes Under 350cc',
-          'For applicable universal or catalogue parts associated with motorcycles below 350cc, Garage 27 may apply an 18% tax/charge component as displayed during checkout.',
-          'Bike-Specific Parts — Bikes 350cc and Above',
-          'For applicable bike-specific parts associated with motorcycles of 350cc and above, Garage 27 may apply a 40% tax/charge component as displayed during checkout.',
           'The applicable amount shown at checkout will be the amount payable for the transaction.',
           'Tax treatment may vary depending on the legal classification, HSN/SAC, product, transaction structure and applicable law.',
           'Garage 27 may modify its tax and charge structure where required by changes in applicable law or tax treatment.',
@@ -898,8 +893,8 @@ export const LEGAL: LegalDoc[] = [
         title: 'SHIPPING',
         blocks: [
           'Garage 27 currently offers:',
-          'FREE SHIPPING on orders above ₹1,999',
-          'Orders below ₹1,999 may attract a:',
+          'FREE SHIPPING on orders above ₹4,999',
+          'Orders below ₹4,999 may attract a:',
           '₹499 shipping fee',
           'The applicable shipping charge will be displayed during checkout.',
           'Shipping availability may vary by location, product type, size, weight and courier serviceability.',

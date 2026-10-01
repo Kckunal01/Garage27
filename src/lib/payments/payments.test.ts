@@ -31,7 +31,6 @@ describe('settlement', () => {
     status: 'awaiting_payment',
     subtotal: 5000,
     platformFee: 0,
-    charge: 0,
     shipping: 0,
     codFee: 0,
     total: 5000,

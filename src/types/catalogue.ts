@@ -129,7 +129,7 @@ export interface Bike {
   year?: number
   /** Trim / variant where the catalogue needs it, e.g. "Signals". */
   variant?: string
-  /** Engine displacement in cc. Bike-specific parts for a bike above 350cc carry the 40% charge. */
+  /** Engine displacement in cc. */
   engineCc?: number
   /** Vehicle-picker thumbnail (optimised still). Falls back to the silhouette. */
   thumbnail?: string

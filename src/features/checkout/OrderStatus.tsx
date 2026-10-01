@@ -8,13 +8,13 @@ import { cancelAdding, clearSelection } from './selection'
 import { CopyCode } from '@/components/garage-ui/CopyCode'
 import { ErrorState, LoadingState } from '@/components/garage-ui/States'
 import { formatINR } from '@/lib/pricing/money'
+import { PLATFORM_FEE_LABEL } from '@/lib/pricing/cart'
 
 interface OrderView {
   reference: string
   status: string
   paymentMethod?: 'online' | 'cod'
   platformFee?: number
-  charge?: number
   shipping?: number
   codFee?: number
   total: number
@@ -100,12 +100,7 @@ export function OrderStatus() {
       </ul>
       {!!order.platformFee && (
         <p className="confirm__total">
-          <span className="label">PLATFORM FEE</span> {formatINR(order.platformFee)}
-        </p>
-      )}
-      {!!order.charge && (
-        <p className="confirm__total">
-          <span className="label">TAX / APPLICABLE CHARGE</span> {formatINR(order.charge)}
+          <span className="label">PLATFORM FEE · {PLATFORM_FEE_LABEL}</span> {formatINR(order.platformFee)}
         </p>
       )}
       {order.shipping !== undefined && (
