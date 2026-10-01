@@ -55,7 +55,6 @@ function LandingView({ parts, bikes, bike, setBike }: Data & { bike: string; set
           <PartsCategoryTile
             key={c}
             meta={PART_CATEGORY_META[c]}
-            index={i}
             href={categoryHref(c, bike)}
             count={counts[c]}
             eager={i < 2}

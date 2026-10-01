@@ -172,12 +172,6 @@
   display: grid;
   gap: 2px;
 }
-.ptile__num {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.18em;
-  color: #ff5a5f;
-}
 .ptile__label {
   font-family: var(--font-display);
   font-weight: 400;
@@ -198,26 +192,10 @@
   color: rgba(239, 227, 200, 0.86);
   text-shadow: 0 1px 6px #000, 0 0 2px #000;
 }
-.ptile__arrow {
-  position: absolute;
-  right: 16px;
-  bottom: 18px;
-  width: 22px;
-  height: 22px;
-  color: rgba(239, 227, 200, 0.8);
-  transition:
-    transform var(--dur),
-    color var(--dur);
-}
 .ptile:hover,
 .ptile:focus-visible {
   border-color: rgba(255, 45, 55, 0.7);
   box-shadow: 0 0 22px -6px rgba(255, 38, 48, 0.55);
-}
-.ptile:hover .ptile__arrow,
-.ptile:focus-visible .ptile__arrow {
-  color: #ff5a5f;
-  transform: translateX(4px);
 }
 
 @media (--desktop) {
@@ -286,15 +264,8 @@
   .ptile--lead .ptile__label {
     font-size: clamp(56px, 5vw, 76px);
   }
-  .ptile__num,
   .ptile__desc {
     font-size: 11px;
-  }
-  .ptile__arrow {
-    right: 24px;
-    bottom: 28px;
-    width: 26px;
-    height: 26px;
   }
 }
 
